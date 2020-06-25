@@ -9,7 +9,7 @@ public class WebServerApplication {
 	// TODO(#8): модель организации
 	// TODO(#10): модель работников
 	// TODO(#11): генерация кода с jOOQ 
-	// TODO: контроллер организаций
+	// TODO(#12): контроллер организаций
 	// TODO: контроллер работников
 	public static void main(String[] args) {
 		SpringApplication.run(WebServerApplication.class, args);
