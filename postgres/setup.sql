@@ -25,7 +25,7 @@ CREATE TABLE Worker (
 --    FOR EACH ROW EXECUTE PROCEDURE check_worker_head()
 
 
--- TODO:  postgres: перенос объявления начальных данных в отдельный файл
+-- TODO(#18):  postgres: перенос объявления начальных данных в отдельный файл
 -- TODO:  postgres: тестирование с pgTap
 INSERT INTO Organization VALUES
     (1, 'headOrg1', NULL),
