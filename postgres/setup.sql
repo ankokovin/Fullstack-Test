@@ -14,7 +14,8 @@ CREATE TABLE Worker (
     head_id integer REFERENCES Worker
 );
 
--- TODO:  postgres: проверка, что начальник состоит в той же организации
+-- TODO(#17):  postgres: проверка, что начальник состоит в той же организации
+
 -- Источник: https://postgrespro.ru/docs/postgresql/9.6/plpgsql-trigger
 -- CREATE OR REPLACE FUNCTION check_worker_head() RETURNS TRIGGER AS $worker_head$
 --    BEGIN
