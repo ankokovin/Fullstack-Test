@@ -1,2 +1,2 @@
 # TODO(#5): docker-compose: описать используемый веб-сервер
-# TODO: docker-compose: описать postgres
+# TODO(#9): docker-compose: описать postgres
