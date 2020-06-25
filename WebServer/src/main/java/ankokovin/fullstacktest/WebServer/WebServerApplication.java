@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WebServerApplication {
 	// TODO(#4): настройка портов и https
 	// TODO(#8): модель организации
-	// TODO: модель работников
+	// TODO(#10): модель работников
 	// TODO: генерация кода с jOOQ 
 	// TODO: контроллер организаций
 	// TODO: контроллер работников
