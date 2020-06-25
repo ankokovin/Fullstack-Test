@@ -1,2 +1,2 @@
 TODO(#1): readme: описание
-TODO: readme: установка
+TODO(#2): readme: установка
