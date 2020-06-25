@@ -25,7 +25,7 @@ CREATE TABLE Worker (
 --    FOR EACH ROW EXECUTE PROCEDURE check_worker_head()
 
 -- TODO(#20):  postgres: обработчик удаления работника
--- TODO:  postgres: обработчик удаления организации
+-- TODO(#21):  postgres: обработчик удаления организации
 
 -- TODO(#18):  postgres: перенос объявления начальных данных в отдельный файл
 -- TODO(#19):  postgres: тестирование с pgTap
