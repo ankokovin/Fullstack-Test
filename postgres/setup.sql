@@ -1,4 +1,3 @@
--- TODO(#6): setup.sql: описать структуру базы данных
 DROP TABLE IF EXISTS Organization, Worker;
 
 CREATE TABLE Organization (
