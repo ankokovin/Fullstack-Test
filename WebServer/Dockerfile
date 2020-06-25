@@ -1,2 +1,2 @@
 # TODO(#3): dockerfile: build server
-# TODO: dockerfile: build frontend with WebPack
+# TODO(#7): dockerfile: build frontend with WebPack
