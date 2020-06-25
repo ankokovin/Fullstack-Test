@@ -26,7 +26,7 @@ CREATE TABLE Worker (
 
 
 -- TODO(#18):  postgres: перенос объявления начальных данных в отдельный файл
--- TODO:  postgres: тестирование с pgTap
+-- TODO(#19):  postgres: тестирование с pgTap
 INSERT INTO Organization VALUES
     (1, 'headOrg1', NULL),
     (2, 'headOrg2', NULL),
