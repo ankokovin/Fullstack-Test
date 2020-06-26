@@ -6,7 +6,7 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master, dev/* ]
+    branches: [ master, dev/*, dependabot/* ]
   pull_request:
     branches: [ master ]
 
@@ -24,6 +24,7 @@ jobs:
     - uses: bahmutov/npm-install@HEAD
       with:
         working-directory: FrontEnd
+        useLockFile: false
     - run: yarn test
       working-directory: FrontEnd
     
