@@ -1,50 +1,66 @@
-/**
- * Webpack common setup
- */
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
-module.exports = {
-    entry: {
-        app: './src/app/app.js'
-    },
-    output: {
-        filename: '[name].[hash].js',
-        path: path.resolve(__dirname, '../WebServer/static')
-    },
+
+module.exports = {    
+    devtool: 'source-map', // for debug purposes on production
     module: {
         rules: [
             {
-                test: /\.js$/,
-                include: [path.resolve(__dirname, "src")],
-                use: {
-                    loader: 'babel-loader'
-                }
+                test: /\.html$/,
+                use: [{ loader: 'html-loader', options: { minimize: true } }]
             },
             {
-                test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+                test: /\.(png|jpe?g)/i,
                 use: [
                     {
-                        loader: 'file-loader',
+                        loader: 'url-loader',
                         options: {
-                            esModule: false,
+                            name: './assets/images/[name].[ext]',
+                            limit: 10000
                         }
+                    },
+                    {
+                        loader: 'img-loader'
                     }
                 ]
             },
             {
-                test: /\.(html)$/,
-                use: {
-                    loader: 'html-loader'
-                }
+                test: /\.scss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'postcss-loader',
+                    'sass-loader'
+                ]
             },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'ng-annotate-loader'
+                    },
+                    {
+                        loader: 'babel-loader'
+                    }
+                ]
+                                                        
+            }
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            template: 'src/index.html'
+        new HtmlWebPackPlugin({
+            template: 'src/index.html',
+            filename: './index.html'
         }),
+        new MiniCssExtractPlugin({
+            filename: '[name].css',
+            chunkFilename: '[id].css'
+        }),
+        new webpack.DefinePlugin({
+            ON_TEST: process.env.NODE_ENV === 'test'
+        })
     ]
 };
