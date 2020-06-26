@@ -6,7 +6,12 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master, dev/*, dependabot/* ]
+    branches: 
+    - master
+    - 'dev/*'
+    - 'dependabot/*' 
+    - '!dev/back*'
+        
   pull_request:
     branches: [ master ]
 
