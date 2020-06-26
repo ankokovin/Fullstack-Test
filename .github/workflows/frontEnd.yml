@@ -25,6 +25,7 @@ jobs:
       with:
         working-directory: FrontEndApp
         useLockFile: false
-    - run: yarn test
+    - run: npm run build
       working-directory: FrontEndApp
-    
+    - run: npm test
+      working-directory: FrontEndApp
