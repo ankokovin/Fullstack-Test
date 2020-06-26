@@ -23,8 +23,8 @@ jobs:
     - uses: actions/checkout@v2
     - uses: bahmutov/npm-install@HEAD
       with:
-        working-directory: FrontEnd
+        working-directory: FrontEndApp
         useLockFile: false
     - run: yarn test
-      working-directory: FrontEnd
+      working-directory: FrontEndApp
     
