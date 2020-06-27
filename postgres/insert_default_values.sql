@@ -6,7 +6,7 @@ INSERT INTO Organization VALUES
 
 INSERT INTO Worker VALUES
     (1, 'Worker1', 1, NULL),
-    (2, 'Worker2', 1, 2),
+    (2, 'Worker2', 1, 1),
     (3, 'Worker3', 2, NULL),
     (4, 'Worker4', 2, 3),
     (5, 'Worker5', 2, 4),
