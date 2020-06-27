@@ -1,7 +1,7 @@
 \set ON_ERROR_ROLLBACK 1
 \set ON_ERROR_STOP true
 BEGIN;
-SELECT plan(10);
+SELECT plan(12);
 SELECT rules_are(
     'worker',
     ARRAY[ 'on_insert', 'on_update']
@@ -70,6 +70,19 @@ SELECT results_eq(
 
 PREPARE insert_worker_wrong_org AS INSERT INTO Worker VALUES (9, 'Worker9', 1, 3);
 SELECT throws_ok('insert_worker_wrong_org');
+SELECT results_eq(
+    'SELECT * FROM Worker',
+     $$VALUES  (1, 'Worker1', 1, NULL),
+    (2, 'Worker2', 1, 1),
+    (3, 'Worker3', 2, NULL),
+    (4, 'Worker4', 2, 3),
+    (5, 'Worker5', 2, 4),
+    (7, 'Worker7', 4, NULL),
+    (8, 'Worker8', 1, 1)$$
+);
+
+PREPARE insert_worker_selfref AS INSERT INTO Worker VALUES (10, 'Worker10', 1, 9);
+SELECT throws_ok('insert_worker_selfref');
 SELECT results_eq(
     'SELECT * FROM Worker',
      $$VALUES  (1, 'Worker1', 1, NULL),
