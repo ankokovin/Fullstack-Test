@@ -94,7 +94,6 @@ SELECT results_eq(
     (8, 'Worker8', 1, 1)$$
 );
 
--- TODO: такие же случаи при Update
 PREPARE update_worker AS
     UPDATE Worker
     SET (id, worker_name, org_id, head_id) = (8, 'Worker_new', 2, 3)
