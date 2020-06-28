@@ -49,6 +49,12 @@ jobs:
     - name: Create database
       run: sudo -u postgres bash -c "psql -c \"CREATE DATABASE orgs_and_workers;\""
 
+    - name: Setup database
+      run: psql --dbname orgs_and_workers -f setup.sql
+      working-directory: postgres
+      env:
+        PGPASSWORD: 12345
+
     - name: Generate code with jOOQ
       run: mvn generate-sources
       working-directory: WebServer
