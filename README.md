@@ -1,4 +1,4 @@
-![Java CI with Maven](https://github.com/ankokovin/Fullstack-Test/workflows/Java%20CI%20with%20Maven/badge.svg?branch=master)
+![CI](https://github.com/ankokovin/Fullstack-Test/workflows/CI/badge.svg)
 
 TODO(#1): readme: описание
 
