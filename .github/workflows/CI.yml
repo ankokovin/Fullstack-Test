@@ -51,8 +51,12 @@ jobs:
 
     - name: Generate code with jOOQ
       run: mvn generate-sources
+      working-directory: WebServer
+      
     - name: Build with Maven
-      run: cd ./WebServer && mvn -B package --file pom.xml
+      run: mvn -B package --file pom.xml
+      working-directory: WebServer
+
   test-postgres:
     runs-on: ubuntu-latest
 
