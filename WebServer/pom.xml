@@ -12,13 +12,32 @@
 	<artifactId>WebServer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>WebServer</name>
-	<description>Тестовое задание на fullstack в ProIT</description>
+	<description>Тестовое задание на fullstack</description>
 
 	<properties>
 		<java.version>1.8</java.version>
+		<org.jooq.version>3.13.2</org.jooq.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<!-- Import dependency management from Spring Boot -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jooq</artifactId>
@@ -26,6 +45,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -40,19 +65,67 @@
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<delimiters>
+						<delimiter>@</delimiter>
+					</delimiters>
+					<useDefaultDelimiters>false</useDefaultDelimiters>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>${org.jooq.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<jdbc>
+								<driver>org.postgresql.Driver</driver>
+								<url>jdbc:postgresql://localhost:5432/orgs_and_workers</url>
+								<user>admin</user>
+								<password>12345</password>
+							</jdbc>
+							<generator>
+								<target>
+									<packageName>ankokovin.fullstacktest.WebServer.Generated</packageName>
+									<directory>src/main/java/</directory>
+								</target>
+								<database>
+									<includes>(Worker)|(Organization)</includes>
+									<inputSchema>public</inputSchema>
+
+								</database>
+								<generate>
+									<pojos>true</pojos>
+									<daos>true</daos>
+								</generate>
+							</generator>
+						</configuration>
+
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

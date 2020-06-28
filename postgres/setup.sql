@@ -1,13 +1,13 @@
 DROP TABLE IF EXISTS Organization, Worker;
 
 CREATE TABLE Organization (
-    id  integer NOT NULL PRIMARY KEY,
+    id  SERIAL NOT NULL PRIMARY KEY,
     org_name text NOT NULL UNIQUE,
     head_org_id integer REFERENCES Organization
 );
 
 CREATE TABLE Worker (
-    id integer NOT NULL PRIMARY KEY,
+    id SERIAL NOT NULL PRIMARY KEY,
     worker_name text NOT NULL,
     org_id integer REFERENCES Organization,
     head_id integer REFERENCES Worker
