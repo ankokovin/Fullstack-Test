@@ -37,6 +37,20 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Install Postgresql-12
+      run: sudo apt-get update && sudo apt-get install -y postgresql-12
+      
+    - name: Start cluster
+      run: sudo pg_ctlcluster 12 main start
+      
+    - name: Create user for runner 
+      run: sudo -u postgres bash -c "psql -c \"CREATE USER runner WITH PASSWORD '12345' SUPERUSER;\""
+
+    - name: Create database
+      run: sudo -u postgres bash -c "psql -c \"CREATE DATABASE orgs_and_workers;\""
+
+    - name: Generate code with jOOQ
+      run: mvn generate-sources
     - name: Build with Maven
       run: cd ./WebServer && mvn -B package --file pom.xml
   test-postgres:
