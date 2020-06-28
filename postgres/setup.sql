@@ -23,6 +23,5 @@ CREATE TABLE Worker (
 -- CREATE TRIGGER worker_head BEFORE INSERT OR UPDATE ON Worker
 --    FOR EACH ROW EXECUTE PROCEDURE check_worker_head()
 
--- TODO(#20):  postgres: обработчик удаления работника
 
     
