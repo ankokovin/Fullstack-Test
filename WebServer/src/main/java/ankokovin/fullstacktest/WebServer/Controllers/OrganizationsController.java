@@ -18,12 +18,6 @@ public class OrganizationsController {
     @Autowired
     private OrganizationService service;
 
-    // TODO: удалить
-    @GetMapping()
-    public ResponseEntity<List<Organization>> getAll() {
-        return ResponseEntity.ok(service.gelAll());
-    }
-
     @GetMapping(value = "{page}")
     public ResponseEntity<List<OrgListElement>> getAll(@PathVariable(value = "page") Long page) {
         // TODO: пагенация
