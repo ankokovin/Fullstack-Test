@@ -24,6 +24,5 @@ CREATE TABLE Worker (
 --    FOR EACH ROW EXECUTE PROCEDURE check_worker_head()
 
 -- TODO(#20):  postgres: обработчик удаления работника
--- TODO(#21):  postgres: обработчик удаления организации
 
     
