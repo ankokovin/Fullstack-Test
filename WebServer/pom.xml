@@ -114,8 +114,13 @@
 									<directory>src/main/java/</directory>
 								</target>
 								<database>
-									<inputCatalog></inputCatalog>
+									<includes>(Worker)|(Organization)</includes>
+									<inputSchema>public</inputSchema>
+
 								</database>
+								<generate>
+									<records>true</records>
+								</generate>
 							</generator>
 						</configuration>
 
