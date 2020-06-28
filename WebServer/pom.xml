@@ -110,8 +110,8 @@
 							</jdbc>
 							<generator>
 								<target>
-									<packageName>ankokovin.fullstack-test.Model</packageName>
-									<directory>src/main/java/ankokovin/fullstacktest/Models</directory>
+									<packageName>ankokovin.fullstacktest.WebServer.Models</packageName>
+									<directory>src/main/java/</directory>
 								</target>
 								<database>
 									<inputCatalog></inputCatalog>
