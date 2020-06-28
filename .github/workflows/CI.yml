@@ -44,7 +44,7 @@ jobs:
       run: sudo pg_ctlcluster 12 main start
       
     - name: Create user for runner 
-      run: sudo -u postgres bash -c "psql -c \"CREATE USER runner WITH PASSWORD '12345' SUPERUSER;\""
+      run: sudo -u postgres bash -c "psql -c \"CREATE USER admin WITH PASSWORD '12345' SUPERUSER;\""
 
     - name: Create database
       run: sudo -u postgres bash -c "psql -c \"CREATE DATABASE orgs_and_workers;\""
