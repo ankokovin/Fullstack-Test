@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orgs_and_workers
+    username: admin
+    password: 12345
+    driver-class-name: org.postgresql.Driver
+  jooq:
+    sql-dialect: Postgres

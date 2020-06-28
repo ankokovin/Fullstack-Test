@@ -110,7 +110,7 @@
 							</jdbc>
 							<generator>
 								<target>
-									<packageName>ankokovin.fullstacktest.WebServer.Models</packageName>
+									<packageName>ankokovin.fullstacktest.WebServer.Generated</packageName>
 									<directory>src/main/java/</directory>
 								</target>
 								<database>
@@ -119,7 +119,8 @@
 
 								</database>
 								<generate>
-									<records>true</records>
+									<pojos>true</pojos>
+									<daos>true</daos>
 								</generate>
 							</generator>
 						</configuration>
