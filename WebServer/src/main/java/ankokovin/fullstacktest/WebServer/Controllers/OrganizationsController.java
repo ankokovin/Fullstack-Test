@@ -2,13 +2,13 @@ package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import java.util.List;
