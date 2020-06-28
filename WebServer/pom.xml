@@ -96,7 +96,6 @@
 				<version>${org.jooq.version}</version>
 				<executions>
 					<execution>
-						<!-- TODO: WebServer: generate jOOQ from file, not a database !-->
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
