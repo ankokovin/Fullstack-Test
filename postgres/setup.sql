@@ -26,5 +26,4 @@ CREATE TABLE Worker (
 -- TODO(#20):  postgres: обработчик удаления работника
 -- TODO(#21):  postgres: обработчик удаления организации
 
--- TODO(#19):  postgres: тестирование с pgTap
     
