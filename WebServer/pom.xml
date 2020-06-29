@@ -117,7 +117,7 @@
 				<version>0.8.2</version>
 				<configuration>
 					<excludes>
-						<exclude>src/main/java/ankokovin/fullstacktest/Webserver/Generated/**/*</exclude>
+						<exclude>ankokovin/fullstacktest/WebServer/Generated/**/*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
