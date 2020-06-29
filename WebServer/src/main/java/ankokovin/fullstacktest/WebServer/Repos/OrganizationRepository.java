@@ -14,12 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.defaultValue;
 
 @Repository
 public class OrganizationRepository {
 
     @Autowired
-    private DSLContext dsl;
+    public DSLContext dsl;
 
     private final Organization organization = Organization.ORGANIZATION;
     private final Worker worker = Worker.WORKER;
@@ -43,7 +44,7 @@ public class OrganizationRepository {
     @Transactional
     public Integer insert(String name, Integer org_id) throws SameNameException {
         return dsl.insertInto(organization)
-                .values(name, org_id)
+                .values(defaultValue(), name, org_id)
                 .returning(organization.ID)
                 .fetchOne()
                 .getValue(organization.ID);
