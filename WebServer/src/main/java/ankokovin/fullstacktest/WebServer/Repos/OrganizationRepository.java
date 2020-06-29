@@ -52,12 +52,16 @@ public class OrganizationRepository {
                 .getValue(organization.ID);
     }
 
-    public Integer update(Integer id, String name, Integer org_id)  throws SameNameException, WrongHeadIdException {
+    public Integer update(Integer id, String name, Integer org_id)  throws
+            SameNameException,
+            WrongHeadIdException,
+            NoSuchRecordException {
         throw new NotImplementedException();
     }
 
     @Transactional
-    public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization getById(Integer id) {
+    public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization getById(Integer id)
+            throws NoSuchRecordException{
         return dsl.select()
                 .from(organization)
                 .where(organization.ID.eq(id))
