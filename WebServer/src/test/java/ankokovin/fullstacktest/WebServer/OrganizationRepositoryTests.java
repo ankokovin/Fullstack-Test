@@ -1,10 +1,14 @@
 package ankokovin.fullstacktest.WebServer;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
+import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
@@ -12,9 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @JooqTest
 public class OrganizationRepositoryTests {
@@ -45,17 +49,168 @@ public class OrganizationRepositoryTests {
         dslContext.truncateTable(organization).restartIdentity().cascade().execute();
     }
 
-    @Test
-    public void whenCreateCorrectNoHead_thenOrganizationCreates() throws SameNameException {
-        //given
-        String name = "ООО Тест";
+    public Organization[] create(Integer cnt) throws Exception {
+        String name = "ООО Тест%d";
+        Organization[] expected = new Organization[cnt];
 
-        int id = organizationRepository.insert(name, null);
-        assertEquals(1,id);
 
+        for (int i=0; i<cnt; ++i) {
+            String fName = String.format(name,i);
+            int id = organizationRepository.insert(fName, null);
+            assertEquals(i+1, id);
+            expected[i] = new Organization(id, fName, null);
+        }
         Object[] actual = dslContext
                 .selectFrom(organization)
                 .fetchInto(Organization.class).toArray();
-        assertArrayEquals(new  Organization[]{new Organization(1, name,null)}, actual);
+        assertArrayEquals(expected, actual);
+        return expected;
     }
+
+    public Organization create() throws Exception {
+        return create(1)[0];
+    }
+
+    @Nested
+    class Insert {
+        @Test
+        public void whenNoHead_thenOrganizationCreates() throws Exception {
+            create();
+        }
+
+        @Test
+        public void whenHead_thenOrganizationCreates() throws Exception {
+            Organization given = create();
+            String name = "ООО Тест2";
+            Organization expected = new Organization(2, name, 1);
+            int id = organizationRepository.insert(name, 1);
+            assertEquals(2, id);
+
+            Object[] actual = dslContext
+                    .selectFrom(organization)
+                    .fetchInto(Organization.class).toArray();
+            assertArrayEquals(new Organization[]{given, expected}, actual);
+        }
+
+        @Test
+        public void whenFirstWithHead_thenThrows() {
+            WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
+                    () -> organizationRepository.insert("OOO Тест",3));
+            assertEquals( 3, e.id);
+        }
+
+        @Test
+        public void whenWrongHead_thenThrows() throws Exception {
+            Organization given = create();
+            WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
+                    () -> organizationRepository.insert("OOO Тест2",3));
+            assertEquals(3, e.id);
+        }
+
+        @Test
+        public void whenSelfHead_thenThrows() {
+            WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
+                    () -> organizationRepository.insert("OOO Тест",1));
+            assertEquals( 1, e.id);
+        }
+
+        @Test
+        public void whenSameName_thenThrows() throws Exception {
+            Organization given = create();
+            SameNameException e = assertThrows(SameNameException.class,
+                    () -> organizationRepository.insert(given.getOrgName(),null));
+            assertEquals(given.getOrgName(), e.name);
+        }
+    }
+
+    @Nested
+    @Disabled("TODO: implement OrganizationRepository.update")
+    class Update {
+        @Test
+        public void whenChangeName_thenOrganizationUpdates() throws Exception {
+            Organization given = create();
+            String name = "ООО Тест Изменено";
+            Organization expected = new Organization(1, name, null);
+
+            int id = organizationRepository.update(given.getId(), name, null);
+            assertEquals(1, id);
+
+            Object[] actual = dslContext
+                    .selectFrom(organization)
+                    .fetchInto(Organization.class).toArray();
+            assertArrayEquals(new Organization[]{expected}, actual);
+        }
+
+        @Test
+        public void whenChangeHead_thenOrganizationUpdates() throws Exception {
+            Organization[] given = create(2);
+            Organization expected = new Organization(given[1].getId(), given[1].getOrgName(), given[0].getId());
+            int id = organizationRepository.update(given[1].getId(),given[1].getOrgName(), given[0].getId());
+            assertEquals(2, id);
+
+            Object[] actual = dslContext
+                    .selectFrom(organization)
+                    .fetchInto(Organization.class).toArray();
+            assertArrayEquals(new Organization[]{given[0], expected}, actual);
+        }
+
+        @Test
+        public void whenChangeHeadSelf_thenThrows() throws Exception {
+            Organization given = create();
+            WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
+                    () -> organizationRepository.update(given.getId(), given.getOrgName(), given.getId()));
+            assertEquals( given.getId(), e.id);
+        }
+
+        @Test
+        public void whenWrongHead_thenThrows() throws Exception {
+            Organization given = create();
+            WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
+                    () -> organizationRepository.update(given.getId(),given.getOrgName(), given.getId()+1));
+            assertEquals(given.getId(), e.id);
+        }
+
+        @Test
+        public void whenSameName_thenThrows() throws Exception {
+            Organization[] given = create(2);
+            SameNameException e = assertThrows(SameNameException.class,
+                    () -> organizationRepository.update(
+                            given[1].getId(),
+                            given[0].getOrgName(),
+                            given[1].getHeadOrgId()));
+            assertEquals(given[0].getOrgName(), e.name);
+        }
+
+        @Test
+        public void whenIdNotPresent_thenThrows() {
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> organizationRepository.update(1,"test",null));
+            assertEquals(e.id, 1);
+        }
+    }
+
+    @Nested
+    @Disabled("TODO: implement OrganizationRepository.delete")
+    class Delete {
+        @Test
+        public void whenCorrectId_thenDeletes() throws Exception {
+            Organization given = create();
+            int id = organizationRepository.delete(given.getId());
+            assertEquals(0, dslContext.selectCount().from(organization));
+        }
+
+        @Test
+        public void whenIncorrectId_thenThrows() {
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> organizationRepository.delete(1));
+            assertEquals(e.id, 1);
+        }
+    }
+
+    @Nested
+    @Disabled()
+    class Get {
+        //TODO
+    }
+
 }

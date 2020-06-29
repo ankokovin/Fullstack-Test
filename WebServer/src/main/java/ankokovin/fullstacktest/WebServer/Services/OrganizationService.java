@@ -1,11 +1,10 @@
 package ankokovin.fullstacktest.WebServer.Services;
 
 
-import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.Record2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,19 @@ public class OrganizationService
         return result;
     }
 
-    public Organization create(String name, Integer org_id) throws SameNameException {
+    public Organization create(String name, Integer org_id) throws
+            SameNameException,
+            WrongHeadIdException,
+            UnexpectedException {
         Integer result_id = rep.insert(name, org_id);
-        return getById(result_id);
+        try {
+            return getById(result_id);
+        } catch (NoSuchRecordException ex) {
+            throw new UnexpectedException(ex);
+        }
     }
 
-    public Organization getById(Integer id) {
+    public Organization getById(Integer id) throws NoSuchRecordException {
         return rep.getById(id);
     }
 

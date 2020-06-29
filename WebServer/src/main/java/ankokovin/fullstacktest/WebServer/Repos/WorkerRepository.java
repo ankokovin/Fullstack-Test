@@ -1,5 +1,8 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
+import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
+import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import org.jooq.DSLContext;
@@ -15,15 +18,18 @@ public class WorkerRepository {
     @Autowired
     private DSLContext dsl;
 
-    public Worker create(String name, Integer org_id, Integer head_id) {
+    public Worker create(String name, Integer org_id, Integer head_id) throws SameNameException, WrongHeadIdException {
         throw new NotImplementedException();
     }
 
-    public Worker update(Integer id, String name, Integer org_id, Integer head_id) {
+    public Integer update(Integer id, String name, Integer org_id, Integer head_id) throws
+            SameNameException,
+            WrongHeadIdException,
+            NoSuchRecordException{
         throw new NotImplementedException();
     }
 
-    public Worker delete(Integer id) {
+    public Integer delete(Integer id) throws NoSuchRecordException {
         throw new NotImplementedException();
     }
 
@@ -34,7 +40,7 @@ public class WorkerRepository {
       throw new NotImplementedException();
     }
 
-    public Worker getById(Integer id) {
+    public Worker getById(Integer id) throws NoSuchRecordException {
         throw new NotImplementedException();
     }
 }
