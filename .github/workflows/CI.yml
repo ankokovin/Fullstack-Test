@@ -55,12 +55,8 @@ jobs:
       env:
         PGPASSWORD: 12345
 
-    - name: Generate code with jOOQ
-      run: mvn generate-sources
-      working-directory: WebServer
-      
-    - name: Test and send coverage
-      run: mvn test jacoco:report
+    - name: Generate code with jOOQ, test and send coverage
+      run: mvn generate-sources test jacoco:report
       working-directory: WebServer
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
