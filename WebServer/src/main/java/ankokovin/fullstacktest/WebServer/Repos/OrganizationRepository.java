@@ -56,7 +56,8 @@ public class OrganizationRepository {
             if (ex instanceof org.springframework.dao.DuplicateKeyException) {
                 if (message.contains("Key (org_name)")) throw new SameNameException(name);
             }
-            if (message.contains("Key (head_org_id)")) throw new WrongHeadIdException(org_id);
+            if (message.contains("organization_check") ||
+                    message.contains("Key (head_org_id)")) throw new WrongHeadIdException(org_id);
             throw new UnexpectedException(ex);
         } catch (Exception ex) {
             throw new UnexpectedException(ex);
