@@ -1,6 +1,12 @@
 server:
   port: 8080
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /docs
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/orgs_and_workers

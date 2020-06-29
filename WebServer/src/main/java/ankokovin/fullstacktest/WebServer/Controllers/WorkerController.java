@@ -1,6 +1,8 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import org.springframework.http.ResponseEntity;
@@ -16,26 +18,19 @@ public class WorkerController {
 
     @PostMapping
     public ResponseEntity<Worker> create(
-            @RequestBody(required = true)String name,
-            @RequestBody(required = true)Integer org_id,
-            @RequestBody(required = false)Integer head_id
-    ) {
+            @RequestBody CreateWorkerInput model) {
         throw new NotImplementedException();
     }
 
     @PutMapping
     public ResponseEntity<Worker> update(
-            @RequestBody(required = true)Integer id,
-            @RequestBody(required = true)String name,
-            @RequestBody(required = true)Integer org_id,
-            @RequestBody(required = false)Integer head_id
-    ){
+            @RequestBody UpdateWorkerInput model){
         throw new NotImplementedException();
     }
 
     @DeleteMapping
     public ResponseEntity<Worker> delete(
-            @RequestBody(required = true)Integer id
+            @RequestBody Integer id
     ){
         throw new NotImplementedException();
     }
