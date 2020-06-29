@@ -1,8 +1,11 @@
 package ankokovin.fullstacktest.WebServer.Services;
 
 
+import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
+import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.Record2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,24 +20,32 @@ public class OrganizationService
     @Autowired
     private OrganizationRepository rep;
 
-    public List<Organization> gelAll() {
-        return rep.getAll();
-    }
-
     public List<OrgListElement> getAllWithCount() {
-        List<OrgListElement> result = new ArrayList<OrgListElement>();
+        List<OrgListElement> result = new ArrayList<>();
         for (Record2<String, Integer> rec: rep.getAllWithCount()) {
             result.add(new OrgListElement(rec.component1(),rec.component2()));
         }
         return result;
     }
 
-    public Organization create(String name, Integer org_id) {
+    public Organization create(String name, Integer org_id) throws SameNameException {
         Integer result_id = rep.insert(name, org_id);
         return getById(result_id);
     }
 
     public Organization getById(Integer id) {
         return rep.getById(id);
+    }
+
+    public Organization update(Integer id, String name, Integer org_id) {
+        throw new NotImplementedException();
+    }
+
+    public Organization delete(Integer id) {
+        throw new NotImplementedException();
+    }
+
+    public TreeNode<Organization> getTree(Integer root, Integer depth) {
+        throw new NotImplementedException();
     }
 }
