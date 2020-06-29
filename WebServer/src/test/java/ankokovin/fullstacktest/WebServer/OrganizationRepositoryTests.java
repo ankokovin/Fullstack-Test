@@ -203,4 +203,9 @@ public class OrganizationRepositoryTests {
         }
     }
 
+    @Nested
+    class Get {
+        //TODO
+    }
+
 }
