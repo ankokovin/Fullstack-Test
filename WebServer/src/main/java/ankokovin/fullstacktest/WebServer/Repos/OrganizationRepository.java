@@ -1,5 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
@@ -65,7 +66,7 @@ public class OrganizationRepository {
 
 
     @Transactional
-    public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization delete(Integer id) {
+    public Integer delete(Integer id) throws NoSuchRecordException {
         throw new NotImplementedException();
     }
 

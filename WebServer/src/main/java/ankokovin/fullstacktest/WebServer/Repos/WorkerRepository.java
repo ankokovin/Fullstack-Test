@@ -1,5 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import org.jooq.DSLContext;
@@ -19,11 +20,11 @@ public class WorkerRepository {
         throw new NotImplementedException();
     }
 
-    public Worker update(Integer id, String name, Integer org_id, Integer head_id) {
+    public Integer update(Integer id, String name, Integer org_id, Integer head_id) {
         throw new NotImplementedException();
     }
 
-    public Worker delete(Integer id) {
+    public Integer delete(Integer id) throws NoSuchRecordException {
         throw new NotImplementedException();
     }
 
