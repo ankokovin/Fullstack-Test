@@ -1,8 +1,9 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
-import ankokovin.fullstacktest.WebServer.NotImplementedException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,12 @@ public class OrganizationsController {
     public ResponseEntity<Organization> create(
             @RequestBody(required = true) String name,
             @RequestBody(required = false) Integer org_id) {
-        return ResponseEntity.ok(service.create(name, org_id));
+        try {
+            return ResponseEntity.ok(service.create(name, org_id));
+        } catch (SameNameException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PutMapping

@@ -1,7 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.WebServer.NotImplementedException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import org.jooq.DSLContext;
 import org.jooq.Record5;
 import org.springframework.beans.factory.annotation.Autowired;

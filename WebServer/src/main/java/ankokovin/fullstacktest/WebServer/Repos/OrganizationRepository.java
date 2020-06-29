@@ -1,8 +1,9 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
-import ankokovin.fullstacktest.WebServer.NotImplementedException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -40,7 +41,7 @@ public class OrganizationRepository {
     }
 
     @Transactional
-    public Integer insert(String name, Integer org_id) {
+    public Integer insert(String name, Integer org_id) throws SameNameException {
         return dsl.insertInto(organization)
                 .values(name, org_id)
                 .returning(organization.ID)
