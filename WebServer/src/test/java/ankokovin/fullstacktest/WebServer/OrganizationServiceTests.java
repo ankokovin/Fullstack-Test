@@ -1,26 +1,21 @@
 package ankokovin.fullstacktest.WebServer;
 
 
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseInputException;
+import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class OrganizationServiceTests {
@@ -32,7 +27,7 @@ public class OrganizationServiceTests {
     private OrganizationRepository organizationRepository;
 
     @BeforeEach
-    public void setUp() throws BaseInputException {
+    public void setUp() throws BaseException {
         String name1 = "ООО Тест";
         Mockito.when(organizationRepository.insert(name1, null))
                 .thenReturn(1)
