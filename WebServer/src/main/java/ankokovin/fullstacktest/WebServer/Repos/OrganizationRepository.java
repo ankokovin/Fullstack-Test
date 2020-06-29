@@ -1,6 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
+import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
@@ -42,7 +43,7 @@ public class OrganizationRepository {
     }
 
     @Transactional
-    public Integer insert(String name, Integer org_id) throws SameNameException {
+    public Integer insert(String name, Integer org_id) throws SameNameException, WrongHeadIdException {
         return dsl.insertInto(organization)
                 .values(defaultValue(), name, org_id)
                 .returning(organization.ID)
