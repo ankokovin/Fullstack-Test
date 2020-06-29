@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS pgtap;
 \set ON_ERROR_STOP true
 BEGIN;
 
-SELECT plan(9);
+SELECT plan(10);
 
 PREPARE org_insert AS INSERT INTO Organization VALUES
     (1, 'headOrg1', NULL),
@@ -45,6 +45,10 @@ SELECT results_eq(
     'SELECT * FROM Organization',
      $$VALUES ( 1, 'headOrg1', NULL), (2, 'headOrg2', NULL), (4, 'Org_1_2', 1)$$
 );
+
+PREPARE insert_self_ref AS INSERT INTO Organization VALUES (5, 'org', 5);
+SELECT throws_ok('insert_self_ref');
+
 INSERT INTO Organization VALUES
     (5, 'Org_1_2_1', 4),
     (6, 'Org_1_2_1_1', 5),
@@ -54,4 +58,6 @@ PREPARE update_head_long_chain AS UPDATE Organization SET head_org_id = 8 WHERE 
 SELECT throws_ok (
     'update_head_long_chain'
 );
+
+
 ROLLBACK;
