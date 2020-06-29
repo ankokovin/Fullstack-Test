@@ -1,5 +1,6 @@
 package ankokovin.fullstacktest.WebServer;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
@@ -175,6 +176,30 @@ public class OrganizationRepositoryTests {
                             given[0].getOrgName(),
                             given[1].getHeadOrgId()));
             assertEquals(given[0].getOrgName(), e.name);
+        }
+
+        @Test
+        public void whenIdNotPresent_thenThrows() {
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> organizationRepository.update(1,"test",null));
+            assertEquals(e.id, 1);
+        }
+    }
+
+    @Nested
+    class Delete {
+        @Test
+        public void whenCorrectId_thenDeletes() throws Exception {
+            Organization given = create();
+            int id = organizationRepository.delete(given.getId());
+            assertEquals(0, dslContext.selectCount().from(organization));
+        }
+
+        @Test
+        public void whenIncorrectId_thenThrows() {
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> organizationRepository.delete(1));
+            assertEquals(e.id, 1);
         }
     }
 
