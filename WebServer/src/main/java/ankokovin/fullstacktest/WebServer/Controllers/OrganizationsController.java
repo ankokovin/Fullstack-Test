@@ -1,15 +1,18 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
+import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
+import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
+
 
 
 import java.util.List;
@@ -34,10 +37,9 @@ public class OrganizationsController {
 
     @PostMapping
     public ResponseEntity<Organization> create(
-            @RequestBody(required = true) String name,
-            @RequestBody(required = false) Integer org_id) {
+            @RequestBody CreateOrganizationInput model) {
         try {
-            return ResponseEntity.ok(service.create(name, org_id));
+            return ResponseEntity.ok(service.create(model.name, model.org_id));
         } catch (SameNameException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(null);
@@ -46,21 +48,19 @@ public class OrganizationsController {
 
     @PutMapping
     public ResponseEntity<Organization> update(
-            @RequestBody(required = true) Integer id,
-            @RequestBody(required = true) String name,
-            @RequestBody(required = false) Integer org_id) {
+            @RequestBody UpdateOrganizationInput model) {
         throw new NotImplementedException();
     }
 
     @DeleteMapping
-    public ResponseEntity<Organization> delete(@RequestBody(required = true) Integer id) {
+    public ResponseEntity<Organization> delete(@RequestBody Integer id) {
         throw new NotImplementedException();
     }
 
     @GetMapping
     public ResponseEntity<TreeNode<Organization>> getTree(
-            @RequestBody(required = true) Integer root,
-            @RequestBody(required = true) Integer depth) {
+            @RequestParam Integer root,
+            @RequestParam Integer depth) {
         throw new NotImplementedException();
     }
 }
