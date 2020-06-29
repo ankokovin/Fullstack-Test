@@ -41,9 +41,13 @@ public class WorkerController {
     }
 
     @GetMapping(value = "{page}")
-    public ResponseEntity<List<WorkerListElement>> get(@PathVariable(value = "page") Long page){
+    public ResponseEntity<List<WorkerListElement>> get(
+            @PathVariable(value = "page") Long page,
+            @RequestParam(value = "searchName") String searchName,
+            @RequestParam(value = "searchOrgName") String searchOrgName){
         //TODO: пагинация и поиск по орге и/или по имени
         throw new NotImplementedException();
     }
 
+    //TODO: getTree?
 }

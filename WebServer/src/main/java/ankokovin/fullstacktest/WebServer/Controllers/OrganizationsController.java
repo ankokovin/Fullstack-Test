@@ -24,9 +24,11 @@ public class OrganizationsController {
     private OrganizationService service;
 
     @GetMapping("/{page}")
-    public ResponseEntity<List<OrgListElement>> getAll(@PathVariable(value = "page") Long page) {
+    public ResponseEntity<List<OrgListElement>> getAll(
+            @PathVariable(value = "page") Long page,
+            @RequestParam(value = "searchName", required = false) String name) {
         // TODO: пагинация и поиск
-        return ResponseEntity.ok(service.getAllWithCount());
+        throw new NotImplementedException();
     }
 
     @PostMapping
@@ -38,6 +40,7 @@ public class OrganizationsController {
 
     @PutMapping
     public ResponseEntity<Organization> update(
+            @RequestBody(required = true) Integer id,
             @RequestBody(required = true) String name,
             @RequestBody(required = false) Integer org_id) {
         throw new NotImplementedException();
