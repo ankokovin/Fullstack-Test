@@ -6,12 +6,16 @@ CREATE TABLE Organization (
     head_org_id integer REFERENCES Organization
 );
 
+
 CREATE TABLE Worker (
     id SERIAL NOT NULL PRIMARY KEY,
     worker_name text NOT NULL,
     org_id integer REFERENCES Organization,
     head_id integer REFERENCES Worker
 );
+
+CREATE INDEX ON Worker(worker_name);
+
 
 CREATE OR REPLACE FUNCTION check_worker_head() RETURNS TRIGGER AS $worker_head$
     DECLARE
