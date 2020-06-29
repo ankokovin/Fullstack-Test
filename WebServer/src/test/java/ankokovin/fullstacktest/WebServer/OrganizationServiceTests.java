@@ -1,6 +1,7 @@
 package ankokovin.fullstacktest.WebServer;
 
 
+import ankokovin.fullstacktest.WebServer.Exceptions.BaseInputException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
@@ -31,7 +32,7 @@ public class OrganizationServiceTests {
     private OrganizationRepository organizationRepository;
 
     @BeforeEach
-    public void setUp() throws SameNameException {
+    public void setUp() throws BaseInputException {
         String name1 = "ООО Тест";
         Mockito.when(organizationRepository.insert(name1, null))
                 .thenReturn(1)
@@ -58,21 +59,21 @@ public class OrganizationServiceTests {
 
 
     @Test
-    public void whenCreateCorrectNoHead_thenOrganizationCreates() throws SameNameException {
+    public void whenCreateCorrectNoHead_thenOrganizationCreates() throws Exception {
         String name = "ООО Тест";
 
         Organization actual = organizationService.create(name, null);
         assertEquals(new Organization(1,name, null), actual);
     }
     @Test
-    public void whenCreateCorrectHead_thenOrganizationCreates() throws SameNameException {
+    public void whenCreateCorrectHead_thenOrganizationCreates() throws Exception {
         String name = "ООО Тест-2";
 
         Organization actual = organizationService.create(name, 1);
         assertEquals(new Organization(2,name, 1), actual);
     }
     @Test
-    public void whenCreateSameName_thenThrowsError() throws SameNameException {
+    public void whenCreateSameName_thenThrowsError() throws Exception {
         String name = "ООО Тест-3";
 
         Organization actual_first = organizationService.create(name, 1);

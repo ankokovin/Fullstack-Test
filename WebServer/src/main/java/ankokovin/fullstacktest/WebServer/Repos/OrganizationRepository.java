@@ -51,6 +51,10 @@ public class OrganizationRepository {
                 .getValue(organization.ID);
     }
 
+    public Integer update(Integer id, String name, Integer org_id)  throws SameNameException, WrongHeadIdException {
+        throw new NotImplementedException();
+    }
+
     @Transactional
     public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization getById(Integer id) {
         return dsl.select()

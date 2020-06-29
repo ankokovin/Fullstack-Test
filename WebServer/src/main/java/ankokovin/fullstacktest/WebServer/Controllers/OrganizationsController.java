@@ -1,5 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.BaseInputException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
@@ -40,7 +41,7 @@ public class OrganizationsController {
             @RequestBody CreateOrganizationInput model) {
         try {
             return ResponseEntity.ok(service.create(model.name, model.org_id));
-        } catch (SameNameException e) {
+        } catch (BaseInputException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(null);
         }

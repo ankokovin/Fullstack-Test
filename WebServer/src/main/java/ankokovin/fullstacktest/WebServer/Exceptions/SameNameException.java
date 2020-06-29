@@ -1,6 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
-public class SameNameException extends Exception {
+public class SameNameException extends BaseInputException {
     public String name;
 
     public SameNameException(String name, String message, Throwable cause) {
