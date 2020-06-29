@@ -1,11 +1,8 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -44,12 +41,26 @@ public class OrganizationRepository {
     }
 
     @Transactional
-    public Integer insert(String name, Integer org_id) throws SameNameException, WrongHeadIdException {
-        return dsl.insertInto(organization)
-                .values(defaultValue(), name, org_id)
-                .returning(organization.ID)
-                .fetchOne()
-                .getValue(organization.ID);
+    public Integer insert(String name, Integer org_id) throws
+            SameNameException,
+            WrongHeadIdException,
+            UnexpectedException {
+        try {
+            return dsl.insertInto(organization)
+                    .values(defaultValue(), name, org_id)
+                    .returning(organization.ID)
+                    .fetchOne()
+                    .getValue(organization.ID);
+        } catch(org.springframework.dao.DataIntegrityViolationException ex){
+            String message = ex.getMessage();
+            if (ex instanceof org.springframework.dao.DuplicateKeyException) {
+                if (message.contains("Key (org_name)")) throw new SameNameException(name);
+            }
+            if (message.contains("Key (head_org_id)")) throw new WrongHeadIdException(org_id);
+            throw new UnexpectedException(ex);
+        } catch (Exception ex) {
+            throw new UnexpectedException(ex);
+        }
     }
 
     public Integer update(Integer id, String name, Integer org_id)  throws

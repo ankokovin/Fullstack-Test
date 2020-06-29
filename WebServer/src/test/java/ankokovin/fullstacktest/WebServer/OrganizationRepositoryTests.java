@@ -94,7 +94,7 @@ public class OrganizationRepositoryTests {
         public void whenFirstWithHead_thenThrows() {
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationRepository.insert("OOO Тест",3));
-            assertEquals( 1, e.id);
+            assertEquals( 3, e.id);
         }
 
         @Test
@@ -102,7 +102,7 @@ public class OrganizationRepositoryTests {
             Organization given = create();
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationRepository.insert("OOO Тест2",3));
-            assertEquals(2, e.id);
+            assertEquals(3, e.id);
         }
 
         @Test
