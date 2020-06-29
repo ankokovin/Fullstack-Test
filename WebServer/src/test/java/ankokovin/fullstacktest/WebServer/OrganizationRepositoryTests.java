@@ -4,17 +4,19 @@ import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.DSLContext;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JooqTest
-@RunWith(SpringRunner.class)
 public class OrganizationRepositoryTests {
 
     private static final ankokovin.fullstacktest.WebServer.Generated.tables.Organization organization
@@ -37,7 +39,7 @@ public class OrganizationRepositoryTests {
     @Autowired
     public OrganizationRepository organizationRepository;
 
-    @Before
+    @BeforeEach
     public void setup(){
         dslContext.truncateTable(worker).restartIdentity().cascade().execute();
         dslContext.truncateTable(organization).restartIdentity().cascade().execute();
@@ -49,11 +51,11 @@ public class OrganizationRepositoryTests {
         String name = "ООО Тест";
 
         int id = organizationRepository.insert(name, null);
-        Assert.assertEquals(1,id);
+        assertEquals(1,id);
 
         Object[] actual = dslContext
                 .selectFrom(organization)
                 .fetchInto(Organization.class).toArray();
-        Assert.assertArrayEquals(new  Organization[]{new Organization(1, name,null)}, actual);
+        assertArrayEquals(new  Organization[]{new Organization(1, name,null)}, actual);
     }
 }

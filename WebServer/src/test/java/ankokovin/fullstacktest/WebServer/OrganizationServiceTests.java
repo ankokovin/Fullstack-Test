@@ -5,30 +5,24 @@ import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
 
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class OrganizationServiceTests {
-
-    @TestConfiguration
-    static class OrganizationServiceTestsConfiguration {
-
-        @Bean
-        public OrganizationService organizationService() {
-            return new OrganizationService();
-        }
-    }
 
     @Autowired
     private OrganizationService organizationService;
@@ -36,7 +30,7 @@ public class OrganizationServiceTests {
     @MockBean
     private OrganizationRepository organizationRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() throws SameNameException {
         String name1 = "ООО Тест";
         Mockito.when(organizationRepository.insert(name1, null))
@@ -68,24 +62,24 @@ public class OrganizationServiceTests {
         String name = "ООО Тест";
 
         Organization actual = organizationService.create(name, null);
-        Assert.assertEquals(new Organization(1,name, null), actual);
+        assertEquals(new Organization(1,name, null), actual);
     }
     @Test
     public void whenCreateCorrectHead_thenOrganizationCreates() throws SameNameException {
         String name = "ООО Тест-2";
 
         Organization actual = organizationService.create(name, 1);
-        Assert.assertEquals(new Organization(2,name, 1), actual);
+        assertEquals(new Organization(2,name, 1), actual);
     }
     @Test
     public void whenCreateSameName_thenThrowsError() throws SameNameException {
         String name = "ООО Тест-3";
 
         Organization actual_first = organizationService.create(name, 1);
-        Assert.assertEquals(new Organization(3,name, 1), actual_first);
+        assertEquals(new Organization(3,name, 1), actual_first);
 
-        SameNameException exception = Assert.assertThrows(SameNameException.class,
+        SameNameException exception = assertThrows(SameNameException.class,
                 () -> organizationService.create(name, 1));
-        Assert.assertEquals(name, exception.name);
+        assertEquals(name, exception.name);
     }
 }
