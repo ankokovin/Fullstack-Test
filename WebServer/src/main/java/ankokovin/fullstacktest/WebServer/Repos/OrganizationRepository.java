@@ -2,6 +2,7 @@ package ankokovin.fullstacktest.WebServer.Repos;
 
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
+import ankokovin.fullstacktest.WebServer.NotImplementedException;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -29,6 +30,7 @@ public class OrganizationRepository {
         );
     }
 
+    @Transactional(readOnly = true)
     public Result<Record2<String, Integer>> getAllWithCount() {
         return dsl.select(organization.ORG_NAME, count(worker.ID))
                 .from(organization.join(worker).on(worker.ORG_ID.eq(organization.ID)))
@@ -53,4 +55,11 @@ public class OrganizationRepository {
                 .where(organization.ID.eq(id))
                 .fetchOneInto(ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization.class);
     }
+
+
+    @Transactional
+    public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization delete(Integer id) {
+        throw new NotImplementedException();
+    }
+
 }
