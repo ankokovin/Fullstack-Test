@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS pgtap;
 \set ON_ERROR_STOP true
 BEGIN;
 
-SELECT plan(7);
+SELECT plan(8);
 
 PREPARE org_insert AS INSERT INTO Organization VALUES
     (1, 'headOrg1', NULL),
@@ -12,6 +12,12 @@ PREPARE org_insert AS INSERT INTO Organization VALUES
     (4, 'Org_1_2', 1);
 SELECT lives_ok(
     'org_insert'
+);
+
+PREPARE org_update_self_update AS UPDATE Organization SET head_org_id = 3 WHERE id = 1;
+
+SELECT throws_ok(
+    'org_update_self_update'
 );
 
 PREPARE del_not_head_org AS DELETE FROM Organization WHERE id = 3;
