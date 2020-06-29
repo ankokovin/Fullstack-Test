@@ -127,8 +127,10 @@
 								</database>
 								<generate>
 									<pojos>true</pojos>
+									<pojosEqualsAndHashCode>true</pojosEqualsAndHashCode>
 									<daos>true</daos>
 								</generate>
+
 							</generator>
 						</configuration>
 
