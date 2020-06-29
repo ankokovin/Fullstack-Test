@@ -4,12 +4,18 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.NotImplementedException;
+import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class WorkerService {
+
+    @Autowired
+    private WorkerRepository rep;
+
     public Worker create(String name, Integer org_id, Integer head_id) {
         throw new NotImplementedException();
     }
