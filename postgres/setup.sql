@@ -3,7 +3,8 @@ DROP TABLE IF EXISTS Organization, Worker;
 CREATE TABLE Organization (
     id  SERIAL NOT NULL PRIMARY KEY,
     org_name text NOT NULL UNIQUE,
-    head_org_id integer REFERENCES Organization
+    head_org_id integer REFERENCES Organization,
+    CHECK (id != head_org_id)
 );
 
 
@@ -11,7 +12,8 @@ CREATE TABLE Worker (
     id SERIAL NOT NULL PRIMARY KEY,
     worker_name text NOT NULL,
     org_id integer REFERENCES Organization,
-    head_id integer REFERENCES Worker
+    head_id integer REFERENCES Worker,
+    CHECK (id != head_id)
 );
 
 CREATE INDEX ON Worker(worker_name);
