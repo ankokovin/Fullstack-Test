@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/worker")
+@RequestMapping(value = "/api/worker",
+        headers = "Accept=application/json",
+        produces = "application/json")
 public class WorkerController {
 
     @PostMapping

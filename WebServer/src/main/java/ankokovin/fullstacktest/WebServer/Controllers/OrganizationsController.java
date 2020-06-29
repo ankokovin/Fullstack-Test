@@ -14,13 +14,16 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/organization")
+@RequestMapping(
+        value = "/api/organization",
+        headers = "Accept=application/json",
+        produces = "application/json")
 public class OrganizationsController {
 
     @Autowired
     private OrganizationService service;
 
-    @GetMapping(value = "{page}")
+    @GetMapping("/{page}")
     public ResponseEntity<List<OrgListElement>> getAll(@PathVariable(value = "page") Long page) {
         // TODO: пагинация и поиск
         return ResponseEntity.ok(service.getAllWithCount());
