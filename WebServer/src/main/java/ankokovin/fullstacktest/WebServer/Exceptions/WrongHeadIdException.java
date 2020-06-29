@@ -1,6 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
-public class WrongHeadIdException extends RuntimeException {
+public class WrongHeadIdException extends Exception {
 
     public Integer id;
 
