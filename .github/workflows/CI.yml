@@ -59,9 +59,14 @@ jobs:
       run: mvn generate-sources test jacoco:report
       working-directory: WebServer
       
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-      working-directory: WebServer
+    - name: Codecov
+      uses: codecov/codecov-action@v1.0.7
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: WebServer/target/site/jacoco/jacoco.xml
+        name: codecov-back
+        fail_ci_if_error: true
+
 
   test-postgres:
     runs-on: ubuntu-latest
