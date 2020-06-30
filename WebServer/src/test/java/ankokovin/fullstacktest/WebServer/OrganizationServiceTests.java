@@ -6,6 +6,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,16 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.mockito.Mockito;
+import org.mockito.internal.matchers.Same;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Target;
 
 
 public class OrganizationServiceTests {
 
-    abstract  class OrganizationServiceTemplate {
+    abstract  class OrganizationServiceTestClassTemplate {
         @Autowired
         protected OrganizationService organizationService;
 
@@ -35,7 +37,7 @@ public class OrganizationServiceTests {
 
     @Nested
     @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-    class Create extends OrganizationServiceTemplate {
+    class Create extends OrganizationServiceTestClassTemplate {
         @BeforeEach
         public void setUp() throws BaseException {
             String name1 = "ООО Тест";
@@ -98,6 +100,58 @@ public class OrganizationServiceTests {
 
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationService.create(new CreateOrganizationInput(name, 3)));
+        }
+    }
+
+    @Nested
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+    class Update extends OrganizationServiceTestClassTemplate {
+        @BeforeEach
+        public void setUp() throws BaseException {
+        }
+
+        @Test
+        public void whenUpdateCorrect_thenReturns() throws BaseException {
+            Organization expected = new Organization(1, "ООО Тест", null);
+            Mockito.when(organizationRepository.update(
+                    expected.getId(),
+                    expected.getOrgName(),
+                    expected.getHeadOrgId()))
+                    .thenReturn(1);
+            Mockito.when(organizationRepository.getById(1))
+                    .thenReturn(expected);
+            Organization actual = organizationService
+                    .update(new UpdateOrganizationInput(
+                            expected.getId(),
+                            expected.getOrgName(),
+                            expected.getHeadOrgId()
+                    )
+            );
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        public void whenUpdateThrowsSameName_thenThrows() throws BaseException {
+            String expected = "ООО Тест";
+            UpdateOrganizationInput model = new UpdateOrganizationInput(1, expected, null);
+            Mockito.when(organizationRepository
+                    .update(model.id, model.name, model.org_id))
+                    .thenThrow(new SameNameException(expected));
+            SameNameException e = assertThrows(SameNameException.class,
+                    () -> organizationService.update(model));
+            assertEquals(expected, e.name);
+        }
+
+        @Test
+        public void whenUpdateThrowsWrongHeadId() throws BaseException {
+            Integer expected = 1;
+            UpdateOrganizationInput model = new UpdateOrganizationInput(1, "ООО Тест", expected);
+            Mockito.when(organizationRepository
+                    .update(model.id, model.name, model.org_id))
+                    .thenThrow(new WrongHeadIdException(expected));
+            WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
+                    () -> organizationService.update(model));
+            assertEquals(expected, e.id);
         }
     }
 
