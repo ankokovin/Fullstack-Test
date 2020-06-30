@@ -119,8 +119,23 @@ public class OrganizationRepository {
 
 
     @Transactional
-    public Integer delete(Integer id) throws NoSuchRecordException {
-        throw new NotImplementedException();
+    public Integer delete(Integer id) throws NoSuchRecordException, UnexpectedException {
+        try {
+            OrganizationRecord result = dsl.deleteFrom(organization)
+                    .where(organization.ID.eq(id))
+                    .returning()
+                    .fetchOne();
+            if (result == null) {
+                throw new NoSuchRecordException(id);
+            } else {
+                return result.getId();
+            }
+        } catch (NoSuchRecordException ex) {
+            throw ex;
+        }
+        catch (Exception ex){
+            throw new UnexpectedException(ex);
+        }
     }
 
 }

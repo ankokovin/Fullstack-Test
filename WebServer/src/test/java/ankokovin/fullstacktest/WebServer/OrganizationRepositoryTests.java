@@ -1,25 +1,21 @@
 package ankokovin.fullstacktest.WebServer;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.junit.jupiter.DisabledIf;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unused")
 @JooqTest
 public class OrganizationRepositoryTests {
 
@@ -28,15 +24,18 @@ public class OrganizationRepositoryTests {
     private static final ankokovin.fullstacktest.WebServer.Generated.tables.Worker worker
             = ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER;
 
+    @SuppressWarnings("unused")
     @TestConfiguration
     static class OrganizationServiceTestsConfiguration {
 
+        @SuppressWarnings("unused")
         @Bean
         public OrganizationRepository organizationRepository() {
             return new OrganizationRepository();
         }
     }
 
+    @SuppressWarnings("unused")
     @Autowired
     private DSLContext dslContext;
 
@@ -49,12 +48,12 @@ public class OrganizationRepositoryTests {
         dslContext.truncateTable(organization).restartIdentity().cascade().execute();
     }
 
-    public Organization[] create(Integer cnt) throws Exception {
+
+    public Organization[] create(int cnt) throws BaseException {
+        assert cnt >= 0;
         String name = "ООО Тест%d";
         Organization[] expected = new Organization[cnt];
-
-
-        for (int i=0; i < expected.length; i++) {
+        for(int i=0; i<cnt;++i) {
             String fName = String.format(name,i);
             int id = organizationRepository.insert(fName, null);
             assertEquals(i+1, id);
@@ -67,19 +66,19 @@ public class OrganizationRepositoryTests {
         return expected;
     }
 
-    public Organization create() throws Exception {
+    public Organization create() throws BaseException {
         return create(1)[0];
     }
 
     @Nested
     class Insert {
         @Test
-        public void whenNoHead_thenOrganizationCreates() throws Exception {
+        public void whenNoHead_thenOrganizationCreates() throws BaseException {
             create();
         }
 
         @Test
-        public void whenHead_thenOrganizationCreates() throws Exception {
+        public void whenHead_thenOrganizationCreates() throws BaseException{
             Organization given = create();
             String name = "ООО Тест2";
             Organization expected = new Organization(2, name, 1);
@@ -93,18 +92,18 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenFirstWithHead_thenThrows() {
+        public void whenFirstWithHead_thenThrows()  {
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationRepository.insert("OOO Тест",3));
             assertEquals( 3, e.id);
         }
 
         @Test
-        public void whenWrongHead_thenThrows() throws Exception {
+        public void whenWrongHead_thenThrows() throws BaseException {
             Organization given = create();
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
-                    () -> organizationRepository.insert("OOO Тест2",3));
-            assertEquals(3, e.id);
+                    () -> organizationRepository.insert("OOO Тест2",given.getId()+2));
+            assertEquals(given.getId()+2, e.id);
         }
 
         @Test
@@ -115,7 +114,7 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenSameName_thenThrows() throws Exception {
+        public void whenSameName_thenThrows() throws BaseException {
             Organization given = create();
             SameNameException e = assertThrows(SameNameException.class,
                     () -> organizationRepository.insert(given.getOrgName(),null));
@@ -126,7 +125,7 @@ public class OrganizationRepositoryTests {
     @Nested
     class Update {
         @Test
-        public void whenChangeName_thenOrganizationUpdates() throws Exception {
+        public void whenChangeName_thenOrganizationUpdates() throws BaseException {
             Organization given = create();
             String name = "ООО Тест Изменено";
             Organization expected = new Organization(1, name, null);
@@ -141,7 +140,7 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenChangeHead_thenOrganizationUpdates() throws Exception {
+        public void whenChangeHead_thenOrganizationUpdates() throws BaseException {
             Organization[] given = create(2);
             Organization expected = new Organization(given[1].getId(), given[1].getOrgName(), given[0].getId());
             int id = organizationRepository.update(given[1].getId(),given[1].getOrgName(), given[0].getId());
@@ -154,7 +153,7 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenChangeHeadSelf_thenThrows() throws Exception {
+        public void whenChangeHeadSelf_thenThrows() throws BaseException {
             Organization given = create();
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationRepository.update(given.getId(), given.getOrgName(), given.getId()));
@@ -162,7 +161,7 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenWrongHead_thenThrows() throws Exception {
+        public void whenWrongHead_thenThrows() throws BaseException {
             Organization given = create();
             Integer new_head_id = given.getId()+1;
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
@@ -171,7 +170,7 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenSameName_thenThrows() throws Exception {
+        public void whenSameName_thenThrows() throws BaseException {
             Organization[] given = create(2);
             SameNameException e = assertThrows(SameNameException.class,
                     () -> organizationRepository.update(
@@ -190,12 +189,12 @@ public class OrganizationRepositoryTests {
     }
 
     @Nested
-    @Disabled("TODO: implement OrganizationRepository.delete")
     class Delete {
         @Test
-        public void whenCorrectId_thenDeletes() throws Exception {
+        public void whenCorrectId_thenDeletes() throws BaseException {
             Organization given = create();
             int id = organizationRepository.delete(given.getId());
+            assertEquals(given.getId(), id);
             assertEquals(0, dslContext.selectCount().from(organization).fetchOneInto(Integer.class));
         }
 
