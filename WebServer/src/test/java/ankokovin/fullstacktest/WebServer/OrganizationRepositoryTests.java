@@ -5,7 +5,6 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
@@ -207,9 +206,23 @@ public class OrganizationRepositoryTests {
     }
 
     @Nested
-    @Disabled()
     class Get {
-        //TODO
+        @Nested
+        class GetById {
+            @Test
+            public void whenIdInTable_thenReturn() throws BaseException {
+                Organization expected = create();
+                Organization actual = organizationRepository.getById(expected.getId());
+                assertEquals(expected.getId(), actual.getId());
+            }
+
+            @Test
+            public void whenIdNotInTable_thenThrows() throws BaseException{
+                Organization expected = create();
+                NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                        () -> organizationRepository.getById(expected.getId()+1));
+            }
+        }
     }
 
 }
