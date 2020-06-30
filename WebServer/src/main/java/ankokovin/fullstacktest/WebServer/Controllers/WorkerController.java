@@ -1,5 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
@@ -29,17 +30,17 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.create(model));
     }
 
-    @PutMapping
+    @PostMapping("/update")
     public ResponseEntity<Worker> update(
-            @RequestBody UpdateWorkerInput model){
-        throw new NotImplementedException();
+            @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
+        return ResponseEntity.ok(workerService.update(model));
     }
 
     @DeleteMapping
     public ResponseEntity<Worker> delete(
             @RequestBody Integer id
-    ){
-        throw new NotImplementedException();
+    ) throws NoSuchRecordException {
+        return ResponseEntity.ok(workerService.delete(id));
     }
 
     @GetMapping(value = "{page}")
