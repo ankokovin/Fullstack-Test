@@ -7,6 +7,7 @@ import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.JSON;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(OrganizationsController.class)
+@Disabled
 class OrganizationControllerTests {
 
     @Autowired
