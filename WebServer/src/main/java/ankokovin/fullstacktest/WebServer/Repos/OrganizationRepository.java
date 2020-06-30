@@ -3,6 +3,8 @@ package ankokovin.fullstacktest.WebServer.Repos;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
+import ankokovin.fullstacktest.WebServer.Generated.tables.records.OrganizationRecord;
+import ankokovin.fullstacktest.WebServer.Models.Table;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -53,37 +55,105 @@ public class OrganizationRepository {
                     .getValue(organization.ID);
         } catch(org.springframework.dao.DataIntegrityViolationException ex){
             String message = ex.getMessage();
-            if (ex instanceof org.springframework.dao.DuplicateKeyException) {
-                if (message.contains("Key (org_name)")) throw new SameNameException(name);
+            if (message != null) {
+                if (ex instanceof org.springframework.dao.DuplicateKeyException) {
+                    if (message.contains("Key (org_name)")) throw new SameNameException(name);
+                }
+                if (message.contains("organization_check") ||
+                        message.contains("Key (head_org_id)")) throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
             }
-            if (message.contains("organization_check") ||
-                    message.contains("Key (head_org_id)")) throw new WrongHeadIdException(org_id);
             throw new UnexpectedException(ex);
         } catch (Exception ex) {
             throw new UnexpectedException(ex);
         }
     }
 
-    public Integer update(Integer id, String name, Integer org_id)  throws
+    @Transactional
+    public Integer update(Integer id, String name, Integer org_id) throws
             SameNameException,
             WrongHeadIdException,
-            NoSuchRecordException {
-        throw new NotImplementedException();
+            NoSuchRecordException,
+            UnexpectedException {
+        try {
+             OrganizationRecord result = dsl.update(organization)
+                    .set(organization.ORG_NAME, name)
+                    .set(organization.HEAD_ORG_ID, org_id)
+                    .where(organization.ID.eq(id))
+                    .returning(organization.ID)
+                    .fetchOne();
+             if (result == null) {
+                 throw new NoSuchRecordException(id);
+             }
+            return result.getValue(organization.ID);
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            String message = ex.getMessage();
+            if (message != null) {
+                if (message.contains("(head_org_id)")) {
+                    throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
+                } else if (message.contains("(org_name)")) {
+                    throw new SameNameException(name);
+                }
+            }
+            throw new UnexpectedException(ex);
+        } catch (org.springframework.jdbc.UncategorizedSQLException ex) {
+            String message = ex.getMessage();
+            if (message != null && message.contains("check_org_head")) {
+                throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
+            }
+            throw new UnexpectedException(ex);
+        } catch (NoSuchRecordException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new UnexpectedException(ex);
+        }
     }
 
     @Transactional
     public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization getById(Integer id)
             throws NoSuchRecordException{
-        return dsl.select()
+        ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization result =  dsl.select()
                 .from(organization)
                 .where(organization.ID.eq(id))
                 .fetchOneInto(ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization.class);
+        if (result == null) throw new NoSuchRecordException(id); else return result;
     }
 
 
     @Transactional
-    public Integer delete(Integer id) throws NoSuchRecordException {
-        throw new NotImplementedException();
+    public Integer delete(Integer id) throws NoSuchRecordException, UnexpectedException, DeleteHasChildException {
+        try {
+            OrganizationRecord result = dsl.deleteFrom(organization)
+                    .where(organization.ID.eq(id))
+                    .returning()
+                    .fetchOne();
+            if (result == null) {
+                throw new NoSuchRecordException(id);
+            } else {
+                return result.getId();
+            }
+        }
+        catch ( org.springframework.dao.DataIntegrityViolationException ex) {
+            String message = ex.getMessage();
+            if (message == null) throw ex;
+            else if (message.contains("is still referenced")){
+                int child_id = Integer.parseInt(message.split("\\)=\\(")[1].split("\\)")[0]);
+                if (message.contains("from table \"organization\"")){
+                    throw new DeleteHasChildException(child_id, Table.ORGANIZATION, ex);
+                } if (message.contains("from table \"worker\"")){
+                    throw new DeleteHasChildException(child_id, Table.WORKER, ex);
+                }
+                throw new UnexpectedException("Unexpected reference",
+                        new DeleteHasChildException(child_id, Table.UNKNOWN, ex));
+            }
+            throw new UnexpectedException(ex);
+        }
+        catch (NoSuchRecordException ex) {
+            throw ex;
+        }
+        catch (Exception ex){
+            throw new UnexpectedException(ex);
+        }
     }
 
 }
