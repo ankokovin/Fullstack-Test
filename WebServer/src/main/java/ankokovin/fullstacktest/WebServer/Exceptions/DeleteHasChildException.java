@@ -1,12 +1,17 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
+import ankokovin.fullstacktest.WebServer.Models.Table;
+
 public class DeleteHasChildException extends BaseException {
-    public Object child;
-    public DeleteHasChildException(Object child, String message, Throwable cause) {
+    public int id;
+    public Table table;
+    public DeleteHasChildException(int id, Table table, String message, Throwable cause) {
         super(message, cause);
-        this.child = child;
+        this.id = id;
+        this.table = table;
     }
-    public DeleteHasChildException(Object child, Throwable cause) {
-        this(child, null, cause);
+    public DeleteHasChildException(int id, Table table, Throwable cause) {
+        this(id, table, null, cause);
     }
+    public DeleteHasChildException(int id, Table table) {this(id, table, null);}
 }

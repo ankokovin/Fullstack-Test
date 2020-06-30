@@ -2,6 +2,7 @@ package ankokovin.fullstacktest.WebServer;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
+import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -207,10 +208,11 @@ public class OrganizationRepositoryTests {
         @Test
         public void whenHasWorkers_thenThrows() throws BaseException {
             Organization expected = create();
-            dslContext.insertInto(worker).values(1, "Test", expected.getId(), null);
+            dslContext.insertInto(worker).values(42, "Test", expected.getId(), null).execute();
             DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
                     () -> organizationRepository.delete(expected.getId()));
-            assertEquals(expected, e.child);
+            assertEquals(Table.WORKER, e.table);
+            assertEquals(expected.getId(), e.id);
         }
         @Test
         public void whenHasSubOrganizations_thenThrows() throws BaseException {
@@ -223,10 +225,29 @@ public class OrganizationRepositoryTests {
                     .selectFrom(organization)
                     .fetchInto(Organization.class).toArray();
             assertArrayEquals(new Organization[]{given[0], expected}, actual);
+            dslContext.insertInto(worker).values(42, "Test", expected.getId(), null).execute();
+            DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
+                    () -> organizationRepository.delete(given[0].getId()));
+            assertEquals(Table.ORGANIZATION, e.table);
+            assertEquals(given[0].getId(), e.id);
+        }
+        @Test
+        public void whenHasWorkersAndSubOrganizations_thenThrows() throws BaseException {
+            Organization[] given = create(2);
+            Organization expected = new Organization(given[1].getId(), given[1].getOrgName(), given[0].getId());
+            int id = organizationRepository.update(given[1].getId(),given[1].getOrgName(), given[0].getId());
+            assertEquals(2, id);
+
+            Object[] actual = dslContext
+                    .selectFrom(organization)
+                    .fetchInto(Organization.class).toArray();
+            assertArrayEquals(new Organization[]{given[0], expected}, actual);
+            dslContext.insertInto(worker).values(42, "Test", expected.getId(), null).execute();
 
             DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
                     () -> organizationRepository.delete(given[0].getId()));
-            assertEquals(expected, e.child);
+            assertEquals(Table.ORGANIZATION, e.table);
+            assertEquals(given[0].getId(), e.id);
         }
     }
 

@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 import  ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.OrganizationRecord;
+import ankokovin.fullstacktest.WebServer.Models.Table;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -131,6 +132,21 @@ public class OrganizationRepository {
             } else {
                 return result.getId();
             }
+        }
+        catch ( org.springframework.dao.DataIntegrityViolationException ex) {
+            String message = ex.getMessage();
+            if (message == null) throw ex;
+            else if (message.contains("is still referenced")){
+                int child_id = Integer.parseInt(message.split("\\)=\\(")[1].split("\\)")[0]);
+                if (message.contains("from table \"organization\"")){
+                    throw new DeleteHasChildException(child_id, Table.ORGANIZATION, ex);
+                } if (message.contains("from table \"worker\"")){
+                    throw new DeleteHasChildException(child_id, Table.WORKER, ex);
+                }
+                throw new UnexpectedException("Unexpected reference",
+                        new DeleteHasChildException(child_id, Table.UNKNOWN, ex));
+            }
+            throw new UnexpectedException(ex);
         }
         catch (NoSuchRecordException ex) {
             throw ex;
