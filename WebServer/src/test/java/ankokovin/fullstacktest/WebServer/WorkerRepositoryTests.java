@@ -1,9 +1,12 @@
 package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 
+import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import org.jooq.DSLContext;
@@ -114,5 +117,90 @@ public class WorkerRepositoryTests {
             assertEquals(given.getId()+1, ex.id);
         }
 
+    }
+
+    @Nested
+    class Update {
+
+        int update(Worker expected) throws SameNameException, NoSuchRecordException, WrongHeadIdException {
+            return workerRepository.update(expected.getId(),
+                    expected.getWorkerName(),
+                    expected.getOrgId(),
+                    expected.getHeadId());
+        }
+
+        @Test
+        void whenChangeName_updates() throws BaseException {
+            Worker expected = create();
+            expected.setWorkerName("New name");
+            int id = update(expected);
+            assertEquals(expected.getId(), id);
+            Worker actual = workerRepository.getById(id);
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        void whenChangeOrg_updates() throws  BaseException {
+            Worker expected = create();
+            expected.setOrgId(organizationRepository.insert("Test2", null));
+            int id = update(expected);
+            assertEquals(expected.getId(), id);
+            Worker actual = workerRepository.getById(id);
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        void whenChangeHead_updates() throws BaseException {
+            Worker[] given = create(2);
+            Worker expected = given[1];
+            expected.setHeadId(given[0].getId());
+            int id = update(expected);
+            assertEquals(expected.getId(), id);
+            Worker actual = workerRepository.getById(id);
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        void whenOrgChangeWrong_throws() throws BaseException {
+            Worker expected = create();
+            expected.setOrgId(expected.getOrgId()+1);
+            WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
+                    () -> update(expected));
+            assertEquals(expected.getOrgId(), ex.id);
+            assertEquals(Table.ORGANIZATION, ex.to);
+        }
+        @Test
+        void whenHeadChangeWrong_throws() throws BaseException {
+            Worker expected = create();
+            expected.setHeadId(expected.getId()+1);
+            WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
+                    () -> update(expected));
+            assertEquals(expected.getOrgId(), ex.id);
+            assertEquals(Table.WORKER, ex.to);
+        }
+        @Test
+        void whenHeadChangeLoop_throws() throws BaseException {
+            Worker[] given = create(2);
+            given[0].setHeadId(given[1].getId());
+            update(given[0]);
+            given[1].setHeadId(given[0].getId());
+            WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
+                    () -> update(given[1]));
+            assertEquals(given[1].getOrgId(), ex.id);
+            assertEquals(Table.WORKER, ex.to);
+        }
+        @Test
+        void whenLongHeadChangeLoop_throws() throws BaseException {
+            Worker[] given = create(3);
+            given[0].setHeadId(given[1].getId());
+            update(given[0]);
+            given[1].setHeadId(given[2].getId());
+            update(given[1]);
+            given[2].setHeadId(given[0].getId());
+            WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
+                    () -> update(given[2]));
+            assertEquals(given[2].getOrgId(), ex.id);
+            assertEquals(Table.WORKER, ex.to);
+        }
     }
 }
