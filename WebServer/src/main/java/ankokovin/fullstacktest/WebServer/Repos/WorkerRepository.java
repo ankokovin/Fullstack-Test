@@ -45,6 +45,7 @@ public class WorkerRepository {
         }
     }
 
+    @Transactional
     public Integer update(Integer id, String name, Integer org_id, Integer head_id) throws
             WrongHeadIdException,
             NoSuchRecordException,
@@ -79,6 +80,7 @@ public class WorkerRepository {
         catch (Exception ex) { throw new UnexpectedException(ex);}
     }
 
+    @Transactional
     public Integer delete(Integer id) throws NoSuchRecordException {
         WorkerRecord result =  dsl.deleteFrom(worker)
                 .where(worker.ID.eq(id))
@@ -95,6 +97,7 @@ public class WorkerRepository {
       throw new NotImplementedException();
     }
 
+    @Transactional
     public Worker getById(Integer id) throws NoSuchRecordException {
         Worker result = dsl.selectFrom(worker).where(worker.ID.eq(id)).fetchOneInto(Worker.class);
         if (result == null) throw new NoSuchRecordException(id);
