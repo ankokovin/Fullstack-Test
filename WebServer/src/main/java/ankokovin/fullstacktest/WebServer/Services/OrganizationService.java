@@ -3,8 +3,10 @@ package ankokovin.fullstacktest.WebServer.Services;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
+import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.Record2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +29,11 @@ public class OrganizationService
         return result;
     }
 
-    public Organization create(String name, Integer org_id) throws
+    public Organization create(CreateOrganizationInput model) throws
             SameNameException,
             WrongHeadIdException,
             UnexpectedException {
-        Integer result_id = rep.insert(name, org_id);
+        Integer result_id = rep.insert(model.name, model.org_id);
         try {
             return getById(result_id);
         } catch (NoSuchRecordException ex) {
@@ -43,7 +45,7 @@ public class OrganizationService
         return rep.getById(id);
     }
 
-    public Organization update(Integer id, String name, Integer org_id) {
+    public Organization update(UpdateOrganizationInput model) {
         throw new NotImplementedException();
     }
 

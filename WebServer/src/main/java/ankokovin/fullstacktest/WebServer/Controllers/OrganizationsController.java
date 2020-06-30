@@ -39,7 +39,7 @@ public class OrganizationsController {
     public ResponseEntity<Organization> create(
             @RequestBody CreateOrganizationInput model) {
         try {
-            return ResponseEntity.ok(service.create(model.name, model.org_id));
+            return ResponseEntity.ok(service.create(model));
         } catch (BaseException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(null);

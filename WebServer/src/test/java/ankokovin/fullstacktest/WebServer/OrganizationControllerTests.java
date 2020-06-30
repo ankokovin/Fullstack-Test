@@ -42,7 +42,7 @@ class OrganizationControllerTests {
         String name = "Алексей";
         CreateOrganizationInput input = new CreateOrganizationInput();
         input.name = name;
-        given(service.create(name, null))
+        given(service.create(new CreateOrganizationInput(name, null)))
                 .willReturn(new Organization(1,name, null));
 
         ObjectMapper objectMapper = new ObjectMapper();

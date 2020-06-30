@@ -1,6 +1,8 @@
 package ankokovin.fullstacktest.WebServer.Services;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
@@ -15,11 +17,11 @@ public class WorkerService {
     @Autowired
     private WorkerRepository rep;
 
-    public Worker create(String name, Integer org_id, Integer head_id) {
+    public Worker create(CreateWorkerInput model) {
         throw new NotImplementedException();
     }
 
-    public Worker update(Integer id, String name, Integer org_id, Integer head_id) {
+    public Worker update(UpdateOrganizationInput model) {
         throw new NotImplementedException();
     }
 
