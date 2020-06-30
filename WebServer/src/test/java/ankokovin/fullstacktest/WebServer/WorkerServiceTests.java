@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -185,6 +186,28 @@ public class WorkerServiceTests {
                     () -> workerService.delete(id));
             assertEquals(id, e.id);
         }
-
+    }
+    @Nested
+    class Get {
+        @Nested
+        class GetById {
+            @Test
+            void whenReturns_Returns() throws NoSuchRecordException {
+                Worker expected = new Worker(1,"test", 1, null);
+                Mockito.when(workerRepository.getById(expected.getId()))
+                        .thenReturn(expected);
+                Worker actual = workerService.getById(expected.getId());
+                assertEquals(expected, actual);
+            }
+            @Test
+            void whenThrows_Throws() throws NoSuchRecordException {
+                Integer id = 2;
+                Mockito.when(workerRepository.getById(id))
+                        .thenThrow(new NoSuchRecordException(id));
+                NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                        () -> workerService.getById(id));
+                assertEquals(id, e.id);
+            }
+        }
     }
 }
