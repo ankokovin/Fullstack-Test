@@ -37,23 +37,19 @@ public class OrganizationsController {
 
     @PostMapping
     public ResponseEntity<Organization> create(
-            @RequestBody CreateOrganizationInput model) {
-        try {
+            @RequestBody CreateOrganizationInput model)  throws BaseException{
             return ResponseEntity.ok(service.create(model));
-        } catch (BaseException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(null);
-        }
+
     }
 
     @PutMapping
     public ResponseEntity<Organization> update(
-            @RequestBody UpdateOrganizationInput model) {
+            @RequestBody UpdateOrganizationInput model) throws BaseException {
         throw new NotImplementedException();
     }
 
     @DeleteMapping
-    public ResponseEntity<Organization> delete(@RequestBody Integer id) {
+    public ResponseEntity<Organization> delete(@RequestBody Integer id) throws BaseException{
         throw new NotImplementedException();
     }
 
