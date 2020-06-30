@@ -218,11 +218,11 @@ public class OrganizationServiceTests {
         }
 
         @Test
-        public void whenDeleteThrowsDeleteHasChildExceptionUnknown_thenThrowsUnexpectedException()
+        public void whenDeleteThrowsUnexpectedException_thenThrowsUnexpectedException()
                 throws BaseException{
             DeleteHasChildException expected = new DeleteHasChildException(42, Table.UNKNOWN);
             Mockito.when(organizationRepository.delete(expected.id))
-                    .thenThrow(expected);
+                    .thenThrow(new UnexpectedException(expected));
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
                     () -> organizationService.delete(expected.id));

@@ -59,8 +59,11 @@ public class OrganizationService
         }
     }
 
-    public Organization delete(Integer id) {
-        throw new NotImplementedException();
+    public Organization delete(Integer id) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
+        Organization res = getById(id);
+        int res_id = rep.delete(id);
+        if (res_id != id) throw new UnexpectedException("Delete returned wrong id");
+        return res;
     }
 
     public TreeNode<Organization> getTree(Integer root, Integer depth) {
