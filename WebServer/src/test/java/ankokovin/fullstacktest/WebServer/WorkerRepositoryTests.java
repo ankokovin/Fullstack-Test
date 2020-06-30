@@ -1,8 +1,5 @@
 package ankokovin.fullstacktest.WebServer;
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
@@ -122,7 +119,7 @@ public class WorkerRepositoryTests {
     @Nested
     class Update {
 
-        int update(Worker expected) throws SameNameException, NoSuchRecordException, WrongHeadIdException {
+        int update(Worker expected) throws NoSuchRecordException, WrongHeadIdException, UnexpectedException {
             return workerRepository.update(expected.getId(),
                     expected.getWorkerName(),
                     expected.getOrgId(),
@@ -175,7 +172,7 @@ public class WorkerRepositoryTests {
             expected.setHeadId(expected.getId()+1);
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> update(expected));
-            assertEquals(expected.getOrgId(), ex.id);
+            assertEquals(expected.getHeadId(), ex.id);
             assertEquals(Table.WORKER, ex.to);
         }
         @Test
@@ -201,6 +198,14 @@ public class WorkerRepositoryTests {
                     () -> update(given[2]));
             assertEquals(given[2].getOrgId(), ex.id);
             assertEquals(Table.WORKER, ex.to);
+        }
+        @Test
+        void whenNoRecordWithId() throws BaseException {
+            Worker given = create();
+            given.setId(given.getId()+1);
+            NoSuchRecordException ex = assertThrows(NoSuchRecordException.class,
+                    () -> update(given));
+            assertEquals(given.getId(), ex.id);
         }
     }
 }

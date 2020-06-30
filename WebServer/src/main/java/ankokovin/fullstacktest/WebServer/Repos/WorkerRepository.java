@@ -2,6 +2,7 @@ package ankokovin.fullstacktest.WebServer.Repos;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.WebServer.Generated.tables.records.WorkerRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import org.jooq.DSLContext;
 import org.jooq.Record5;
@@ -45,10 +46,37 @@ public class WorkerRepository {
     }
 
     public Integer update(Integer id, String name, Integer org_id, Integer head_id) throws
-            SameNameException,
             WrongHeadIdException,
-            NoSuchRecordException{
-        throw new NotImplementedException();
+            NoSuchRecordException,
+            UnexpectedException {
+        try {
+            WorkerRecord result =  dsl.update(worker)
+                    .set(worker.ORG_ID, org_id)
+                    .set(worker.HEAD_ID, head_id)
+                    .set(worker.WORKER_NAME, name)
+                    .where(worker.ID.eq(id))
+                    .returning(worker.ID)
+                    .fetchOne();
+            if (result == null) throw new NoSuchRecordException(id);
+            return result.getValue(worker.ID);
+        } catch (org.springframework.jdbc.UncategorizedSQLException ex) {
+            String message = ex.getMessage();
+            if (message == null) throw new UnexpectedException(ex);
+            if (message.contains("check_worker_head")) {
+                throw new WrongHeadIdException(head_id, Table.WORKER);
+            }
+            throw ex;
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            String message = ex.getMessage();
+            if (message == null) throw new UnexpectedException(ex);
+            if (message.contains("Key (org_id)")) {
+                throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
+            } else if (message.contains(" Key (head_id)")) {
+                throw new WrongHeadIdException(head_id, Table.WORKER);
+            }
+            throw new UnexpectedException(ex);
+        } catch (NoSuchRecordException ex) { throw ex; }
+        catch (Exception ex) { throw new UnexpectedException(ex);}
     }
 
     public Integer delete(Integer id) throws NoSuchRecordException {
