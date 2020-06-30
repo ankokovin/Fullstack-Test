@@ -39,8 +39,10 @@ public class WorkerService {
         }
     }
 
-    public Worker delete(Integer id) {
-        throw new NotImplementedException();
+    public Worker delete(Integer id) throws NoSuchRecordException {
+        Worker res = getById(id);
+        rep.delete(id);
+        return res;
     }
 
     public List<WorkerListElement> get(Integer page, String searchName, String searchOrgName) {
