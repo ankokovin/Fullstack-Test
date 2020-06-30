@@ -208,4 +208,22 @@ public class WorkerRepositoryTests {
             assertEquals(given.getId(), ex.id);
         }
     }
+
+    @Nested
+    class Delete {
+        @Test
+        void whenCorrectId_deletes() throws BaseException {
+            Worker given = create();
+            int id = workerRepository.delete(given.getId());
+            assertEquals(given.getId(), id);
+        }
+
+        @Test
+        void whenWrongId_throws() throws BaseException {
+            int id = 42;
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> workerRepository.delete(id));
+            assertEquals(e.id, id);
+        }
+    }
 }
