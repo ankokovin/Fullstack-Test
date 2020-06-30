@@ -45,8 +45,18 @@ public class OrganizationService
         return rep.getById(id);
     }
 
-    public Organization update(UpdateOrganizationInput model) {
-        throw new NotImplementedException();
+    public Organization update(UpdateOrganizationInput model) throws
+            WrongHeadIdException,
+            SameNameException,
+            UnexpectedException {
+        try {
+            int id = rep.update(model.id, model.name, model.org_id);
+            return getById(id);
+        } catch (SameNameException | WrongHeadIdException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new UnexpectedException(ex);
+        }
     }
 
     public Organization delete(Integer id) {
