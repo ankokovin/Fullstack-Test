@@ -11,7 +11,6 @@ import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OrganizationServiceTests {
 
     @SuppressWarnings({"unused", "InnerClassMayBeStatic"})
-    abstract  class OrganizationServiceTestClassTemplate {
+    abstract class OrganizationServiceTestClassTemplate {
         @Autowired
         protected OrganizationService organizationService;
 
@@ -115,11 +114,11 @@ public class OrganizationServiceTests {
                     .thenReturn(expected);
             Organization actual = organizationService
                     .update(new UpdateOrganizationInput(
-                            expected.getId(),
-                            expected.getOrgName(),
-                            expected.getHeadOrgId()
-                    )
-            );
+                                    expected.getId(),
+                                    expected.getOrgName(),
+                                    expected.getHeadOrgId()
+                            )
+                    );
             assertEquals(expected, actual);
         }
 
@@ -168,7 +167,7 @@ public class OrganizationServiceTests {
     class Delete extends OrganizationServiceTestClassTemplate {
 
         @Test
-        public void whenDeleteSucceeds_thenReturns() throws BaseException{
+        public void whenDeleteSucceeds_thenReturns() throws BaseException {
             int id = 1;
             Organization expected = new Organization(id, "ООО Тест", null);
             Mockito.when(organizationRepository.delete(id))
@@ -181,7 +180,7 @@ public class OrganizationServiceTests {
         }
 
         @Test
-        public void whenDeleteThrowsNoSuchRecord_thenThrowsNoSuchRecord() throws BaseException{
+        public void whenDeleteThrowsNoSuchRecord_thenThrowsNoSuchRecord() throws BaseException {
             int expected = 1;
             Mockito.when(organizationRepository.delete(expected))
                     .thenThrow(new NoSuchRecordException(expected));
@@ -193,7 +192,7 @@ public class OrganizationServiceTests {
 
         @Test
         public void whenDeleteThrowsDeleteHasChildExceptionOrganization_thenThrowsDeleteHasChildExceptionOrganization()
-                throws BaseException{
+                throws BaseException {
             DeleteHasChildException expected = new DeleteHasChildException(42, Table.ORGANIZATION);
             Mockito.when(organizationRepository.delete(expected.id))
                     .thenThrow(expected);
@@ -206,7 +205,7 @@ public class OrganizationServiceTests {
 
         @Test
         public void whenDeleteThrowsDeleteHasChildExceptionWorker_thenThrowsDeleteHasChildExceptionWorker()
-                throws BaseException{
+                throws BaseException {
             DeleteHasChildException expected = new DeleteHasChildException(42, Table.WORKER);
             Mockito.when(organizationRepository.delete(expected.id))
                     .thenThrow(expected);
@@ -219,7 +218,7 @@ public class OrganizationServiceTests {
 
         @Test
         public void whenDeleteThrowsUnexpectedException_thenThrowsUnexpectedException()
-                throws BaseException{
+                throws BaseException {
             DeleteHasChildException expected = new DeleteHasChildException(42, Table.UNKNOWN);
             Mockito.when(organizationRepository.delete(expected.id))
                     .thenThrow(new UnexpectedException(expected));
@@ -227,7 +226,7 @@ public class OrganizationServiceTests {
             UnexpectedException e = assertThrows(UnexpectedException.class,
                     () -> organizationService.delete(expected.id));
             assertTrue(e.getCause() instanceof DeleteHasChildException);
-            DeleteHasChildException actual = (DeleteHasChildException)e.getCause();
+            DeleteHasChildException actual = (DeleteHasChildException) e.getCause();
             assertEquals(expected.id, actual.id);
             assertEquals(expected.table, actual.table);
         }

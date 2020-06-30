@@ -7,24 +7,26 @@ import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdRespons
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import org.jooq.DSLContext;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrganizationControllerTests {
 
+    private final String endPoint = "/api/organization";
     @Autowired
     private TestRestTemplate restTemplate;
-
-    private final String endPoint = "/api/organization";
-
     @Autowired
     private DSLContext dsl;
 
@@ -40,10 +42,10 @@ class OrganizationControllerTests {
         assert n > 0;
         Organization[] result = new Organization[n];
         String nameTemplate = "Тест-%d";
-        for (int i=0; i<n; ++i) {
+        for (int i = 0; i < n; ++i) {
             String name = String.format(nameTemplate, i);
             CreateOrganizationInput input = new CreateOrganizationInput(name, null);
-            Organization expected = new Organization(i+1, name, null);
+            Organization expected = new Organization(i + 1, name, null);
             ResponseEntity<Organization> response = restTemplate.postForEntity(endPoint, input,
                     Organization.class);
             assertEquals(expected, response.getBody());
@@ -62,16 +64,18 @@ class OrganizationControllerTests {
         public void whenCreateCorrectNoHead_thenOrganizationCreates() {
             create();
         }
+
         @Test
         public void whenCreateCorrectHead_thenOrganizationCreates() {
             Organization given = create();
             String name = "Алексей2";
             CreateOrganizationInput input = new CreateOrganizationInput(name, given.getId());
-            Organization expected = new Organization(given.getId()+1, name, given.getId());
+            Organization expected = new Organization(given.getId() + 1, name, given.getId());
             ResponseEntity<Organization> response = restTemplate.postForEntity(endPoint, input,
                     Organization.class);
             assertEquals(expected, response.getBody());
         }
+
         @Test
         public void whenCreateWrongHead_thenReturnsException() {
             String name = "Алексей";
@@ -86,6 +90,7 @@ class OrganizationControllerTests {
             assertNotNull(actual);
             assertEquals(expected, actual);
         }
+
         @Test
         public void whenCreateSameName_thenReturnsException() {
             Organization given = create();
@@ -105,12 +110,13 @@ class OrganizationControllerTests {
     @Nested
     class Update {
         private final String endPointUpdate = endPoint + "/update";
+
         @Test
         public void whenUpdateCorrect_thenUpdates() {
             Organization given = create();
             String newName = "Aleksei";
             given.setOrgName(newName);
-            UpdateOrganizationInput input = new UpdateOrganizationInput(given.getId(),newName,null);
+            UpdateOrganizationInput input = new UpdateOrganizationInput(given.getId(), newName, null);
             ResponseEntity<Organization> response = restTemplate.postForEntity(endPointUpdate, input,
                     Organization.class);
             assertEquals(200, response.getStatusCodeValue());
@@ -133,6 +139,7 @@ class OrganizationControllerTests {
             assertNotNull(actual);
             assertEquals(expected, actual);
         }
+
         @Test
         public void whenUpdateWrongHead() {
             Organization[] given = create(2);
@@ -150,8 +157,9 @@ class OrganizationControllerTests {
             assertEquals(expected, actual);
         }
     }
+
     @Nested
-    class Delete{
+    class Delete {
         @Test
         public void whenDeleteSucceeds() {
             Organization given = create();

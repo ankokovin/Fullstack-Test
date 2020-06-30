@@ -1,19 +1,16 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
+import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-
-
 
 import java.util.List;
 
@@ -37,8 +34,8 @@ public class OrganizationsController {
 
     @PostMapping
     public ResponseEntity<Organization> create(
-            @RequestBody CreateOrganizationInput model)  throws BaseException{
-            return ResponseEntity.ok(service.create(model));
+            @RequestBody CreateOrganizationInput model) throws BaseException {
+        return ResponseEntity.ok(service.create(model));
 
     }
 
@@ -49,7 +46,7 @@ public class OrganizationsController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Organization> delete(@RequestBody Integer id) throws BaseException{
+    public ResponseEntity<Organization> delete(@RequestBody Integer id) throws BaseException {
         return ResponseEntity.ok(service.delete(id));
     }
 

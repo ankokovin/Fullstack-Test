@@ -16,15 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OrganizationService
-{
+public class OrganizationService {
     @Autowired
     private OrganizationRepository rep;
 
     public List<OrgListElement> getAllWithCount() {
         List<OrgListElement> result = new ArrayList<>();
-        for (Record2<String, Integer> rec: rep.getAllWithCount()) {
-            result.add(new OrgListElement(rec.component1(),rec.component2()));
+        for (Record2<String, Integer> rec : rep.getAllWithCount()) {
+            result.add(new OrgListElement(rec.component1(), rec.component2()));
         }
         return result;
     }

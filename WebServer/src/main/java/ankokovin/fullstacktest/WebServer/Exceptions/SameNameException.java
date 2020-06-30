@@ -7,6 +7,12 @@ public class SameNameException extends BaseException {
         super(message, cause);
         this.name = name;
     }
-    public SameNameException(String name, String message) { this(name,message,null); }
-    public SameNameException(String name) { this(name,null,null); }
+
+    public SameNameException(String name, String message) {
+        this(name, message, null);
+    }
+
+    public SameNameException(String name) {
+        this(name, null, null);
+    }
 }

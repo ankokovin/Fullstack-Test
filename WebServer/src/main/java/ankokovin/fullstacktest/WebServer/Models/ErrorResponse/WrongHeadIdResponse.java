@@ -7,7 +7,10 @@ import java.util.Objects;
 public class WrongHeadIdResponse extends ErrorResponse {
     public int id;
     public Table to;
-    public WrongHeadIdResponse(){}
+
+    public WrongHeadIdResponse() {
+    }
+
     public WrongHeadIdResponse(int id, Table to) {
         super("Невозможно указать элемент как родительский");
         this.id = id;

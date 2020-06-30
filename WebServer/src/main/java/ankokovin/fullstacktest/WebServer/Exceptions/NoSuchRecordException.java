@@ -7,6 +7,12 @@ public class NoSuchRecordException extends BaseException {
         super(message, cause);
         this.id = id;
     }
-    public NoSuchRecordException(Integer id, String message) { this(id,message,null); }
-    public NoSuchRecordException(Integer id) { this(id,null,null); }
+
+    public NoSuchRecordException(Integer id, String message) {
+        this(id, message, null);
+    }
+
+    public NoSuchRecordException(Integer id) {
+        this(id, null, null);
+    }
 }

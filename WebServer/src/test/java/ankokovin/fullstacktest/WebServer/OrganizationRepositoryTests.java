@@ -7,11 +7,11 @@ import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,41 +23,26 @@ public class OrganizationRepositoryTests {
             = ankokovin.fullstacktest.WebServer.Generated.tables.Organization.ORGANIZATION;
     private static final ankokovin.fullstacktest.WebServer.Generated.tables.Worker worker
             = ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER;
-
-    @SuppressWarnings("unused")
-    @TestConfiguration
-    static class OrganizationServiceTestsConfiguration {
-
-        @SuppressWarnings("unused")
-        @Bean
-        public OrganizationRepository organizationRepository() {
-            return new OrganizationRepository();
-        }
-    }
-
+    @Autowired
+    public OrganizationRepository organizationRepository;
     @SuppressWarnings("unused")
     @Autowired
     private DSLContext dslContext;
 
-    @Autowired
-    public OrganizationRepository organizationRepository;
-
-
     @BeforeEach
-    public void setup(){
+    public void setup() {
         dslContext.truncateTable(worker).restartIdentity().cascade().execute();
         dslContext.truncateTable(organization).restartIdentity().cascade().execute();
     }
-
 
     public Organization[] create(int cnt) throws BaseException {
         assert cnt >= 0;
         String name = "ООО Тест%d";
         Organization[] expected = new Organization[cnt];
-        for(int i=0; i<cnt;++i) {
-            String fName = String.format(name,i);
+        for (int i = 0; i < cnt; ++i) {
+            String fName = String.format(name, i);
             int id = organizationRepository.insert(fName, null);
-            assertEquals(i+1, id);
+            assertEquals(i + 1, id);
             expected[i] = new Organization(id, fName, null);
         }
         Object[] actual = dslContext
@@ -71,6 +56,17 @@ public class OrganizationRepositoryTests {
         return create(1)[0];
     }
 
+    @SuppressWarnings("unused")
+    @TestConfiguration
+    static class OrganizationServiceTestsConfiguration {
+
+        @SuppressWarnings("unused")
+        @Bean
+        public OrganizationRepository organizationRepository() {
+            return new OrganizationRepository();
+        }
+    }
+
     @Nested
     class Insert {
         @Test
@@ -79,7 +75,7 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenHead_thenOrganizationCreates() throws BaseException{
+        public void whenHead_thenOrganizationCreates() throws BaseException {
             Organization given = create();
             String name = "ООО Тест2";
             Organization expected = new Organization(2, name, 1);
@@ -93,32 +89,32 @@ public class OrganizationRepositoryTests {
         }
 
         @Test
-        public void whenFirstWithHead_thenThrows()  {
+        public void whenFirstWithHead_thenThrows() {
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
-                    () -> organizationRepository.insert("OOO Тест",3));
-            assertEquals( 3, e.id);
+                    () -> organizationRepository.insert("OOO Тест", 3));
+            assertEquals(3, e.id);
         }
 
         @Test
         public void whenWrongHead_thenThrows() throws BaseException {
             Organization given = create();
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
-                    () -> organizationRepository.insert("OOO Тест2",given.getId()+2));
-            assertEquals(given.getId()+2, e.id);
+                    () -> organizationRepository.insert("OOO Тест2", given.getId() + 2));
+            assertEquals(given.getId() + 2, e.id);
         }
 
         @Test
         public void whenSelfHead_thenThrows() {
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
-                    () -> organizationRepository.insert("OOO Тест",1));
-            assertEquals( 1, e.id);
+                    () -> organizationRepository.insert("OOO Тест", 1));
+            assertEquals(1, e.id);
         }
 
         @Test
         public void whenSameName_thenThrows() throws BaseException {
             Organization given = create();
             SameNameException e = assertThrows(SameNameException.class,
-                    () -> organizationRepository.insert(given.getOrgName(),null));
+                    () -> organizationRepository.insert(given.getOrgName(), null));
             assertEquals(given.getOrgName(), e.name);
         }
     }
@@ -144,7 +140,7 @@ public class OrganizationRepositoryTests {
         public void whenChangeHead_thenOrganizationUpdates() throws BaseException {
             Organization[] given = create(2);
             Organization expected = new Organization(given[1].getId(), given[1].getOrgName(), given[0].getId());
-            int id = organizationRepository.update(given[1].getId(),given[1].getOrgName(), given[0].getId());
+            int id = organizationRepository.update(given[1].getId(), given[1].getOrgName(), given[0].getId());
             assertEquals(2, id);
 
             Object[] actual = dslContext
@@ -158,15 +154,15 @@ public class OrganizationRepositoryTests {
             Organization given = create();
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationRepository.update(given.getId(), given.getOrgName(), given.getId()));
-            assertEquals( given.getId(), e.id);
+            assertEquals(given.getId(), e.id);
         }
 
         @Test
         public void whenWrongHead_thenThrows() throws BaseException {
             Organization given = create();
-            Integer new_head_id = given.getId()+1;
+            Integer new_head_id = given.getId() + 1;
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
-                    () -> organizationRepository.update(given.getId(),given.getOrgName(), new_head_id));
+                    () -> organizationRepository.update(given.getId(), given.getOrgName(), new_head_id));
             assertEquals(new_head_id, e.id);
         }
 
@@ -184,7 +180,7 @@ public class OrganizationRepositoryTests {
         @Test
         public void whenIdNotPresent_thenThrows() {
             NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
-                    () -> organizationRepository.update(1,"test",null));
+                    () -> organizationRepository.update(1, "test", null));
             assertEquals(e.id, 1);
         }
     }
@@ -205,6 +201,7 @@ public class OrganizationRepositoryTests {
                     () -> organizationRepository.delete(1));
             assertEquals(e.id, 1);
         }
+
         @Test
         public void whenHasWorkers_thenThrows() throws BaseException {
             Organization expected = create();
@@ -214,11 +211,12 @@ public class OrganizationRepositoryTests {
             assertEquals(Table.WORKER, e.table);
             assertEquals(expected.getId(), e.id);
         }
+
         @Test
         public void whenHasSubOrganizations_thenThrows() throws BaseException {
             Organization[] given = create(2);
             Organization expected = new Organization(given[1].getId(), given[1].getOrgName(), given[0].getId());
-            int id = organizationRepository.update(given[1].getId(),given[1].getOrgName(), given[0].getId());
+            int id = organizationRepository.update(given[1].getId(), given[1].getOrgName(), given[0].getId());
             assertEquals(2, id);
 
             Object[] actual = dslContext
@@ -231,11 +229,12 @@ public class OrganizationRepositoryTests {
             assertEquals(Table.ORGANIZATION, e.table);
             assertEquals(given[0].getId(), e.id);
         }
+
         @Test
         public void whenHasWorkersAndSubOrganizations_thenThrows() throws BaseException {
             Organization[] given = create(2);
             Organization expected = new Organization(given[1].getId(), given[1].getOrgName(), given[0].getId());
-            int id = organizationRepository.update(given[1].getId(),given[1].getOrgName(), given[0].getId());
+            int id = organizationRepository.update(given[1].getId(), given[1].getOrgName(), given[0].getId());
             assertEquals(2, id);
 
             Object[] actual = dslContext
@@ -263,10 +262,10 @@ public class OrganizationRepositoryTests {
             }
 
             @Test
-            public void whenIdNotInTable_thenThrows() throws BaseException{
+            public void whenIdNotInTable_thenThrows() throws BaseException {
                 Organization expected = create();
                 NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
-                        () -> organizationRepository.getById(expected.getId()+1));
+                        () -> organizationRepository.getById(expected.getId() + 1));
             }
         }
     }

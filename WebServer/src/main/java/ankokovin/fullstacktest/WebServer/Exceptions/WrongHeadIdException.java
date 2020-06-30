@@ -7,13 +7,19 @@ public class WrongHeadIdException extends BaseException {
     public final Integer id;
     public final Table to;
 
-    public WrongHeadIdException(Integer id,Table to, String message, Throwable cause) {
+    public WrongHeadIdException(Integer id, Table to, String message, Throwable cause) {
         super(message, cause);
         this.id = id;
         this.to = to;
     }
-    public WrongHeadIdException(Integer id,Table to, String message) { this(id,to,message,null); }
-    public WrongHeadIdException(Integer id,Table to) { this(id,to,null,null); }
+
+    public WrongHeadIdException(Integer id, Table to, String message) {
+        this(id, to, message, null);
+    }
+
+    public WrongHeadIdException(Integer id, Table to) {
+        this(id, to, null, null);
+    }
 
 
 }
