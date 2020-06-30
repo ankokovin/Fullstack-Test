@@ -45,12 +45,12 @@ public class OrganizationsController {
     @PostMapping("/update")
     public ResponseEntity<Organization> update(
             @RequestBody UpdateOrganizationInput model) throws BaseException {
-        throw new NotImplementedException();
+        return ResponseEntity.ok(service.update(model));
     }
 
     @DeleteMapping
     public ResponseEntity<Organization> delete(@RequestBody Integer id) throws BaseException{
-        throw new NotImplementedException();
+        return ResponseEntity.ok(service.delete(id));
     }
 
     @GetMapping
