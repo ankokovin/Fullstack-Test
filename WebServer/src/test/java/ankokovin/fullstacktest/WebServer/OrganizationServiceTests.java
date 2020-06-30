@@ -4,6 +4,7 @@ package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
@@ -162,4 +163,73 @@ public class OrganizationServiceTests {
         }
     }
 
+    @Nested
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+    class Delete extends OrganizationServiceTestClassTemplate {
+
+        @Test
+        public void whenDeleteSucceeds_thenReturns() throws BaseException{
+            int id = 1;
+            Organization expected = new Organization(id, "ООО Тест", null);
+            Mockito.when(organizationRepository.delete(id))
+                    .thenReturn(id);
+            Mockito.when(organizationRepository.getById(id))
+                    .thenReturn(expected);
+
+            Organization actual = organizationService.delete(id);
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        public void whenDeleteThrowsNoSuchRecord_thenThrowsNoSuchRecord() throws BaseException{
+            int expected = 1;
+            Mockito.when(organizationRepository.delete(expected))
+                    .thenThrow(new NoSuchRecordException(expected));
+
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> organizationService.delete(expected));
+            assertEquals(expected, e.id);
+        }
+
+        @Test
+        public void whenDeleteThrowsDeleteHasChildExceptionOrganization_thenThrowsDeleteHasChildExceptionOrganization()
+                throws BaseException{
+            DeleteHasChildException expected = new DeleteHasChildException(42, Table.ORGANIZATION);
+            Mockito.when(organizationRepository.delete(expected.id))
+                    .thenThrow(expected);
+
+            DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
+                    () -> organizationService.delete(expected.id));
+            assertEquals(expected.id, e.id);
+            assertEquals(expected.table, e.table);
+        }
+
+        @Test
+        public void whenDeleteThrowsDeleteHasChildExceptionWorker_thenThrowsDeleteHasChildExceptionWorker()
+                throws BaseException{
+            DeleteHasChildException expected = new DeleteHasChildException(42, Table.WORKER);
+            Mockito.when(organizationRepository.delete(expected.id))
+                    .thenThrow(expected);
+
+            DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
+                    () -> organizationService.delete(expected.id));
+            assertEquals(expected.id, e.id);
+            assertEquals(expected.table, e.table);
+        }
+
+        @Test
+        public void whenDeleteThrowsDeleteHasChildExceptionUnknown_thenThrowsUnexpectedException()
+                throws BaseException{
+            DeleteHasChildException expected = new DeleteHasChildException(42, Table.UNKNOWN);
+            Mockito.when(organizationRepository.delete(expected.id))
+                    .thenThrow(expected);
+
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> organizationService.delete(expected.id));
+            assertTrue(e.getCause() instanceof DeleteHasChildException);
+            DeleteHasChildException actual = (DeleteHasChildException)e.getCause();
+            assertEquals(expected.id, actual.id);
+            assertEquals(expected.table, actual.table);
+        }
+    }
 }
