@@ -1,37 +1,22 @@
 package ankokovin.fullstacktest.WebServer;
 
-import ankokovin.fullstacktest.WebServer.Controllers.OrganizationsController;
-import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
-import ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
-import ankokovin.fullstacktest.WebServer.Models.WrongHeadIdResponse;
-import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
-
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -56,23 +41,38 @@ class OrganizationControllerTests {
                 .restartIdentity().cascade().execute();
     }
 
+    Organization[] create(int n) {
+        assert n > 0;
+        Organization[] result = new Organization[n];
+        String nameTemplate = "Тест-%d";
+        for (int i=0; i<n; ++i) {
+            String name = String.format(nameTemplate, i);
+            CreateOrganizationInput input = new CreateOrganizationInput(name, null);
+            Organization expected = new Organization(i+1, name, null);
+            ResponseEntity<Organization> response = restTemplate.postForEntity(endPoint, input,
+                    Organization.class);
+            assertEquals(expected, response.getBody());
+            result[i] = expected;
+        }
+        return result;
+    }
+
+    Organization create() {
+        return create(1)[0];
+    }
+
     @Nested
     class Create {
         @Test
         public void whenCreateCorrectNoHead_thenOrganizationCreates() {
-            String name = "Алексей";
-            CreateOrganizationInput input = new CreateOrganizationInput(name, null);
-            Organization expected = new Organization(1, name, null);
-            ResponseEntity<Organization> response = restTemplate.postForEntity(endPoint, input,
-                    Organization.class);
-            assertEquals(expected, response.getBody());
+            create();
         }
         @Test
         public void whenCreateCorrectHead_thenOrganizationCreates() {
-            whenCreateCorrectNoHead_thenOrganizationCreates();
+            Organization given = create();
             String name = "Алексей2";
-            CreateOrganizationInput input = new CreateOrganizationInput(name, 1);
-            Organization expected = new Organization(2, name, 1);
+            CreateOrganizationInput input = new CreateOrganizationInput(name, given.getId());
+            Organization expected = new Organization(given.getId()+1, name, given.getId());
             ResponseEntity<Organization> response = restTemplate.postForEntity(endPoint, input,
                     Organization.class);
             assertEquals(expected, response.getBody());
@@ -89,8 +89,78 @@ class OrganizationControllerTests {
             System.out.println(response);
             WrongHeadIdResponse actual = response.getBody();
             assertNotNull(actual);
-            assertEquals(expected.id, actual.id);
+            assertEquals(expected, actual);
+        }
+        @Test
+        public void whenCreateSameName_thenReturnsException() {
+            Organization given = create();
+            String name = given.getOrgName();
+            CreateOrganizationInput input = new CreateOrganizationInput(name, null);
+            SameNameResponse expected = new SameNameResponse(name);
+            ResponseEntity<SameNameResponse> response = restTemplate.postForEntity(endPoint, input,
+                    SameNameResponse.class);
+            assertEquals(400, response.getStatusCodeValue());
+            System.out.println(response);
+            SameNameResponse actual = response.getBody();
+            assertNotNull(actual);
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Nested
+    class Update {
+        private final String endPointUpdate = endPoint + "/update";
+        @Test
+        public void whenUpdateCorrect_thenUpdates() {
+            Organization given = create();
+            String newName = "Aleksei";
+            given.setOrgName(newName);
+            UpdateOrganizationInput input = new UpdateOrganizationInput(given.getId(),newName,null);
+            ResponseEntity<Organization> response = restTemplate.postForEntity(endPointUpdate, input,
+                    Organization.class);
+            assertEquals(200, response.getStatusCodeValue());
+            assertEquals(given, response.getBody());
         }
 
+        @Test
+        public void whenSameName() {
+            Organization[] given = create(2);
+            UpdateOrganizationInput input = new UpdateOrganizationInput(
+                    given[0].getId(),
+                    given[1].getOrgName(),
+                    null);
+            SameNameResponse expected = new SameNameResponse(given[1].getOrgName());
+            ResponseEntity<SameNameResponse> response = restTemplate.postForEntity(endPointUpdate, input,
+                    SameNameResponse.class);
+            assertEquals(400, response.getStatusCodeValue());
+            System.out.println(response);
+            SameNameResponse actual = response.getBody();
+            assertNotNull(actual);
+            assertEquals(expected, actual);
+        }
+        @Test
+        public void whenUpdateWrongHead() {
+            Organization[] given = create(2);
+            UpdateOrganizationInput input = new UpdateOrganizationInput(
+                    given[1].getId(),
+                    given[1].getOrgName(),
+                    given[1].getId());
+            WrongHeadIdResponse expected = new WrongHeadIdResponse(given[1].getId());
+            ResponseEntity<WrongHeadIdResponse> response = restTemplate.postForEntity(endPointUpdate, input,
+                    WrongHeadIdResponse.class);
+            assertEquals(400, response.getStatusCodeValue());
+            System.out.println(response);
+            WrongHeadIdResponse actual = response.getBody();
+            assertNotNull(actual);
+            assertEquals(expected, actual);
+        }
+    }
+    @Nested
+    class Delete{
+        @Test
+        public void whenDeleteSucceeds() {
+            Organization given = create();
+            restTemplate.delete(endPoint, given.getId(), Organization.class);
+        }
     }
 }

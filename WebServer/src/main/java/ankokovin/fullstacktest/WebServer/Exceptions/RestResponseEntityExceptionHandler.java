@@ -1,14 +1,11 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.*;
-import ankokovin.fullstacktest.WebServer.Models.DeleteHasChildResponse;
-import ankokovin.fullstacktest.WebServer.Models.NoSuchRecordResponse;
-import ankokovin.fullstacktest.WebServer.Models.WrongHeadIdResponse;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.DeleteHasChildResponse;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -52,10 +49,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(SameNameException.class)
     protected ResponseEntity<Object> handleSameName(SameNameException ex, WebRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("error", ex);
-        body.put("timestamp", LocalDateTime.now());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        SameNameResponse response = new SameNameResponse(ex.name);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
 

@@ -42,7 +42,7 @@ public class OrganizationsController {
 
     }
 
-    @PutMapping
+    @PostMapping("/update")
     public ResponseEntity<Organization> update(
             @RequestBody UpdateOrganizationInput model) throws BaseException {
         throw new NotImplementedException();

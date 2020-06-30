@@ -10,4 +10,6 @@ public class WrongHeadIdException extends BaseException {
     }
     public WrongHeadIdException(Integer id, String message) { this(id,message,null); }
     public WrongHeadIdException(Integer id) { this(id,null,null); }
+
+
 }
