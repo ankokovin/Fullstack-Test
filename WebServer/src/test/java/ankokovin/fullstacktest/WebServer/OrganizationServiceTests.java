@@ -1,9 +1,7 @@
 package ankokovin.fullstacktest.WebServer;
 
 
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
-import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
@@ -13,20 +11,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.mockito.Mockito;
-import org.mockito.internal.matchers.Same;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.lang.annotation.Target;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class OrganizationServiceTests {
 
+    @SuppressWarnings({"unused", "InnerClassMayBeStatic"})
     abstract  class OrganizationServiceTestClassTemplate {
         @Autowired
         protected OrganizationService organizationService;
@@ -96,19 +91,16 @@ public class OrganizationServiceTests {
 
         @Test
         public void whenCreateWrongHead_thenThrows() {
-            String name = "ООО Тест-3";
-
+            int expected = 3;
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
-                    () -> organizationService.create(new CreateOrganizationInput(name, 3)));
+                    () -> organizationService.create(new CreateOrganizationInput("ООО Тест-3", expected)));
+            assertEquals(expected, e.id);
         }
     }
 
     @Nested
     @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
     class Update extends OrganizationServiceTestClassTemplate {
-        @BeforeEach
-        public void setUp() throws BaseException {
-        }
 
         @Test
         public void whenUpdateCorrect_thenReturns() throws BaseException {
@@ -143,7 +135,7 @@ public class OrganizationServiceTests {
         }
 
         @Test
-        public void whenUpdateThrowsWrongHeadId() throws BaseException {
+        public void whenUpdateThrowsWrongHeadId_thenThrows() throws BaseException {
             Integer expected = 1;
             UpdateOrganizationInput model = new UpdateOrganizationInput(1, "ООО Тест", expected);
             Mockito.when(organizationRepository
@@ -152,6 +144,21 @@ public class OrganizationServiceTests {
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationService.update(model));
             assertEquals(expected, e.id);
+        }
+
+        @Test
+        public void whenUpdateUnexpectedChange_thenThrows() throws BaseException {
+            Integer expected = 1;
+            UpdateOrganizationInput model = new UpdateOrganizationInput(expected, "ООО Тест", null);
+            Mockito.when(organizationRepository
+                    .update(model.id, model.name, model.org_id))
+                    .thenReturn(model.id);
+            Mockito.when(organizationRepository.getById(expected))
+                    .thenThrow(new NoSuchRecordException(expected));
+            UnexpectedException ex = assertThrows(UnexpectedException.class,
+                    () -> organizationService.update(model));
+            assertTrue(ex.getCause() instanceof NoSuchRecordException);
+            assertEquals(expected, ((NoSuchRecordException) ex.getCause()).id);
         }
     }
 
