@@ -10,6 +10,7 @@ import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class WorkerServiceTests {
@@ -33,10 +33,11 @@ public class WorkerServiceTests {
 
     @Nested
     class Create{
+
         @Test
         void whenReturns_thenReturn() throws BaseException {
             String name = "Test";
-            Integer id = 56;
+            Integer id = 57;
             Integer org_id = 42;
             Integer head_id = 45;
             Worker expected = new Worker(id, name, org_id, head_id);
@@ -53,7 +54,7 @@ public class WorkerServiceTests {
         void whenThrowsWrongHead_thenThrows() throws BaseException {
             String name = "Test";
             Integer org_id = 42;
-            Integer head_id = 45;
+            Integer head_id = 46;
             Mockito.when(workerRepository.insert(name,org_id,head_id))
                     .thenThrow(new WrongHeadIdException(org_id, Table.WORKER));
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
@@ -64,8 +65,8 @@ public class WorkerServiceTests {
         @Test
         void whenThrowsUnknownException() throws BaseException {
             String name = "Test";
-            Integer org_id = 42;
-            Integer head_id = 45;
+            Integer org_id = 424;
+            Integer head_id = 452;
             String message = "TestTest";
             Mockito.when(workerRepository.insert(name,org_id,head_id))
                     .thenThrow(new UnexpectedException(message));
