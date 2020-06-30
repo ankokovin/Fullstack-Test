@@ -232,4 +232,35 @@ public class OrganizationServiceTests {
             assertEquals(expected.table, actual.table);
         }
     }
+
+    @Nested
+    class Get {
+
+        @Nested
+        @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+        class GetById extends OrganizationServiceTestClassTemplate {
+            @Test
+            void whenReturns_thenReturns() throws NoSuchRecordException {
+                int id = 42;
+                Organization expected = new Organization(id, "ООО Тест", null);
+                Mockito.when(organizationRepository.getById(id))
+                        .thenReturn(expected);
+
+                Organization actual = organizationService.getById(id);
+                assertEquals(expected, actual);
+            }
+
+            @Test
+            void whenThrows_thenThrows() throws NoSuchRecordException {
+                int id = 42;
+                NoSuchRecordException expected = new NoSuchRecordException(42);
+                Mockito.when(organizationRepository.getById(id))
+                        .thenThrow(expected);
+
+                NoSuchRecordException actual = assertThrows(NoSuchRecordException.class,
+                        () -> organizationService.getById(id));
+                assertEquals(expected, actual);
+            }
+        }
+    }
 }
