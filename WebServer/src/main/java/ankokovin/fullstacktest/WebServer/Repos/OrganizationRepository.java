@@ -120,7 +120,7 @@ public class OrganizationRepository {
 
 
     @Transactional
-    public Integer delete(Integer id) throws NoSuchRecordException, UnexpectedException {
+    public Integer delete(Integer id) throws NoSuchRecordException, UnexpectedException, DeleteHasChildException {
         try {
             OrganizationRecord result = dsl.deleteFrom(organization)
                     .where(organization.ID.eq(id))
@@ -131,7 +131,8 @@ public class OrganizationRepository {
             } else {
                 return result.getId();
             }
-        } catch (NoSuchRecordException ex) {
+        }
+        catch (NoSuchRecordException ex) {
             throw ex;
         }
         catch (Exception ex){

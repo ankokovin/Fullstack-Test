@@ -41,6 +41,7 @@ public class OrganizationRepositoryTests {
     @Autowired
     public OrganizationRepository organizationRepository;
 
+
     @BeforeEach
     public void setup(){
         dslContext.truncateTable(worker).restartIdentity().cascade().execute();
@@ -202,6 +203,30 @@ public class OrganizationRepositoryTests {
             NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                     () -> organizationRepository.delete(1));
             assertEquals(e.id, 1);
+        }
+        @Test
+        public void whenHasWorkers_thenThrows() throws BaseException {
+            Organization expected = create();
+            dslContext.insertInto(worker).values(1, "Test", expected.getId(), null);
+            DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
+                    () -> organizationRepository.delete(expected.getId()));
+            assertEquals(expected, e.child);
+        }
+        @Test
+        public void whenHasSubOrganizations_thenThrows() throws BaseException {
+            Organization[] given = create(2);
+            Organization expected = new Organization(given[1].getId(), given[1].getOrgName(), given[0].getId());
+            int id = organizationRepository.update(given[1].getId(),given[1].getOrgName(), given[0].getId());
+            assertEquals(2, id);
+
+            Object[] actual = dslContext
+                    .selectFrom(organization)
+                    .fetchInto(Organization.class).toArray();
+            assertArrayEquals(new Organization[]{given[0], expected}, actual);
+
+            DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
+                    () -> organizationRepository.delete(given[0].getId()));
+            assertEquals(expected, e.child);
         }
     }
 
