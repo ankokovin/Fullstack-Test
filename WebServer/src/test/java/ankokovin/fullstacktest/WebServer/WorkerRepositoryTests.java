@@ -1,9 +1,7 @@
 package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Exceptions.SameNameException;
-import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
-import ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
@@ -61,7 +59,7 @@ public class WorkerRepositoryTests {
         for (int i=0; i<n; ++i) {
             String name = String.format(nameTemplate, i);
             expected[i] = new Worker(i+1, name, org_id, null);
-            actual[i] = workerRepository.create(name,org_id,null);
+            actual[i] = workerRepository.getById(workerRepository.insert(name,org_id,null));
         }
         assertArrayEquals(expected, actual);
         return actual;
@@ -81,34 +79,37 @@ public class WorkerRepositoryTests {
         @Test
         void whenHead_creates() throws BaseException {
             Worker given = create();
-            Worker expected = new Worker(given.getId()+1, "Тест", given.getOrgId(), given.getId());
-            Worker actual = workerRepository.create(
-                    expected.getWorkerName(),
-                    expected.getOrgId(),
-                    expected.getId());
-            assertEquals(expected, actual);
+            Integer actual = workerRepository.insert(
+                    "test",
+                    given.getOrgId(),
+                    given.getId());
+            assertEquals(given.getId()+1, actual);
         }
 
-        @Test
-        void whenSameName_throws() throws BaseException {
-            Worker given = create();
-            SameNameException ex = assertThrows(SameNameException.class,
-                    () -> workerRepository.create(
-                            given.getWorkerName(),
-                            given.getOrgId(),
-                            given.getHeadId()
-                    ));
-            assertEquals(given.getWorkerName(), ex.name);
-        }
+
 
         @Test
-        void whenWrongHead_throws() throws BaseException {
+        void whenWrongHeadWorker_throws() throws BaseException {
             Worker given = create();
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
-                    () -> workerRepository.create(
+                    () -> workerRepository.insert(
                             "test",
                             given.getOrgId(),
                             given.getId()+1
+                    ));
+            assertEquals(given.getId()+1, ex.id);
+        }
+
+
+
+        @Test
+        void whenWrongOrg_throws() throws BaseException {
+            Worker given = create();
+            WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
+                    () -> workerRepository.insert(
+                            "test",
+                            given.getOrgId()+1,
+                            null
                     ));
             assertEquals(given.getId()+1, ex.id);
         }
