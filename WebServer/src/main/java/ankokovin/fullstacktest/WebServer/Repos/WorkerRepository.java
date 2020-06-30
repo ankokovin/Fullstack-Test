@@ -80,7 +80,12 @@ public class WorkerRepository {
     }
 
     public Integer delete(Integer id) throws NoSuchRecordException {
-        throw new NotImplementedException();
+        WorkerRecord result =  dsl.deleteFrom(worker)
+                .where(worker.ID.eq(id))
+                .returning(worker.ID)
+                .fetchOne();
+        if (result == null) throw new NoSuchRecordException(id);
+        return result.getValue(worker.ID);
     }
 
     public List<Record5<String,Integer,String,Integer,String>> getAll(
