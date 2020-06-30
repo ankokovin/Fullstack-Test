@@ -54,7 +54,7 @@ public class OrganizationRepositoryTests {
         Organization[] expected = new Organization[cnt];
 
 
-        for (int i=0; i<cnt; ++i) {
+        for (int i=0; i < expected.length; i++) {
             String fName = String.format(name,i);
             int id = organizationRepository.insert(fName, null);
             assertEquals(i+1, id);
@@ -124,7 +124,6 @@ public class OrganizationRepositoryTests {
     }
 
     @Nested
-    @Disabled("TODO: implement OrganizationRepository.update")
     class Update {
         @Test
         public void whenChangeName_thenOrganizationUpdates() throws Exception {
@@ -165,9 +164,10 @@ public class OrganizationRepositoryTests {
         @Test
         public void whenWrongHead_thenThrows() throws Exception {
             Organization given = create();
+            Integer new_head_id = given.getId()+1;
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
-                    () -> organizationRepository.update(given.getId(),given.getOrgName(), given.getId()+1));
-            assertEquals(given.getId(), e.id);
+                    () -> organizationRepository.update(given.getId(),given.getOrgName(), new_head_id));
+            assertEquals(new_head_id, e.id);
         }
 
         @Test
@@ -196,7 +196,7 @@ public class OrganizationRepositoryTests {
         public void whenCorrectId_thenDeletes() throws Exception {
             Organization given = create();
             int id = organizationRepository.delete(given.getId());
-            assertEquals(0, dslContext.selectCount().from(organization));
+            assertEquals(0, dslContext.selectCount().from(organization).fetchOneInto(Integer.class));
         }
 
         @Test
