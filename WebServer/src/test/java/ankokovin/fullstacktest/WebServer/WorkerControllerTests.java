@@ -1,14 +1,10 @@
 package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.*;
 import org.junit.jupiter.api.Test;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
-import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
-import ankokovin.fullstacktest.WebServer.Models.Table;
-import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.*;
@@ -27,7 +23,6 @@ public class WorkerControllerTests {
             = ankokovin.fullstacktest.WebServer.Generated.tables.Organization.ORGANIZATION;
     private static final ankokovin.fullstacktest.WebServer.Generated.tables.Worker worker
             = ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER;
-    public static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -45,13 +40,14 @@ public class WorkerControllerTests {
                 .restartIdentity().cascade().execute();
     }
 
-    Worker[] create(int n) throws BaseException {
+    Worker[] create(int n) {
         assert n > 0;
         String org_name = "TestOrg";
         CreateOrganizationInput input_org = new CreateOrganizationInput(org_name, null);
         ResponseEntity<Organization> response_org = restTemplate.postForEntity("/api/organization", input_org,
                 Organization.class);
         Organization org =  response_org.getBody();
+        assert org != null;
         String nameTemplate = "Тест Тестовый Тестович %d";
         Worker[] expected = new Worker[n];
         Worker[] actual = new Worker[n];
@@ -68,19 +64,19 @@ public class WorkerControllerTests {
         return actual;
     }
 
-    Worker create() throws BaseException {
+    Worker create() {
         return create(1)[0];
     }
 
     @Nested
     class Create {
         @Test
-        public void creates() throws BaseException {
+        public void creates() {
             create();
         }
 
         @Test
-        public void whenWrongHeadId_returns() throws BaseException {
+        public void whenWrongHeadId_returns() {
             CreateWorkerInput input = new CreateWorkerInput("test", 1, null);
             WrongHeadIdResponse expected = new WrongHeadIdResponse(input.org_id, Table.ORGANIZATION);
             ResponseEntity<WrongHeadIdResponse> response = restTemplate.postForEntity(endPoint, input,
@@ -88,6 +84,44 @@ public class WorkerControllerTests {
             assertEquals(400, response.getStatusCodeValue());
             WrongHeadIdResponse actual = response.getBody();
             assertEquals(expected, actual);
+        }
+    }
+    @Nested
+    class Update {
+        final String updateEndPoint = endPoint + "/update";
+        @Test
+        public void updates() {
+            Worker expected = create();
+            expected.setWorkerName("Test1");
+            UpdateWorkerInput input = new UpdateWorkerInput(expected.getId(),
+                    expected.getWorkerName(), expected.getOrgId(), expected.getHeadId());
+            ResponseEntity<Worker> response = restTemplate.postForEntity(updateEndPoint, input, Worker.class);
+            assertEquals(200, response.getStatusCodeValue());
+            Worker actual = response.getBody();
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        public void whenWrongHeadId_returns() {
+            Worker given = create();
+            given.setOrgId(given.getOrgId() + 1);
+            WrongHeadIdResponse expected = new WrongHeadIdResponse(given.getOrgId(), Table.ORGANIZATION);
+            UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),
+                    given.getWorkerName(), given.getOrgId(), given.getHeadId());
+            ResponseEntity<WrongHeadIdResponse> response = restTemplate.postForEntity(updateEndPoint, input,
+                    WrongHeadIdResponse.class);
+            assertEquals(400, response.getStatusCodeValue());
+            WrongHeadIdResponse actual = response.getBody();
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Nested
+    class Delete {
+        @Test
+        public void deletes() {
+            Worker given = create();
+            restTemplate.delete(endPoint,given.getId());
         }
     }
 }
