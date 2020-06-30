@@ -164,4 +164,27 @@ public class WorkerServiceTests {
             assertEquals(id, ((NoSuchRecordException) e.getCause()).id);
         }
     }
+    @Nested
+    class Delete {
+        @Test
+        void whenDelete_Returns() throws NoSuchRecordException {
+            Worker expected = new Worker(1,"test",1,null);
+            Mockito.when(workerRepository.getById(expected.getId()))
+                    .thenReturn(expected);
+            Mockito.when(workerRepository.delete(expected.getId()))
+                    .thenReturn(expected.getId());
+            Worker actual = workerService.delete(expected.getId());
+            assertEquals(expected, actual);
+        }
+        @Test
+        void whenNoSuchRecord_Throws() throws NoSuchRecordException {
+            Integer id = 2;
+            Mockito.when(workerRepository.getById(id))
+                    .thenThrow(new NoSuchRecordException(id));
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> workerService.delete(id));
+            assertEquals(id, e.id);
+        }
+
+    }
 }
