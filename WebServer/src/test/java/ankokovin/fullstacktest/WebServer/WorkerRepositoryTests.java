@@ -219,11 +219,24 @@ public class WorkerRepositoryTests {
         }
 
         @Test
-        void whenWrongId_throws() throws BaseException {
+        void whenWrongId_throws() {
             int id = 42;
             NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                     () -> workerRepository.delete(id));
-            assertEquals(e.id, id);
+            assertEquals(id, e.id);
+        }
+    }
+    @Nested
+    class Get {
+        @Nested
+        class GetById {
+            @Test
+            void whenWrongId_throws()  {
+                int id = 42;
+                NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                        () -> workerRepository.getById(id));
+                assertEquals(id, e.id);
+            }
         }
     }
 }

@@ -96,6 +96,8 @@ public class WorkerRepository {
     }
 
     public Worker getById(Integer id) throws NoSuchRecordException {
-        return dsl.selectFrom(worker).where(worker.ID.eq(id)).fetchOneInto(Worker.class);
+        Worker result = dsl.selectFrom(worker).where(worker.ID.eq(id)).fetchOneInto(Worker.class);
+        if (result == null) throw new NoSuchRecordException(id);
+        return result;
     }
 }
