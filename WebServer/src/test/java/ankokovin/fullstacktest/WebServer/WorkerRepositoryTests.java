@@ -1,7 +1,6 @@
 package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 
-import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;

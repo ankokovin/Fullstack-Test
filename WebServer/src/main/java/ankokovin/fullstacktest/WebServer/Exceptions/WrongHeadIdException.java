@@ -4,8 +4,8 @@ import ankokovin.fullstacktest.WebServer.Models.Table;
 
 public class WrongHeadIdException extends BaseException {
 
-    public Integer id;
-    public Table to;
+    public final Integer id;
+    public final Table to;
 
     public WrongHeadIdException(Integer id,Table to, String message, Throwable cause) {
         super(message, cause);

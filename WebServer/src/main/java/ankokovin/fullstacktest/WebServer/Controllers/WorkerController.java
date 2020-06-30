@@ -43,6 +43,7 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.delete(id));
     }
 
+    @SuppressWarnings("unused")
     @GetMapping(value = "{page}")
     public ResponseEntity<List<WorkerListElement>> get(
             @PathVariable(value = "page") Long page,

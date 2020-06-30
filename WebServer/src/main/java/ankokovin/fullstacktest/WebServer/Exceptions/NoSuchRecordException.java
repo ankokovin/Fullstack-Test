@@ -1,7 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
 public class NoSuchRecordException extends BaseException {
-    public Integer id;
+    public final Integer id;
 
     public NoSuchRecordException(Integer id, String message, Throwable cause) {
         super(message, cause);

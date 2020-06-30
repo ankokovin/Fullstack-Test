@@ -6,7 +6,6 @@ import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,8 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrganizationControllerTests {
-
-    public static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private TestRestTemplate restTemplate;

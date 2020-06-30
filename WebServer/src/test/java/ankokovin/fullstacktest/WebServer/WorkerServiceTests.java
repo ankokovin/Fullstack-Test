@@ -7,15 +7,11 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
-import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
-import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

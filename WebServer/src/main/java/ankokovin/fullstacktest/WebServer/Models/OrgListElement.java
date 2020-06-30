@@ -1,16 +1,13 @@
 package ankokovin.fullstacktest.WebServer.Models;
 
 
+@SuppressWarnings("unused")
 public class OrgListElement {
-    public String name;
-    public Integer count;
+    public final String name;
+    public final Integer count;
     public OrgListElement(String name, Integer count) {
-        if (name == null) {
-            // TODO: throw
-        }
-        if (count == null) {
-            // TODO: throw
-        }
+        // TODO: throw
+        // TODO: throw
         this.count = count;
         this.name = name;
     }

@@ -1,11 +1,8 @@
 package ankokovin.fullstacktest.WebServer;
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
-import org.junit.jupiter.api.Test;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,13 +31,13 @@ public class WorkerControllerTests {
 
     @BeforeEach
     void SetUp() {
-        dsl.truncateTable(ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER)
+        dsl.truncateTable(worker)
                 .restartIdentity().cascade().execute();
-        dsl.truncateTable(ankokovin.fullstacktest.WebServer.Generated.tables.Organization.ORGANIZATION)
+        dsl.truncateTable(organization)
                 .restartIdentity().cascade().execute();
     }
 
-    Worker[] create(int n) {
+    Worker[] create(@SuppressWarnings("SameParameterValue") int n) {
         assert n > 0;
         String org_name = "TestOrg";
         CreateOrganizationInput input_org = new CreateOrganizationInput(org_name, null);

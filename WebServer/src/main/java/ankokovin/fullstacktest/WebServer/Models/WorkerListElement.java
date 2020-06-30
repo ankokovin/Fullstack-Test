@@ -1,12 +1,15 @@
 package ankokovin.fullstacktest.WebServer.Models;
 
-import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-
+@SuppressWarnings("unused")
 public class WorkerListElement {
+    @SuppressWarnings("unused")
     public String name;
+    @SuppressWarnings("unused")
     public Integer org_id;
+    @SuppressWarnings("unused")
     public String org_name;
+    @SuppressWarnings("unused")
     public Integer head_id;
+    @SuppressWarnings("unused")
     public String head_name;
 }

@@ -5,7 +5,6 @@ import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
-import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;

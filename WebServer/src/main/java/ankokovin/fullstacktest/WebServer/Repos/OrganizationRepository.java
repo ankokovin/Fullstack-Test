@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.defaultValue;
 
@@ -25,13 +23,6 @@ public class OrganizationRepository {
 
     private final Organization organization = Organization.ORGANIZATION;
     private final Worker worker = Worker.WORKER;
-
-    @Transactional(readOnly = true)
-    public List<ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization> getAll() {
-        return dsl.selectFrom(organization).fetchInto(
-                ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization.class
-        );
-    }
 
     @Transactional(readOnly = true)
     public Result<Record2<String, Integer>> getAllWithCount() {

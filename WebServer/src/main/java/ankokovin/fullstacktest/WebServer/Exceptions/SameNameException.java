@@ -1,7 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
 public class SameNameException extends BaseException {
-    public String name;
+    public final String name;
 
     public SameNameException(String name, String message, Throwable cause) {
         super(message, cause);
