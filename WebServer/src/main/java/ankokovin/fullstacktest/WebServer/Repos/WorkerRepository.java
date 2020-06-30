@@ -2,6 +2,7 @@ package ankokovin.fullstacktest.WebServer.Repos;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.WebServer.Models.Table;
 import org.jooq.DSLContext;
 import org.jooq.Record5;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class WorkerRepository {
             String message = ex.getMessage();
             if (message == null) throw ex;
             if (message.contains("id must not be equal head_id"))
-                throw new WrongHeadIdException(head_id);
+                throw new WrongHeadIdException(head_id, Table.WORKER);
             throw new UnexpectedException(ex);
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
             String message = ex.getMessage();
             if (message == null) throw ex;
             if (message.contains("Key (org_id)"))
-                throw new WrongHeadIdException(org_id);
+                throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
             throw new UnexpectedException(ex);
         }
     }

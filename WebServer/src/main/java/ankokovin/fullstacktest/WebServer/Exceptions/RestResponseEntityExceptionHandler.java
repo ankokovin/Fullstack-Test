@@ -43,7 +43,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(WrongHeadIdException.class)
     protected ResponseEntity<Object> handleWrongHead(WrongHeadIdException ex, WebRequest request) {
-        WrongHeadIdResponse response = new WrongHeadIdResponse(ex.id);
+        WrongHeadIdResponse response = new WrongHeadIdResponse(ex.id, ex.to);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

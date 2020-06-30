@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
@@ -82,7 +83,7 @@ class OrganizationControllerTests {
             String name = "Алексей";
             int org_id = 1;
             CreateOrganizationInput input = new CreateOrganizationInput(name, org_id);
-            WrongHeadIdResponse expected = new WrongHeadIdResponse(org_id);
+            WrongHeadIdResponse expected = new WrongHeadIdResponse(org_id, Table.ORGANIZATION);
             ResponseEntity<WrongHeadIdResponse> response = restTemplate.postForEntity(endPoint, input,
                     WrongHeadIdResponse.class);
             assertEquals(400, response.getStatusCodeValue());
@@ -145,7 +146,7 @@ class OrganizationControllerTests {
                     given[1].getId(),
                     given[1].getOrgName(),
                     given[1].getId());
-            WrongHeadIdResponse expected = new WrongHeadIdResponse(given[1].getId());
+            WrongHeadIdResponse expected = new WrongHeadIdResponse(given[1].getId(), Table.ORGANIZATION);
             ResponseEntity<WrongHeadIdResponse> response = restTemplate.postForEntity(endPointUpdate, input,
                     WrongHeadIdResponse.class);
             assertEquals(400, response.getStatusCodeValue());

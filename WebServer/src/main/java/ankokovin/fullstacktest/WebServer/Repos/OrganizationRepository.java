@@ -60,7 +60,7 @@ public class OrganizationRepository {
                     if (message.contains("Key (org_name)")) throw new SameNameException(name);
                 }
                 if (message.contains("organization_check") ||
-                        message.contains("Key (head_org_id)")) throw new WrongHeadIdException(org_id);
+                        message.contains("Key (head_org_id)")) throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
             }
             throw new UnexpectedException(ex);
         } catch (Exception ex) {
@@ -89,7 +89,7 @@ public class OrganizationRepository {
             String message = ex.getMessage();
             if (message != null) {
                 if (message.contains("(head_org_id)")) {
-                    throw new WrongHeadIdException(org_id);
+                    throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
                 } else if (message.contains("(org_name)")) {
                     throw new SameNameException(name);
                 }
@@ -98,7 +98,7 @@ public class OrganizationRepository {
         } catch (org.springframework.jdbc.UncategorizedSQLException ex) {
             String message = ex.getMessage();
             if (message != null && message.contains("check_org_head")) {
-                throw new WrongHeadIdException(org_id);
+                throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
             }
             throw new UnexpectedException(ex);
         } catch (NoSuchRecordException ex) {

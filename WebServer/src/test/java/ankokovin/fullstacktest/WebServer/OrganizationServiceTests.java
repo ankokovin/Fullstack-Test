@@ -58,7 +58,7 @@ public class OrganizationServiceTests {
                     .thenReturn(new Organization(3, name3, 1));
 
             Mockito.when(organizationRepository.insert(name3, 3))
-                    .thenThrow(new WrongHeadIdException(3));
+                    .thenThrow(new WrongHeadIdException(3, Table.ORGANIZATION));
 
         }
 
@@ -141,7 +141,7 @@ public class OrganizationServiceTests {
             UpdateOrganizationInput model = new UpdateOrganizationInput(1, "ООО Тест", expected);
             Mockito.when(organizationRepository
                     .update(model.id, model.name, model.org_id))
-                    .thenThrow(new WrongHeadIdException(expected));
+                    .thenThrow(new WrongHeadIdException(expected, Table.ORGANIZATION));
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationService.update(model));
             assertEquals(expected, e.id);
