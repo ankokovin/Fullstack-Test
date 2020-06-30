@@ -1,6 +1,9 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
+import ankokovin.fullstacktest.WebServer.Models.DeleteHasChildResponse;
+import ankokovin.fullstacktest.WebServer.Models.NoSuchRecordResponse;
+import ankokovin.fullstacktest.WebServer.Models.WrongHeadIdResponse;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,35 +33,29 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler(DeleteHasChildException.class)
-    protected ResponseEntity<Object> handleDeleteChild(DeleteHasChildException ex, WebRequest request) throws JsonProcessingException {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("error", ex);
-        body.put("timestamp", LocalDateTime.now());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    };
+    protected ResponseEntity<Object> handleDeleteChild(DeleteHasChildException ex, WebRequest request) {
+        DeleteHasChildResponse response = new DeleteHasChildResponse(ex.id, ex.table);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(NoSuchRecordException.class)
-    protected ResponseEntity<Object> handleNoSuchRecord(NoSuchRecordException ex, WebRequest request) throws JsonProcessingException {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("error", ex);
-        body.put("timestamp", LocalDateTime.now());
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    };
+    protected ResponseEntity<Object> handleNoSuchRecord(NoSuchRecordException ex, WebRequest request) {
+        NoSuchRecordResponse response = new NoSuchRecordResponse(ex.id);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(WrongHeadIdException.class)
-    protected ResponseEntity<Object> handleWrongHead(WrongHeadIdException ex, WebRequest request) throws JsonProcessingException {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("error", ex);
-        body.put("timestamp", LocalDateTime.now());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    };
+    protected ResponseEntity<Object> handleWrongHead(WrongHeadIdException ex, WebRequest request) {
+        WrongHeadIdResponse response = new WrongHeadIdResponse(ex.id);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(SameNameException.class)
-    protected ResponseEntity<Object> handleSameName(SameNameException ex, WebRequest request) throws JsonProcessingException {
+    protected ResponseEntity<Object> handleSameName(SameNameException ex, WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("error", ex);
         body.put("timestamp", LocalDateTime.now());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    };
+    }
 }
 

@@ -6,6 +6,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.WrongHeadIdResponse;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
@@ -37,6 +38,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrganizationControllerTests {
 
+    public static ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -56,7 +59,7 @@ class OrganizationControllerTests {
     @Nested
     class Create {
         @Test
-        public void whenCreateCorrectNoHead_thenOrganizationCreates() throws Exception {
+        public void whenCreateCorrectNoHead_thenOrganizationCreates() {
             String name = "Алексей";
             CreateOrganizationInput input = new CreateOrganizationInput(name, null);
             Organization expected = new Organization(1, name, null);
@@ -65,7 +68,7 @@ class OrganizationControllerTests {
             assertEquals(expected, response.getBody());
         }
         @Test
-        public void whenCreateCorrectHead_thenOrganizationCreates() throws Exception {
+        public void whenCreateCorrectHead_thenOrganizationCreates() {
             whenCreateCorrectNoHead_thenOrganizationCreates();
             String name = "Алексей2";
             CreateOrganizationInput input = new CreateOrganizationInput(name, 1);
@@ -75,15 +78,18 @@ class OrganizationControllerTests {
             assertEquals(expected, response.getBody());
         }
         @Test
-        public void whenCreateWrongHead_thenReturnsException() throws Exception {
+        public void whenCreateWrongHead_thenReturnsException() {
             String name = "Алексей";
-            CreateOrganizationInput input = new CreateOrganizationInput(name, 1);
-            ResponseEntity<Object> response = restTemplate.postForEntity(endPoint, input,
-                    Object.class);
+            int org_id = 1;
+            CreateOrganizationInput input = new CreateOrganizationInput(name, org_id);
+            WrongHeadIdResponse expected = new WrongHeadIdResponse(org_id);
+            ResponseEntity<WrongHeadIdResponse> response = restTemplate.postForEntity(endPoint, input,
+                    WrongHeadIdResponse.class);
             assertEquals(400, response.getStatusCodeValue());
             System.out.println(response);
-            Map<String, Object> response_body = (Map<String, Object>)response.getBody();
-            assertEquals(input.org_id, ((Map<String, Object>)response_body.get("error")).get("id"));
+            WrongHeadIdResponse actual = response.getBody();
+            assertNotNull(actual);
+            assertEquals(expected.id, actual.id);
         }
 
     }
