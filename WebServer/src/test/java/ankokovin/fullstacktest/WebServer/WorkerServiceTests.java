@@ -169,7 +169,7 @@ public class WorkerServiceTests {
     class Delete {
         @Test
         void whenDelete_Returns() throws NoSuchRecordException {
-            Worker expected = new Worker(1,"test",1,null);
+            Worker expected = new Worker(1353,"test",1,null);
             Mockito.when(workerRepository.getById(expected.getId()))
                     .thenReturn(expected);
             Mockito.when(workerRepository.delete(expected.getId()))
@@ -179,7 +179,7 @@ public class WorkerServiceTests {
         }
         @Test
         void whenNoSuchRecord_Throws() throws NoSuchRecordException {
-            Integer id = 2;
+            Integer id = 25265;
             Mockito.when(workerRepository.getById(id))
                     .thenThrow(new NoSuchRecordException(id));
             NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
@@ -201,7 +201,7 @@ public class WorkerServiceTests {
             }
             @Test
             void whenThrows_Throws() throws NoSuchRecordException {
-                Integer id = 2;
+                Integer id = 15165;
                 Mockito.when(workerRepository.getById(id))
                         .thenThrow(new NoSuchRecordException(id));
                 NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
