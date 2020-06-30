@@ -111,10 +111,11 @@ public class OrganizationRepository {
     @Transactional
     public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization getById(Integer id)
             throws NoSuchRecordException{
-        return dsl.select()
+        ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization result =  dsl.select()
                 .from(organization)
                 .where(organization.ID.eq(id))
                 .fetchOneInto(ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization.class);
+        if (result == null) throw new NoSuchRecordException(id); else return result;
     }
 
 
