@@ -2,9 +2,13 @@ package ankokovin.fullstacktest.WebServer.Models.ErrorResponse;
 
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class NoSuchRecordResponse extends ErrorResponse {
     public int id;
-    public NoSuchRecordResponse() {}
+
+    public NoSuchRecordResponse() {
+    }
+
     public NoSuchRecordResponse(int id) {
         super("Запись не найдена");
         this.id = id;

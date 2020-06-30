@@ -1,13 +1,13 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +43,12 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.delete(id));
     }
 
+    @SuppressWarnings("unused")
     @GetMapping(value = "{page}")
     public ResponseEntity<List<WorkerListElement>> get(
             @PathVariable(value = "page") Long page,
             @RequestParam(value = "searchName") String searchName,
-            @RequestParam(value = "searchOrgName") String searchOrgName){
+            @RequestParam(value = "searchOrgName") String searchOrgName) {
         //TODO: пагинация и поиск по орге и/или по имени
         throw new NotImplementedException();
     }

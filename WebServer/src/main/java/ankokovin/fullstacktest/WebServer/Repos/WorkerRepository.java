@@ -1,6 +1,9 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.*;
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
+import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
+import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.WorkerRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
@@ -17,10 +20,9 @@ import static org.jooq.impl.DSL.defaultValue;
 @Repository
 public class WorkerRepository {
 
+    private final ankokovin.fullstacktest.WebServer.Generated.tables.Worker worker = ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER;
     @Autowired
     private DSLContext dsl;
-
-    private final ankokovin.fullstacktest.WebServer.Generated.tables.Worker worker = ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER;
 
     @Transactional
     public Integer insert(String name, Integer org_id, Integer head_id) throws WrongHeadIdException, UnexpectedException {
@@ -51,7 +53,7 @@ public class WorkerRepository {
             NoSuchRecordException,
             UnexpectedException {
         try {
-            WorkerRecord result =  dsl.update(worker)
+            WorkerRecord result = dsl.update(worker)
                     .set(worker.ORG_ID, org_id)
                     .set(worker.HEAD_ID, head_id)
                     .set(worker.WORKER_NAME, name)
@@ -76,13 +78,16 @@ public class WorkerRepository {
                 throw new WrongHeadIdException(head_id, Table.WORKER);
             }
             throw new UnexpectedException(ex);
-        } catch (NoSuchRecordException ex) { throw ex; }
-        catch (Exception ex) { throw new UnexpectedException(ex);}
+        } catch (NoSuchRecordException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new UnexpectedException(ex);
+        }
     }
 
     @Transactional
     public Integer delete(Integer id) throws NoSuchRecordException {
-        WorkerRecord result =  dsl.deleteFrom(worker)
+        WorkerRecord result = dsl.deleteFrom(worker)
                 .where(worker.ID.eq(id))
                 .returning(worker.ID)
                 .fetchOne();
@@ -90,11 +95,11 @@ public class WorkerRepository {
         return result.getValue(worker.ID);
     }
 
-    public List<Record5<String,Integer,String,Integer,String>> getAll(
+    public List<Record5<String, Integer, String, Integer, String>> getAll(
             Integer page,
             String org_name,
             String head_name) {
-      throw new NotImplementedException();
+        throw new NotImplementedException();
     }
 
     @Transactional

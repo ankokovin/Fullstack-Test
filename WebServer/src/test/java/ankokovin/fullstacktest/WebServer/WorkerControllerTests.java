@@ -1,20 +1,25 @@
 package ankokovin.fullstacktest.WebServer;
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
-import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.WebServer.Models.*;
-import org.junit.jupiter.api.Test;
+
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
+import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ankokovin.fullstacktest.WebServer.Models.Table;
+import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
 import org.jooq.DSLContext;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,37 +28,34 @@ public class WorkerControllerTests {
             = ankokovin.fullstacktest.WebServer.Generated.tables.Organization.ORGANIZATION;
     private static final ankokovin.fullstacktest.WebServer.Generated.tables.Worker worker
             = ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER;
-
+    private final String endPoint = "/api/worker";
     @Autowired
     private TestRestTemplate restTemplate;
-
-    private final String endPoint = "/api/worker";
-
     @Autowired
     private DSLContext dsl;
 
     @BeforeEach
     void SetUp() {
-        dsl.truncateTable(ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER)
+        dsl.truncateTable(worker)
                 .restartIdentity().cascade().execute();
-        dsl.truncateTable(ankokovin.fullstacktest.WebServer.Generated.tables.Organization.ORGANIZATION)
+        dsl.truncateTable(organization)
                 .restartIdentity().cascade().execute();
     }
 
-    Worker[] create(int n) {
+    Worker[] create(@SuppressWarnings("SameParameterValue") int n) {
         assert n > 0;
         String org_name = "TestOrg";
         CreateOrganizationInput input_org = new CreateOrganizationInput(org_name, null);
         ResponseEntity<Organization> response_org = restTemplate.postForEntity("/api/organization", input_org,
                 Organization.class);
-        Organization org =  response_org.getBody();
+        Organization org = response_org.getBody();
         assert org != null;
         String nameTemplate = "Тест Тестовый Тестович %d";
         Worker[] expected = new Worker[n];
         Worker[] actual = new Worker[n];
-        for (int i=0; i<n; ++i) {
+        for (int i = 0; i < n; ++i) {
             String name = String.format(nameTemplate, i);
-            expected[i] = new Worker(i+1, name, org.getId(), null);
+            expected[i] = new Worker(i + 1, name, org.getId(), null);
             CreateWorkerInput input = new CreateWorkerInput(name, org.getId(), null);
             ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
                     Worker.class);
@@ -86,9 +88,11 @@ public class WorkerControllerTests {
             assertEquals(expected, actual);
         }
     }
+
     @Nested
     class Update {
         final String updateEndPoint = endPoint + "/update";
+
         @Test
         public void updates() {
             Worker expected = create();
@@ -121,7 +125,7 @@ public class WorkerControllerTests {
         @Test
         public void deletes() {
             Worker given = create();
-            restTemplate.delete(endPoint,given.getId());
+            restTemplate.delete(endPoint, given.getId());
         }
     }
 }

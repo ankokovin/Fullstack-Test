@@ -1,7 +1,9 @@
 package ankokovin.fullstacktest.WebServer;
-import ankokovin.fullstacktest.WebServer.Exceptions.*;
 
-import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
+import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
+import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
+import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @JooqTest
@@ -22,30 +25,15 @@ public class WorkerRepositoryTests {
             = ankokovin.fullstacktest.WebServer.Generated.tables.Organization.ORGANIZATION;
     private static final ankokovin.fullstacktest.WebServer.Generated.tables.Worker worker
             = ankokovin.fullstacktest.WebServer.Generated.tables.Worker.WORKER;
-    @TestConfiguration
-    static class WorkerServiceTestsConfiguration {
-
-        @SuppressWarnings("unused")
-        @Bean
-        public WorkerRepository workerRepository() {
-            return new WorkerRepository();
-        }
-
-        @Bean
-        public OrganizationRepository organizationRepository() { return new OrganizationRepository(); }
-    }
-
+    @Autowired
+    public WorkerRepository workerRepository;
+    @Autowired
+    public OrganizationRepository organizationRepository;
     @Autowired
     private DSLContext dslContext;
 
-    @Autowired
-    public WorkerRepository workerRepository;
-
-    @Autowired
-    public OrganizationRepository organizationRepository;
-
     @BeforeEach
-    public void setup(){
+    public void setup() {
         dslContext.truncateTable(worker).restartIdentity().cascade().execute();
         dslContext.truncateTable(organization).restartIdentity().cascade().execute();
     }
@@ -56,10 +44,10 @@ public class WorkerRepositoryTests {
         String nameTemplate = "Тест Тестовый Тестович %d";
         Worker[] expected = new Worker[n];
         Worker[] actual = new Worker[n];
-        for (int i=0; i<n; ++i) {
+        for (int i = 0; i < n; ++i) {
             String name = String.format(nameTemplate, i);
-            expected[i] = new Worker(i+1, name, org_id, null);
-            actual[i] = workerRepository.getById(workerRepository.insert(name,org_id,null));
+            expected[i] = new Worker(i + 1, name, org_id, null);
+            actual[i] = workerRepository.getById(workerRepository.insert(name, org_id, null));
         }
         assertArrayEquals(expected, actual);
         return actual;
@@ -67,6 +55,21 @@ public class WorkerRepositoryTests {
 
     Worker create() throws BaseException {
         return create(1)[0];
+    }
+
+    @TestConfiguration
+    static class WorkerServiceTestsConfiguration {
+
+        @SuppressWarnings("unused")
+        @Bean
+        public WorkerRepository workerRepository() {
+            return new WorkerRepository();
+        }
+
+        @Bean
+        public OrganizationRepository organizationRepository() {
+            return new OrganizationRepository();
+        }
     }
 
     @Nested
@@ -83,9 +86,8 @@ public class WorkerRepositoryTests {
                     "test",
                     given.getOrgId(),
                     given.getId());
-            assertEquals(given.getId()+1, actual);
+            assertEquals(given.getId() + 1, actual);
         }
-
 
 
         @Test
@@ -95,11 +97,10 @@ public class WorkerRepositoryTests {
                     () -> workerRepository.insert(
                             "test",
                             given.getOrgId(),
-                            given.getId()+1
+                            given.getId() + 1
                     ));
-            assertEquals(given.getId()+1, ex.id);
+            assertEquals(given.getId() + 1, ex.id);
         }
-
 
 
         @Test
@@ -108,10 +109,10 @@ public class WorkerRepositoryTests {
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> workerRepository.insert(
                             "test",
-                            given.getOrgId()+1,
+                            given.getOrgId() + 1,
                             null
                     ));
-            assertEquals(given.getId()+1, ex.id);
+            assertEquals(given.getId() + 1, ex.id);
         }
 
     }
@@ -137,7 +138,7 @@ public class WorkerRepositoryTests {
         }
 
         @Test
-        void whenChangeOrg_updates() throws  BaseException {
+        void whenChangeOrg_updates() throws BaseException {
             Worker expected = create();
             expected.setOrgId(organizationRepository.insert("Test2", null));
             int id = update(expected);
@@ -160,21 +161,23 @@ public class WorkerRepositoryTests {
         @Test
         void whenOrgChangeWrong_throws() throws BaseException {
             Worker expected = create();
-            expected.setOrgId(expected.getOrgId()+1);
+            expected.setOrgId(expected.getOrgId() + 1);
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> update(expected));
             assertEquals(expected.getOrgId(), ex.id);
             assertEquals(Table.ORGANIZATION, ex.to);
         }
+
         @Test
         void whenHeadChangeWrong_throws() throws BaseException {
             Worker expected = create();
-            expected.setHeadId(expected.getId()+1);
+            expected.setHeadId(expected.getId() + 1);
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> update(expected));
             assertEquals(expected.getHeadId(), ex.id);
             assertEquals(Table.WORKER, ex.to);
         }
+
         @Test
         void whenHeadChangeLoop_throws() throws BaseException {
             Worker[] given = create(2);
@@ -186,6 +189,7 @@ public class WorkerRepositoryTests {
             assertEquals(given[1].getOrgId(), ex.id);
             assertEquals(Table.WORKER, ex.to);
         }
+
         @Test
         void whenLongHeadChangeLoop_throws() throws BaseException {
             Worker[] given = create(3);
@@ -199,10 +203,11 @@ public class WorkerRepositoryTests {
             assertEquals(given[2].getOrgId(), ex.id);
             assertEquals(Table.WORKER, ex.to);
         }
+
         @Test
         void whenNoRecordWithId() throws BaseException {
             Worker given = create();
-            given.setId(given.getId()+1);
+            given.setId(given.getId() + 1);
             NoSuchRecordException ex = assertThrows(NoSuchRecordException.class,
                     () -> update(given));
             assertEquals(given.getId(), ex.id);
@@ -226,12 +231,13 @@ public class WorkerRepositoryTests {
             assertEquals(id, e.id);
         }
     }
+
     @Nested
     class Get {
         @Nested
         class GetById {
             @Test
-            void whenWrongId_throws()  {
+            void whenWrongId_throws() {
                 int id = 42;
                 NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                         () -> workerRepository.getById(id));
