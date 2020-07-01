@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
@@ -394,55 +395,16 @@ public class OrganizationRepositoryTests {
         @Nested
         class GetTree {
 
-            TreeNode<Organization> setUp() {
-                TreeNode<Organization> given = new TreeNode<>(null,
-                        Arrays.asList(
-                                new TreeNode<>(new Organization(1,"Test",null)),
-                                new TreeNode<>(new Organization(2,"Test2",null)),
-                                new TreeNode<>(new Organization(3,"Test3",null),
-                                        Arrays.asList(
-                                                new TreeNode<>(new Organization(4,"Test4",3)),
-                                                new TreeNode<>(new Organization(5,"Test5",3),
-                                                        Collections.singletonList(new TreeNode<>(new Organization(6, "Test6", 5))))
-                                        )
-                                )
-                        ));
-                push(given);
-                Organization[] check_added = unroll(given).toArray(new Organization[0]);
-                Organization[] res = dslContext.selectFrom(organization).fetchInto(Organization.class).toArray(new Organization[0]);
-                assertArrayEquals(check_added, res);
-                return given;
-            }
 
-            void push(TreeNode<Organization> orgs) {
-                if (orgs.item != null) dslContext.insertInto(organization).values(
-                        orgs.item.getId(),
-                        orgs.item.getOrgName(),
-                        orgs.item.getHeadOrgId()).execute();
-                if (orgs.children != null) orgs.children.forEach(this::push);
-            }
-
-            List<Organization> unroll(TreeNode<Organization> orgs) {
-                ArrayList<Organization> result = new ArrayList<>();
-                if (orgs.item != null) result.add(orgs.item);
-                if (orgs.children != null && orgs.children.size() > 0) result.addAll(
-                        orgs.children.stream()
-                                .map(this::unroll)
-                                .reduce((x, y) -> {
-                                    x.addAll(y);
-                                    return x;
-                                }).get());
-                return result;
-            }
             @Test
             void returnsTree() throws NoSuchRecordException {
-                TreeNode<Organization> expected = setUp();
+                TreeNode<Organization> expected = setUp(dslContext);
                 TreeNode<Organization> actual = organizationRepository.getTree(5, null);
                 assertEquals(expected, actual);
             }
             @Test
             void depth_limit() throws NoSuchRecordException {
-                TreeNode<Organization> given = setUp();
+                TreeNode<Organization> given = setUp(dslContext);
                 TreeNode<Organization> expected = new TreeNode<>(given.item,
                             given.children.stream()
                                     .map(x->x.item)
@@ -454,7 +416,7 @@ public class OrganizationRepositoryTests {
             }
             @Test
             void custom_head() throws NoSuchRecordException {
-                TreeNode<Organization> given = setUp();
+                TreeNode<Organization> given = setUp(dslContext);
                 TreeNode<Organization> expected = given.children.get(1);
                 TreeNode<Organization> actual = organizationRepository.getTree(5, expected.item.getId());
                 assertEquals(expected, actual);
@@ -462,7 +424,7 @@ public class OrganizationRepositoryTests {
 
             @Test
             void throws_noSuchRecord() {
-                TreeNode<Organization> given = setUp();
+                TreeNode<Organization> given = setUp(dslContext);
                 Integer expected = 42;
                 NoSuchRecordException actual = assertThrows(NoSuchRecordException.class,
                         () -> organizationRepository.getTree(1, 42));

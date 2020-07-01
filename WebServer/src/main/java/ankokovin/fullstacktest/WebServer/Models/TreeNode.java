@@ -1,5 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Models;
 
+import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -42,3 +44,4 @@ public class TreeNode<T> {
                 '}';
     }
 }
+

@@ -58,7 +58,7 @@ public class OrganizationsController {
 
     @GetMapping("/tree")
     public ResponseEntity<TreeNode<Organization>> getTree(
-            @RequestParam Integer root,
+            @RequestParam(required = false) Integer id,
             @RequestParam Integer depth) {
         throw new NotImplementedException();
     }
