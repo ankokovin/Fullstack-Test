@@ -315,7 +315,7 @@ public class WorkerRepositoryTests {
             @Test
             void custom_head() throws BaseException {
                 TreeNode<WorkerTreeListElement> given = setUp(organizationRepository, dslContext);
-                TreeNode<WorkerTreeListElement> expected = given.children.get(1);
+                TreeNode<WorkerTreeListElement> expected = given.children.get(2);
                 TreeNode<WorkerTreeListElement> actual = workerRepository.getTree(5, expected.item.id);
                 assertEquals(expected, actual);
             }

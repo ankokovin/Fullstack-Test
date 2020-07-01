@@ -112,13 +112,13 @@ public class WorkerHelpers {
         Organization[] orgs = OrganizationHelpers.create(2,organizationRepository,dslContext);
         TreeNode<Worker> workersTree = new TreeNode<>(null,
                 Arrays.asList(
-                        new TreeNode<>(new Worker(1,"Test",2,null)),
-                        new TreeNode<>(new Worker(2,"Test2",1,null)),
-                        new TreeNode<>(new Worker(3,"Test3",1,2),
+                        new TreeNode<>(new Worker(1,"Test",1,null)),
+                        new TreeNode<>(new Worker(2,"Test2",2,null)),
+                        new TreeNode<>(new Worker(3,"Test3",2,null),
                                 Arrays.asList(
-                                        new TreeNode<>(new Worker(4,"Test4",1,3)),
-                                        new TreeNode<>(new Worker(5,"Test5",1,3),
-                                                Collections.singletonList(new TreeNode<>(new Worker(6, "Test6", 1, 5))))
+                                        new TreeNode<>(new Worker(4,"Test4",2,3)),
+                                        new TreeNode<>(new Worker(5,"Test5",2,3),
+                                                Collections.singletonList(new TreeNode<>(new Worker(6, "Test6", 2, 5))))
                                 )
                         )
                 ));
