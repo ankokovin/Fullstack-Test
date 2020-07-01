@@ -7,6 +7,8 @@ import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.WorkerRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
+import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.WorkerTreeListElement;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 
@@ -131,6 +134,39 @@ public class WorkerRepository {
                 .limit(pageSize)
                 .offset((pageNum-1)*pageSize)
                 .fetch();
+    }
+    @Transactional(readOnly = true)
+    private TreeNode<WorkerTreeListElement> getTree(int maxDepth, WorkerTreeListElement element) {
+        if (maxDepth == 0) return new TreeNode<>(element);
+        return new TreeNode<>(element, dsl.selectFrom(worker)
+                .where(worker.HEAD_ID.eq(element.id))
+                .fetch()
+                .map(x -> getTree(maxDepth - 1,
+                        new WorkerTreeListElement(x.getId(),
+                                x.getWorkerName(),
+                                element.org_id,
+                                element.org_name))));
+    }
+
+    @Transactional(readOnly = true)
+    public TreeNode<WorkerTreeListElement> getTree(int maxDepth, Integer root_id) throws NoSuchRecordException {
+        assert maxDepth > 0;
+        if (root_id != null) {
+            Record3<String, Integer, String> org = dsl.select(worker.WORKER_NAME, organization.ID, organization.ORG_NAME)
+                    .from(worker).join(organization).on(worker.ORG_ID.eq(organization.ID))
+                    .where(worker.ID.eq(root_id)).fetchOne();
+            if (org == null) throw new NoSuchRecordException(root_id);
+            return getTree(maxDepth,
+                    new WorkerTreeListElement(root_id, org.component1(), org.component2(), org.component3()));
+        }
+        return new TreeNode<>(null, dsl.select(worker.ID, worker.WORKER_NAME, organization.ID, organization.ORG_NAME)
+                .from(worker).join(organization).on(worker.ORG_ID.eq(organization.ID))
+                .where(worker.HEAD_ID.isNull())
+                .orderBy(organization.ID, worker.ID)
+                .fetch().parallelStream()
+                .map(x -> getTree(maxDepth-1,
+                        new WorkerTreeListElement(x.component1(), x.component2(), x.component3(), x.component4() )))
+                .collect(Collectors.toList()));
     }
 
     @Transactional

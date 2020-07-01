@@ -5,10 +5,19 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.WorkerTreeListElement;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
+import org.jooq.DSLContext;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,5 +104,58 @@ public class WorkerHelpers {
 
     public static Worker create(TestRestTemplate restTemplate, String endPoint) {
         return create(1, restTemplate, endPoint)[0];
+    }
+
+
+    public static TreeNode<WorkerTreeListElement> setUp(OrganizationRepository organizationRepository,
+                                                        DSLContext dslContext) throws BaseException {
+        Organization[] orgs = OrganizationHelpers.create(2,organizationRepository,dslContext);
+        TreeNode<Worker> workersTree = new TreeNode<>(null,
+                Arrays.asList(
+                        new TreeNode<>(new Worker(1,"Test",1,null)),
+                        new TreeNode<>(new Worker(2,"Test2",2,null)),
+                        new TreeNode<>(new Worker(3,"Test3",2,null),
+                                Arrays.asList(
+                                        new TreeNode<>(new Worker(4,"Test4",2,3)),
+                                        new TreeNode<>(new Worker(5,"Test5",2,3),
+                                                Collections.singletonList(new TreeNode<>(new Worker(6, "Test6", 2, 5))))
+                                )
+                        )
+                ));
+        push(workersTree, dslContext);
+        Worker[] check_added = unroll(workersTree).toArray(new Worker[0]);
+        Worker[] res = dslContext.selectFrom(worker).fetchInto(Worker.class).toArray(new Worker[0]);
+        assertArrayEquals(check_added, res);
+        return new TreeNode<>(null, workersTree.children.parallelStream()
+                .map(x->transform(x,x.item.getOrgId(),orgs[x.item.getOrgId()-1].getOrgName())).collect(Collectors.toList()));
+    }
+    public static TreeNode<WorkerTreeListElement> transform(TreeNode<Worker> workerNode, int org_id, String org_name){
+        WorkerTreeListElement element = new WorkerTreeListElement(
+                workerNode.item.getId(), workerNode.item.getWorkerName(), org_id, org_name);
+        return new TreeNode<>(element, workerNode.children.parallelStream()
+                .map(x->transform(x, org_id, org_name)).collect(Collectors.toList()));
+
+    }
+
+    public static void  push(TreeNode<Worker> workerTreeNode, DSLContext dslContext) {
+        if (workerTreeNode.item != null) dslContext.insertInto(worker).values(
+                workerTreeNode.item.getId(),
+                workerTreeNode.item.getWorkerName(),
+                workerTreeNode.item.getOrgId(),
+                workerTreeNode.item.getHeadId()).execute();
+        if (workerTreeNode.children != null) workerTreeNode.children.forEach(it->push(it, dslContext));
+    }
+
+    public static List<Worker> unroll(TreeNode<Worker> orgs) {
+        ArrayList<Worker> result = new ArrayList<>();
+        if (orgs.item != null) result.add(orgs.item);
+        if (orgs.children != null && orgs.children.size() > 0) result.addAll(
+                orgs.children.stream()
+                        .map(WorkerHelpers::unroll)
+                        .reduce((x, y) -> {
+                            x.addAll(y);
+                            return x;
+                        }).get());
+        return result;
     }
 }

@@ -405,8 +405,7 @@ public class OrganizationRepositoryTests {
                 TreeNode<Organization> given = setUp(dslContext);
                 TreeNode<Organization> expected = new TreeNode<>(given.item,
                             given.children.stream()
-                                    .map(x->x.item)
-                                    .map(TreeNode::new)
+                                    .map(x->new TreeNode<>(x.item))
                                     .collect(Collectors.toList())
                         );
                 TreeNode<Organization> actual = organizationRepository.getTree(1, null);

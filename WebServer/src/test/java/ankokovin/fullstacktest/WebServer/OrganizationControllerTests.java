@@ -230,7 +230,7 @@ class OrganizationControllerTests {
                         treeEndpoint+"?depth=5",
                         OrganizationTreeNode.class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertEquals(expected, (TreeNode<Organization>)(response.getBody()));
+                assertEquals(expected, response.getBody());
             }
             @Test
             void getNegativeDepth(){
