@@ -459,6 +459,15 @@ public class OrganizationRepositoryTests {
                 TreeNode<Organization> actual = organizationRepository.getTree(5, expected.item.getId());
                 assertEquals(expected, actual);
             }
+
+            @Test
+            void throws_noSuchRecord() {
+                TreeNode<Organization> given = setUp();
+                Integer expected = 42;
+                NoSuchRecordException actual = assertThrows(NoSuchRecordException.class,
+                        () -> organizationRepository.getTree(1, 42));
+                assertEquals(expected, actual.id);
+            }
         }
     }
 }

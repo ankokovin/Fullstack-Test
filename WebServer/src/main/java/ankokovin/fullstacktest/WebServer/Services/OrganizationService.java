@@ -66,7 +66,7 @@ public class OrganizationService {
         return res;
     }
 
-    public TreeNode<Organization> getTree(Integer root, Integer depth) {
-        throw new NotImplementedException();
+    public TreeNode<Organization> getTree(Integer root, Integer depth) throws NoSuchRecordException {
+        return rep.getTree(depth, root);
     }
 }

@@ -3,10 +3,7 @@ package ankokovin.fullstacktest.WebServer;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
-import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
-import ankokovin.fullstacktest.WebServer.Models.Table;
-import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.jooq.Record3;
@@ -286,6 +283,32 @@ public class OrganizationServiceTests {
                 List<OrgListElement> actual = organizationService.getAllWithCount(pageNum, pageSize, null);
                 assertEquals(1, actual.size());
                 assertEquals(el, actual.get(0));
+            }
+        }
+
+        @Nested
+        @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+        class GetTree extends OrganizationServiceTestClassTemplate {
+            @Test
+            void whenAsked_thenReturns() throws NoSuchRecordException {
+
+                int root = 1;
+                int depth = 1;
+                TreeNode<Organization> expected = new TreeNode<>(new Organization(root, "test", null));
+                Mockito.when(organizationService.getTree(root, depth))
+                        .thenReturn(expected);
+                TreeNode<Organization> actual = organizationService.getTree(root, depth);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void whenThrows_thenThrows() throws NoSuchRecordException {
+                int root = 42;
+                int depth = 1;
+                NoSuchRecordException expected = new NoSuchRecordException(root);
+                Mockito.when(organizationService.getTree(root, depth))
+                        .thenThrow(expected);
+                assertEquals(expected, assertThrows(NoSuchRecordException.class,
+                        () -> organizationService.getTree(root, depth)));
             }
         }
     }
