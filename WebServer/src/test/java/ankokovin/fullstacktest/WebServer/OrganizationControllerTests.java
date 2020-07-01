@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import org.jooq.DSLContext;
@@ -16,6 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -164,6 +169,57 @@ class OrganizationControllerTests {
         public void whenDeleteSucceeds() {
             Organization given = create();
             restTemplate.delete(endPoint, given.getId(), Organization.class);
+        }
+    }
+
+    @Nested
+    class Get {
+        @Nested
+        class GetAll {
+
+            @Test
+            public void whenWrongPage_thenReturnBadRequest() {
+                String url = endPoint+"?page=-1";
+                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+                assertEquals(400, response.getStatusCodeValue());
+            }
+            @Test
+            public void whenWrongPageSize_thenReturnBadRequest() {
+                String url = endPoint+"?pageSize=-1";
+                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class, -1);
+                assertEquals(400, response.getStatusCodeValue());
+            }
+            @Test
+            public void whenOk_thenReturns() {
+                Organization[] given = create(100);
+                int page = 2;
+                int pageSize = 10;
+                Organization[] expected_orgs = Arrays.copyOfRange(given, (page-1) * pageSize, page*pageSize);
+                Object[] expected = Arrays.stream(expected_orgs)
+                        .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
+                        .toArray();
+                String url = endPoint+String.format("?page=%d&pageSize=%d",page, pageSize);
+                ResponseEntity<OrgListElement[]> response
+                        = restTemplate.getForEntity(url, OrgListElement[].class);
+                assertEquals(200, response.getStatusCodeValue());
+                assertEquals(expected, response.getBody());
+            }
+            @Test
+            public void whenSearchOk_thenReturns() {
+                Organization[] given = create(100);
+                int page = 1;
+                int pageSize = 1;
+                Organization[] expected_orgs =  new Organization[]{given[42]};
+                Object[] expected = Arrays.stream(expected_orgs)
+                        .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
+                        .toArray();
+                String url = endPoint+String.format("?page=%d&pageSize=%d?searchName=%s",
+                        page, pageSize, expected_orgs[0].getOrgName());
+                ResponseEntity<OrgListElement[]> response
+                        = restTemplate.getForEntity(url, OrgListElement[].class);
+                assertEquals(200, response.getStatusCodeValue());
+                assertEquals(expected, response.getBody());
+            }
         }
     }
 }

@@ -29,9 +29,9 @@ public class OrganizationsController {
 
 
 
-    @GetMapping("/getAll")
+    @GetMapping
     public ResponseEntity<List<OrgListElement>> getAll(
-            @RequestParam(value = "pageNum", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageLength,
             @RequestParam(value = "searchName", required = false) String name) {
         throw new NotImplementedException();
@@ -55,7 +55,7 @@ public class OrganizationsController {
         return ResponseEntity.ok(service.delete(id));
     }
 
-    @GetMapping
+    @GetMapping("/tree")
     public ResponseEntity<TreeNode<Organization>> getTree(
             @RequestParam Integer root,
             @RequestParam Integer depth) {

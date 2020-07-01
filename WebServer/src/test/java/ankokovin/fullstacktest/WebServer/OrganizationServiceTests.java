@@ -4,10 +4,12 @@ package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
+import org.jooq.Record3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -259,6 +264,28 @@ public class OrganizationServiceTests {
                 NoSuchRecordException actual = assertThrows(NoSuchRecordException.class,
                         () -> organizationService.getById(id));
                 assertEquals(expected, actual);
+            }
+        }
+
+        @Nested
+        @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+        class GetAll extends OrganizationServiceTestClassTemplate {
+            @Test
+            void whenAsked_thenReturns() {
+                int pageNum = 1;
+                int pageSize = 1;
+                OrgListElement el = new OrgListElement(1,"Test",42);
+                List<Record3<Integer, String, Integer>> repRes = new LinkedList<>();
+                Record3<Integer, String, Integer> mockResult = Mockito.mock(Record3.class);
+                Mockito.when(mockResult.component1()).thenReturn(el.id);
+                Mockito.when(mockResult.component2()).thenReturn(el.name);
+                Mockito.when(mockResult.component3()).thenReturn(el.count);
+                repRes.add(mockResult);
+                Mockito.when(organizationRepository.getAllWithCount(pageNum, pageSize, null))
+                        .thenReturn(repRes);
+                List<OrgListElement> actual = organizationService.getAllWithCount(pageNum, pageSize, null);
+                assertEquals(1, actual.size());
+                assertEquals(el, actual.get(0));
             }
         }
     }
