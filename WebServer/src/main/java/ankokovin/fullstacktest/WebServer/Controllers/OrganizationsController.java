@@ -1,6 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
+import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
@@ -21,15 +22,21 @@ import java.util.List;
         produces = "application/json")
 public class OrganizationsController {
 
+    private final String defaultPageCount = "25";
+    private final int maxPageCount = 100;
+
     @Autowired
     private OrganizationService service;
 
-    @GetMapping("/{page}")
+
+
+    @GetMapping
     public ResponseEntity<List<OrgListElement>> getAll(
-            @PathVariable(value = "page") Long page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageSize,
             @RequestParam(value = "searchName", required = false) String name) {
-        // TODO: пагинация и поиск
-        throw new NotImplementedException();
+        if (page <= 0 || pageSize <= 0) return ResponseEntity.badRequest().body(null);
+        return ResponseEntity.ok(service.getAllWithCount(page, pageSize, name));
     }
 
     @PostMapping
@@ -50,10 +57,11 @@ public class OrganizationsController {
         return ResponseEntity.ok(service.delete(id));
     }
 
-    @GetMapping
+    @GetMapping("/tree")
     public ResponseEntity<TreeNode<Organization>> getTree(
-            @RequestParam Integer root,
-            @RequestParam Integer depth) {
-        throw new NotImplementedException();
+            @RequestParam(required = false) Integer id,
+            @RequestParam Integer depth) throws NoSuchRecordException {
+        if (depth <= 0) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(service.getTree(id, depth));
     }
 }

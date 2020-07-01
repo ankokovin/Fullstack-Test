@@ -1,11 +1,10 @@
 package ankokovin.fullstacktest.WebServer;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.*;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
-import ankokovin.fullstacktest.WebServer.Models.Table;
-import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -16,9 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.Arrays;
+import java.util.List;
+
+import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -164,6 +167,87 @@ class OrganizationControllerTests {
         public void whenDeleteSucceeds() {
             Organization given = create();
             restTemplate.delete(endPoint, given.getId(), Organization.class);
+        }
+    }
+
+    @Nested
+    class Get {
+        @Nested
+        class GetAll {
+
+            @Test
+            public void whenWrongPage_thenReturnBadRequest() {
+                String url = endPoint+"?page=-1";
+                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+                assertEquals(400, response.getStatusCodeValue());
+            }
+            @Test
+            public void whenWrongPageSize_thenReturnBadRequest() {
+                String url = endPoint+"?pageSize=-1";
+                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class, -1);
+                assertEquals(400, response.getStatusCodeValue());
+            }
+            @Test
+            public void whenOk_thenReturns() {
+                Organization[] given = create(100);
+                int page = 2;
+                int pageSize = 10;
+                Organization[] expected_orgs = Arrays.copyOfRange(given, (page-1) * pageSize, page*pageSize);
+                OrgListElement[] expected = Arrays.stream(expected_orgs)
+                        .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
+                        .toArray(OrgListElement[]::new);
+                String url = endPoint+String.format("?page=%d&pageSize=%d",page, pageSize);
+                ResponseEntity<OrgListElement[]> response
+                        = restTemplate.getForEntity(url, OrgListElement[].class);
+                assertEquals(200, response.getStatusCodeValue());
+                assertArrayEquals(expected, response.getBody());
+            }
+            @Test
+            public void whenSearchOk_thenReturns() {
+                Organization[] given = create(100);
+                int page = 1;
+                int pageSize = 1;
+                Organization[] expected_orgs =  new Organization[]{given[42]};
+                OrgListElement[] expected = Arrays.stream(expected_orgs)
+                        .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
+                        .toArray(OrgListElement[]::new);
+                String url = endPoint+String.format("?page=%d&pageSize=%d&searchName=%s",
+                        page, pageSize, "42");
+                ResponseEntity<OrgListElement[]> response
+                        = restTemplate.getForEntity(url, OrgListElement[].class);
+                assertEquals(200, response.getStatusCodeValue());
+                assertArrayEquals(expected, response.getBody());
+            }
+        }
+
+        @Nested
+        class GetTree {
+            private final String treeEndpoint = endPoint + "/tree";
+            @Test
+            void get_returns() {
+                OrganizationTreeNode expected = new OrganizationTreeNode(setUp(dsl));
+                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=5",
+                        OrganizationTreeNode.class);
+                assertEquals(200, response.getStatusCodeValue());
+                assertEquals(expected, (TreeNode<Organization>)(response.getBody()));
+            }
+            @Test
+            void getNegativeDepth(){
+                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=-1",
+                        OrganizationTreeNode.class);
+                assertEquals(400, response.getStatusCodeValue());
+            }
+            @Test
+            void get_noSuchRecord() {
+                Integer id = 42;
+                ResponseEntity<NoSuchRecordResponse> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=1&id="+id.toString(),
+                        NoSuchRecordResponse.class);
+                assertEquals(404, response.getStatusCodeValue());
+                assertEquals(id, response.getBody().id);
+            }
         }
     }
 }

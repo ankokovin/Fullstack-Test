@@ -1,35 +1,72 @@
 package ankokovin.fullstacktest.WebServer.Repos;
-
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
-import ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
+import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.OrganizationRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.Result;
+import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.defaultValue;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.jooq.impl.DSL.*;
 
 @Repository
 public class OrganizationRepository {
 
-    private final Organization organization = Organization.ORGANIZATION;
+    private final ankokovin.fullstacktest.WebServer.Generated.tables.Organization organization
+            = ankokovin.fullstacktest.WebServer.Generated.tables.Organization.ORGANIZATION;
     private final Worker worker = Worker.WORKER;
     @Autowired
     public DSLContext dsl;
 
     @Transactional(readOnly = true)
-    public Result<Record2<String, Integer>> getAllWithCount() {
-        return dsl.select(organization.ORG_NAME, count(worker.ID))
-                .from(organization.join(worker).on(worker.ORG_ID.eq(organization.ID)))
-                .groupBy(organization.ORG_NAME)
-                .fetch();
+    public List<Record3<Integer, String, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
 
+        SelectJoinStep<Record3<Integer, String, Integer>> s =  dsl.select(organization.ID, organization.ORG_NAME, count(worker.ID))
+                .from(organization.leftJoin(worker).on(worker.ORG_ID.eq(organization.ID)));
+        SelectConditionStep<Record3<Integer, String, Integer>> cond =
+                searchName != null
+                ?
+                s.where(organization.ORG_NAME.contains(searchName))
+                : (SelectConditionStep<Record3<Integer, String, Integer>>) s;
+                return cond
+                        .groupBy(organization.ID)
+                        .orderBy(organization.ID)
+                        .limit(pageSize)
+                        .offset((pageNum - 1) * pageSize)
+                        .fetch();
+
+    }
+    @Transactional(readOnly = true)
+    private TreeNode<Organization> getTree(
+            Organization root,
+            Integer maxDepth) {
+        if (maxDepth == 0) return new TreeNode<>(root);
+        return new TreeNode<>(root, dsl.selectFrom(organization)
+                .where(organization.HEAD_ORG_ID.eq(root.getId()))
+                .fetchInto(Organization.class)
+                .parallelStream()
+                .map(organization1 -> getTree(organization1, maxDepth - 1))
+                .collect(Collectors.toList()));
+    }
+
+    @Transactional(readOnly = true)
+    public TreeNode<Organization> getTree(
+            int maxDepth,
+            Integer rootId) throws NoSuchRecordException {
+        assert maxDepth > 0;
+        if (rootId == null) return new TreeNode<>(null, dsl.selectFrom(organization)
+                    .where(organization.HEAD_ORG_ID.isNull())
+                    .fetchInto(Organization.class)
+                    .parallelStream()
+                    .map(organization1 -> getTree(organization1, maxDepth - 1))
+                    .collect(Collectors.toList()));
+        return getTree(getById(rootId), maxDepth);
     }
 
     @Transactional
@@ -100,12 +137,12 @@ public class OrganizationRepository {
     }
 
     @Transactional
-    public ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization getById(Integer id)
+    public Organization getById(Integer id)
             throws NoSuchRecordException {
-        ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization result = dsl.select()
+        Organization result = dsl.select()
                 .from(organization)
                 .where(organization.ID.eq(id))
-                .fetchOneInto(ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization.class);
+                .fetchOneInto(Organization.class);
         if (result == null) throw new NoSuchRecordException(id);
         else return result;
     }
