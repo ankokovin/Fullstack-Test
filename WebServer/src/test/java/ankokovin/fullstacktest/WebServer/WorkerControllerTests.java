@@ -1,12 +1,14 @@
 package ankokovin.fullstacktest.WebServer;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
-import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
-import ankokovin.fullstacktest.WebServer.Models.Table;
-import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
+import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
+import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,6 +40,10 @@ public class WorkerControllerTests {
     private TestRestTemplate restTemplate;
     @Autowired
     private DSLContext dsl;
+    @Autowired
+    private WorkerRepository workerRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @BeforeEach
     void SetUp() {
@@ -42,39 +53,13 @@ public class WorkerControllerTests {
                 .restartIdentity().cascade().execute();
     }
 
-    Worker[] create(@SuppressWarnings("SameParameterValue") int n) {
-        assert n > 0;
-        String org_name = "TestOrg";
-        CreateOrganizationInput input_org = new CreateOrganizationInput(org_name, null);
-        ResponseEntity<Organization> response_org = restTemplate.postForEntity("/api/organization", input_org,
-                Organization.class);
-        Organization org = response_org.getBody();
-        assert org != null;
-        String nameTemplate = "Тест Тестовый Тестович %d";
-        Worker[] expected = new Worker[n];
-        Worker[] actual = new Worker[n];
-        for (int i = 0; i < n; ++i) {
-            String name = String.format(nameTemplate, i);
-            expected[i] = new Worker(i + 1, name, org.getId(), null);
-            CreateWorkerInput input = new CreateWorkerInput(name, org.getId(), null);
-            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
-                    Worker.class);
-            actual[i] = response.getBody();
-            assertEquals(200, response.getStatusCodeValue());
-        }
-        assertArrayEquals(expected, actual);
-        return actual;
-    }
 
-    Worker create() {
-        return create(1)[0];
-    }
 
     @Nested
     class Create {
         @Test
         public void creates() {
-            create();
+            WorkerHelpers.create(restTemplate, endPoint);
         }
 
         @Test
@@ -95,7 +80,7 @@ public class WorkerControllerTests {
 
         @Test
         public void updates() {
-            Worker expected = create();
+            Worker expected =  WorkerHelpers.create(restTemplate, endPoint);
             expected.setWorkerName("Test1");
             UpdateWorkerInput input = new UpdateWorkerInput(expected.getId(),
                     expected.getWorkerName(), expected.getOrgId(), expected.getHeadId());
@@ -107,7 +92,7 @@ public class WorkerControllerTests {
 
         @Test
         public void whenWrongHeadId_returns() {
-            Worker given = create();
+            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
             given.setOrgId(given.getOrgId() + 1);
             WrongHeadIdResponse expected = new WrongHeadIdResponse(given.getOrgId(), Table.ORGANIZATION);
             UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),
@@ -124,8 +109,76 @@ public class WorkerControllerTests {
     class Delete {
         @Test
         public void deletes() {
-            Worker given = create();
+            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
             restTemplate.delete(endPoint, given.getId());
+        }
+    }
+
+    @Nested
+    class Get {
+        @Test
+        public void whenWrongPage_thenReturnBadRequest() {
+            String url = endPoint+"?page=-1";
+            ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+        @Test
+        public void whenWrongPageSize_thenReturnBadRequest() {
+            String url = endPoint+"?pageSize=-1";
+            ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class, -1);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+        @Test
+        public void whenOk_thenReturns() {
+            Worker[] given = WorkerHelpers.create(100, restTemplate, endPoint);
+            int page = 2;
+            int pageSize = 10;
+            String url = endPoint+String.format("?page=%d&pageSize=%d",page,pageSize);
+            Worker[] expected_orgs = Arrays.copyOfRange(given, (page-1)*pageSize, page*pageSize);
+            WorkerListElement[] expected = Arrays.stream(expected_orgs)
+                    .map((x) -> new WorkerListElement(x.getId(), x.getWorkerName(),
+                            null, null,
+                            1, "TestOrg")).toArray(WorkerListElement[]::new);
+            ResponseEntity<WorkerListElement[]> response = restTemplate.getForEntity(url, WorkerListElement[].class);
+            assertEquals(200, response.getStatusCodeValue());
+            assertArrayEquals(expected, response.getBody());
+        }
+        @Test
+        public void whenSearch_thenReturns() throws BaseException {
+            int exp_1 = 12;
+            Organization[] orgs = OrganizationHelpers.create(2, organizationRepository,dsl);
+            String orgName = orgs[0].getOrgName();
+            Worker[] expectedWorker = WorkerHelpers.insert(exp_1, orgs[0].getId(),workerRepository);
+            WorkerListElement[] expected = Arrays.stream(expectedWorker)
+                    .map((x) -> new WorkerListElement(x.getId(), x.getWorkerName(),
+                            null, null,
+                            orgs[0].getId(), orgs[0].getOrgName())).toArray(WorkerListElement[]::new);
+            int r = 42;
+            WorkerHelpers.insert(r,orgs[1].getId(),exp_1,workerRepository);
+            Worker head = WorkerHelpers.insert(1,orgs[1].getId(),exp_1+r, workerRepository)[0];
+            int exp_2 = 23;
+            String nameTemplate = "Find me%d";
+            expectedWorker = WorkerHelpers.insert(exp_2,orgs[1].getId(),
+                    r + exp_1 + 1, head.getId(),nameTemplate,workerRepository);
+            expected = ArrayUtils.addAll(expected, Arrays.stream(expectedWorker)
+                    .map((x) -> new WorkerListElement(x.getId(), x.getWorkerName(),
+                            head.getId(), head.getWorkerName(),
+                            orgs[1].getId(), orgs[1].getOrgName())).toArray(WorkerListElement[]::new));
+            int pageSize = exp_1 + exp_2 - 10;
+            int expSize_1 = pageSize;
+            int expSize_2 = 10;
+            WorkerListElement[] expectedFirstPage = Arrays.copyOfRange(expected, 0, expSize_1);
+            WorkerListElement[] expectedSecondPage = Arrays.copyOfRange(expected, expSize_1, expSize_1+expSize_2);
+            String url = String.format("%s?page=%d&pageSize=%d&searchName=%s&searchOrgName=%s",
+                    endPoint,1,pageSize,nameTemplate.substring(0, 5),orgName);
+            ResponseEntity<WorkerListElement[]> response = restTemplate.getForEntity(url, WorkerListElement[].class);
+            assertEquals(200, response.getStatusCodeValue());
+            assertArrayEquals(expectedFirstPage, response.getBody());
+            url = String.format("%s?page=%d&pageSize=%d&searchName=%s&searchOrgName=%s",
+                    endPoint,2,pageSize,nameTemplate.substring(0, 5),orgName);
+            response = restTemplate.getForEntity(url, WorkerListElement[].class);
+            assertEquals(200, response.getStatusCodeValue());
+            assertArrayEquals(expectedSecondPage, response.getBody());
         }
     }
 }

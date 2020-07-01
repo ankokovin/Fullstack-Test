@@ -8,14 +8,22 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
+import org.assertj.core.util.Lists;
+import org.jooq.Record3;
+import org.jooq.Record6;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -209,6 +217,46 @@ public class WorkerServiceTests {
                 NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                         () -> workerService.getById(id));
                 assertEquals(id, e.id);
+            }
+        }
+        @Nested
+        class GetAll {
+            @Test
+            void whenAsked_Returns() {
+                int page = 2;
+                int pageSize = 10;
+                int org_id = 1;
+                int head_id = 4;
+                String org_name = "test";
+                String head_name = "head_name";
+                String name_format = "Name:";
+                List<WorkerListElement> expected
+                        = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
+                        .mapToObj((i) -> new WorkerListElement(
+                                        i,
+                                        String.format(name_format+"%d",i),
+                                        head_id,
+                                        head_name,
+                                        org_id,
+                                        org_name)
+                        ).collect(Collectors.toList()));
+                List<Record6<Integer, String, Integer, String, Integer, String>> mockResult
+                        = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
+                        .mapToObj((i) -> {
+                            Record6<Integer, String, Integer, String, Integer, String> res = Mockito.mock(Record6.class);
+                            Mockito.when(res.component1()).thenReturn(i);
+                            Mockito.when(res.component2()).thenReturn(String.format(name_format+"%d",i));
+                            Mockito.when(res.component3()).thenReturn(head_id);
+                            Mockito.when(res.component4()).thenReturn(head_name);
+                            Mockito.when(res.component5()).thenReturn(org_id);
+                            Mockito.when(res.component6()).thenReturn(org_name);
+                            return res;
+                        }).collect(Collectors.toList()));
+                Mockito.when(workerRepository.getAll(page, pageSize,org_name,name_format))
+                        .thenReturn(mockResult);
+                List<WorkerListElement> actual = workerService.get(page, pageSize,name_format,org_name);
+                assertEquals(expected.size(), actual.size());
+                assertIterableEquals(expected, actual);
             }
         }
     }

@@ -10,6 +10,7 @@ import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 import org.jooq.DSLContext;
+import org.jooq.Record6;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -60,12 +63,12 @@ public class WorkerRepositoryTests {
     class Insert {
         @Test
         void whenNoHead_creates() throws BaseException {
-            WorkerHelpers.create(workerRepository, organizationRepository);
+            WorkerHelpers.insert(workerRepository, organizationRepository);
         }
 
         @Test
         void whenHead_creates() throws BaseException {
-            Worker given = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker given = WorkerHelpers.insert(workerRepository, organizationRepository);
             Integer actual = workerRepository.insert(
                     "test",
                     given.getOrgId(),
@@ -76,7 +79,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenWrongHeadWorker_throws() throws BaseException {
-            Worker given = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker given = WorkerHelpers.insert(workerRepository, organizationRepository);
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> workerRepository.insert(
                             "test",
@@ -89,7 +92,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenWrongOrg_throws() throws BaseException {
-            Worker given = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker given = WorkerHelpers.insert(workerRepository, organizationRepository);
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> workerRepository.insert(
                             "test",
@@ -113,7 +116,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenChangeName_updates() throws BaseException {
-            Worker expected = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker expected = WorkerHelpers.insert(workerRepository, organizationRepository);
             expected.setWorkerName("New name");
             int id = update(expected);
             assertEquals(expected.getId(), id);
@@ -123,7 +126,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenChangeOrg_updates() throws BaseException {
-            Worker expected = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker expected = WorkerHelpers.insert(workerRepository, organizationRepository);
             expected.setOrgId(organizationRepository.insert("Test2", null));
             int id = update(expected);
             assertEquals(expected.getId(), id);
@@ -133,7 +136,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenChangeHead_updates() throws BaseException {
-            Worker[] given = WorkerHelpers.create(2, workerRepository, organizationRepository);
+            Worker[] given = WorkerHelpers.insert(2, workerRepository, organizationRepository);
             Worker expected = given[1];
             expected.setHeadId(given[0].getId());
             int id = update(expected);
@@ -144,7 +147,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenOrgChangeWrong_throws() throws BaseException {
-            Worker expected = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker expected = WorkerHelpers.insert(workerRepository, organizationRepository);
             expected.setOrgId(expected.getOrgId() + 1);
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> update(expected));
@@ -154,7 +157,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenHeadChangeWrong_throws() throws BaseException {
-            Worker expected = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker expected = WorkerHelpers.insert(workerRepository, organizationRepository);
             expected.setHeadId(expected.getId() + 1);
             WrongHeadIdException ex = assertThrows(WrongHeadIdException.class,
                     () -> update(expected));
@@ -164,7 +167,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenHeadChangeLoop_throws() throws BaseException {
-            Worker[] given = WorkerHelpers.create(2, workerRepository, organizationRepository);
+            Worker[] given = WorkerHelpers.insert(2, workerRepository, organizationRepository);
             given[0].setHeadId(given[1].getId());
             update(given[0]);
             given[1].setHeadId(given[0].getId());
@@ -176,7 +179,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenLongHeadChangeLoop_throws() throws BaseException {
-            Worker[] given = WorkerHelpers.create(3, workerRepository, organizationRepository);
+            Worker[] given = WorkerHelpers.insert(3, workerRepository, organizationRepository);
             given[0].setHeadId(given[1].getId());
             update(given[0]);
             given[1].setHeadId(given[2].getId());
@@ -190,7 +193,7 @@ public class WorkerRepositoryTests {
 
         @Test
         void whenNoRecordWithId() throws BaseException {
-            Worker given = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker given = WorkerHelpers.insert(workerRepository, organizationRepository);
             given.setId(given.getId() + 1);
             NoSuchRecordException ex = assertThrows(NoSuchRecordException.class,
                     () -> update(given));
@@ -202,7 +205,7 @@ public class WorkerRepositoryTests {
     class Delete {
         @Test
         void whenCorrectId_deletes() throws BaseException {
-            Worker given = WorkerHelpers.create(workerRepository, organizationRepository);
+            Worker given = WorkerHelpers.insert(workerRepository, organizationRepository);
             int id = workerRepository.delete(given.getId());
             assertEquals(given.getId(), id);
         }
@@ -226,6 +229,65 @@ public class WorkerRepositoryTests {
                 NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                         () -> workerRepository.getById(id));
                 assertEquals(id, e.id);
+            }
+        }
+        @Nested
+        class GetAll {
+            @Test
+            void whenAskedAll_returns() throws BaseException {
+                int cnt = 10;
+                Worker[] expected = WorkerHelpers.insert(cnt, workerRepository, organizationRepository);
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, cnt, null, null);
+                assertEquals(cnt, actual.size());
+                for (int i = 0; i < cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(1, actual.get(i).component5());
+                    assertEquals("Test", actual.get(i).component6());
+                }
+            }
+            @Test
+            void whenSearchOrg_thenReturns() throws BaseException {
+                int cnt = 32;
+                WorkerHelpers.insert(cnt, workerRepository, organizationRepository);
+                int expected_cnt = 14;
+                String orgName = "Find me";
+                Worker[] expected = WorkerHelpers.insert(expected_cnt, cnt,
+                        orgName,organizationRepository,"WorkerName%d", workerRepository);
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, expected_cnt+5,orgName.substring(1,6),null);
+                assertEquals(expected_cnt, actual.size());
+                for (int i = 0; i < expected_cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(2, actual.get(i).component5());
+                    assertEquals(orgName, actual.get(i).component6());
+                }
+            }
+            @Test
+            void whenSearchWorker_thenReturns() throws BaseException {
+                int cnt = 32;
+                WorkerHelpers.insert(cnt, workerRepository, organizationRepository);
+                int expected_cnt = 14;
+                String workerNameTemplate = "Find me%d";
+                Worker[] expected = WorkerHelpers.insert(expected_cnt, 1, cnt,workerNameTemplate, workerRepository);
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, expected_cnt+5,
+                        null,workerNameTemplate.substring(1,6));
+                assertEquals(expected_cnt, actual.size());
+                for (int i = 0; i < expected_cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(1, actual.get(i).component5());
+                    assertEquals("Test", actual.get(i).component6());
+                }
             }
         }
     }

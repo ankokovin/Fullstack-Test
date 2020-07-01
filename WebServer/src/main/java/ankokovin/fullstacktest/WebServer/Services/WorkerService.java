@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkerService {
@@ -44,8 +45,16 @@ public class WorkerService {
         return res;
     }
 
-    public List<WorkerListElement> get(Integer page, String searchName, String searchOrgName) {
-        throw new NotImplementedException();
+    public List<WorkerListElement> get(Integer page, Integer pageSize, String searchName, String searchOrgName) {
+        return rep.getAll(page, pageSize, searchOrgName, searchName).stream()
+                .map(x-> new WorkerListElement(
+                        x.component1(),
+                        x.component2(),
+                        x.component3(),
+                        x.component4(),
+                        x.component5(),
+                        x.component6()))
+                .collect(Collectors.toList());
     }
 
     public Worker getById(Integer id) throws NoSuchRecordException {
