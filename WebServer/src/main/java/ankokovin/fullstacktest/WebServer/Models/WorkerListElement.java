@@ -1,15 +1,52 @@
 package ankokovin.fullstacktest.WebServer.Models;
 
-@SuppressWarnings("unused")
+
+import java.util.Objects;
+
 public class WorkerListElement {
-    @SuppressWarnings("unused")
+    public int id;
     public String name;
-    @SuppressWarnings("unused")
     public Integer org_id;
-    @SuppressWarnings("unused")
     public String org_name;
-    @SuppressWarnings("unused")
     public Integer head_id;
-    @SuppressWarnings("unused")
     public String head_name;
+    public WorkerListElement(){}
+    public WorkerListElement(int id, String name, Integer head_id, String head_name, Integer org_id, String org_name){
+        this.id = id;
+        this.name = name;
+        this.head_id = head_id;
+        this.head_name = head_name;
+        this.org_id = org_id;
+        this.org_name = org_name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WorkerListElement that = (WorkerListElement) o;
+        return id == that.id &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(org_id, that.org_id) &&
+                Objects.equals(org_name, that.org_name) &&
+                Objects.equals(head_id, that.head_id) &&
+                Objects.equals(head_name, that.head_name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, org_id, org_name, head_id, head_name);
+    }
+
+    @Override
+    public String toString() {
+        return "WorkerListElement{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", org_id=" + org_id +
+                ", org_name='" + org_name + '\'' +
+                ", head_id=" + head_id +
+                ", head_name='" + head_name + '\'' +
+                '}';
+    }
 }

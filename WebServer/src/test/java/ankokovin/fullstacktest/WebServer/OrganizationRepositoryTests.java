@@ -2,7 +2,6 @@ package ankokovin.fullstacktest.WebServer;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
@@ -20,7 +19,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
@@ -377,7 +375,7 @@ public class OrganizationRepositoryTests {
                 Organization[] expected = OrganizationHelpers.create(pageSize, organizationRepository, dslContext);
                 int offsetWorker = 0;
                 for (int i = 0; i < pageSize; i++) {
-                    WorkerHelpers.create(i, expected[i].getId(),offsetWorker, workerRepository);
+                    WorkerHelpers.insert(i, expected[i].getId(),offsetWorker, workerRepository);
                     offsetWorker += i;
                 }
                 List<Record3<Integer, String, Integer>> actual

@@ -21,6 +21,8 @@ import java.util.List;
         produces = "application/json")
 public class WorkerController {
 
+    private final String defaultPageCount = "25";
+
     @Autowired
     WorkerService workerService;
 
@@ -43,14 +45,15 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.delete(id));
     }
 
-    @SuppressWarnings("unused")
-    @GetMapping(value = "{page}")
+
+    @GetMapping
     public ResponseEntity<List<WorkerListElement>> get(
-            @PathVariable(value = "page") Long page,
-            @RequestParam(value = "searchName") String searchName,
-            @RequestParam(value = "searchOrgName") String searchOrgName) {
-        //TODO: пагинация и поиск по орге и/или по имени
-        throw new NotImplementedException();
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) Integer pageSize,
+            @RequestParam(value = "searchName", required = false) String searchName,
+            @RequestParam(value = "searchOrgName", required = false) String searchOrgName) {
+        if (page <= 0 || pageSize <= 0) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(workerService.get(page, pageSize, searchName, searchOrgName));
     }
 
     //TODO: getTree?
