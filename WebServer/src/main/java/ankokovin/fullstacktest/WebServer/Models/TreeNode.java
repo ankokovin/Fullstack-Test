@@ -25,7 +25,7 @@ public class TreeNode<T> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || (getClass() != o.getClass())) return false;
         TreeNode<?> treeNode = (TreeNode<?>) o;
         return Objects.equals(item, treeNode.item) &&
                 Objects.equals(children, treeNode.children);

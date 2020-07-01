@@ -225,12 +225,12 @@ class OrganizationControllerTests {
             private final String treeEndpoint = endPoint + "/tree";
             @Test
             void get_returns() {
-                TreeNode<Organization> expected = setUp(dsl);
+                OrganizationTreeNode expected = new OrganizationTreeNode(setUp(dsl));
                 ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=5",
                         OrganizationTreeNode.class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertEquals(response.getBody(), expected);
+                assertEquals(expected, (TreeNode<Organization>)(response.getBody()));
             }
             @Test
             void getNegativeDepth(){
