@@ -11,7 +11,7 @@ CREATE TABLE Organization (
 CREATE TABLE Worker (
     id SERIAL NOT NULL PRIMARY KEY,
     worker_name text NOT NULL,
-    org_id integer REFERENCES Organization,
+    org_id integer NOT NULL REFERENCES Organization,
     head_id integer REFERENCES Worker,
     CHECK (id != head_id)
 );
