@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Table;
+import ankokovin.fullstacktest.WebServer.Models.TreeNode;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
@@ -18,9 +19,9 @@ import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -389,6 +390,75 @@ public class OrganizationRepositoryTests {
                 }
             }
         }
-    }
 
+        @Nested
+        class GetTree {
+
+            TreeNode<Organization> setUp() {
+                TreeNode<Organization> given = new TreeNode<>(null,
+                        Arrays.asList(
+                                new TreeNode<>(new Organization(1,"Test",null)),
+                                new TreeNode<>(new Organization(2,"Test2",null)),
+                                new TreeNode<>(new Organization(3,"Test3",null),
+                                        Arrays.asList(
+                                                new TreeNode<>(new Organization(4,"Test4",3)),
+                                                new TreeNode<>(new Organization(5,"Test5",3),
+                                                        Collections.singletonList(new TreeNode<>(new Organization(6, "Test6", 5))))
+                                        )
+                                )
+                        ));
+                push(given);
+                Organization[] check_added = unroll(given).toArray(new Organization[0]);
+                Organization[] res = dslContext.selectFrom(organization).fetchInto(Organization.class).toArray(new Organization[0]);
+                assertArrayEquals(check_added, res);
+                return given;
+            }
+
+            void push(TreeNode<Organization> orgs) {
+                if (orgs.item != null) dslContext.insertInto(organization).values(
+                        orgs.item.getId(),
+                        orgs.item.getOrgName(),
+                        orgs.item.getHeadOrgId()).execute();
+                if (orgs.children != null) orgs.children.forEach(this::push);
+            }
+
+            List<Organization> unroll(TreeNode<Organization> orgs) {
+                ArrayList<Organization> result = new ArrayList<>();
+                if (orgs.item != null) result.add(orgs.item);
+                if (orgs.children != null && orgs.children.size() > 0) result.addAll(
+                        orgs.children.stream()
+                                .map(this::unroll)
+                                .reduce((x, y) -> {
+                                    x.addAll(y);
+                                    return x;
+                                }).get());
+                return result;
+            }
+            @Test
+            void returnsTree() throws NoSuchRecordException {
+                TreeNode<Organization> expected = setUp();
+                TreeNode<Organization> actual = organizationRepository.getTree(5, null);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void depth_limit() throws NoSuchRecordException {
+                TreeNode<Organization> given = setUp();
+                TreeNode<Organization> expected = new TreeNode<>(given.item,
+                            given.children.stream()
+                                    .map(x->x.item)
+                                    .map(TreeNode::new)
+                                    .collect(Collectors.toList())
+                        );
+                TreeNode<Organization> actual = organizationRepository.getTree(1, null);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void custom_head() throws NoSuchRecordException {
+                TreeNode<Organization> given = setUp();
+                TreeNode<Organization> expected = given.children.get(1);
+                TreeNode<Organization> actual = organizationRepository.getTree(5, expected.item.getId());
+                assertEquals(expected, actual);
+            }
+        }
+    }
 }
