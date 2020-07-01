@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS pgtap;
 \set ON_ERROR_STOP true
 BEGIN;
 -- Проверка схемы данных
-SELECT plan(15);
+SELECT plan(17);
 
 -- Таблицы
 SELECT has_table( 'worker' );
@@ -17,6 +17,7 @@ SELECT col_is_pk ( 'worker', 'id' );
 SELECT col_type_is( 'worker', 'id', 'integer');
 
 SELECT col_type_is( 'worker', 'worker_name', 'text');
+SELECT is_indexed('worker', 'worker_name');
 
 SELECT col_type_is( 'worker', 'org_id', 'integer');
 SELECT fk_ok( 'worker', 'org_id', 'organization', 'id');
@@ -31,6 +32,7 @@ SELECT col_type_is('organization', 'id', 'integer');
 
 SELECT col_type_is('organization', 'org_name', 'text');
 SELECT col_is_unique('organization', 'org_name');
+SELECT is_indexed('organization', 'org_name');
 
 SELECT * FROM finish();
 ROLLBACK;

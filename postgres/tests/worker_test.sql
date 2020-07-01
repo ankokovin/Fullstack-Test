@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS pgtap;
 \set ON_ERROR_ROLLBACK 1
 \set ON_ERROR_STOP true
 BEGIN;
-SELECT plan(21);
+SELECT plan(22);
 
 INSERT INTO Organization VALUES
     (1, 'headOrg1', NULL),
@@ -192,4 +192,7 @@ SELECT results_eq(
     (8, 'Worker_new', 2, 3)$$
 );
 
+PREPARE update_head_id_chain AS UPDATE Worker SET head_id = 5 WHERE id = 3;
+-- 22
+SELECT (throws_ok('update_head_id_chain'));
 ROLLBACK;
