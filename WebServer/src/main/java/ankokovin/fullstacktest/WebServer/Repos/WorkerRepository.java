@@ -7,6 +7,8 @@ import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.WorkerRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
+import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.WorkerTreeListElement;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +133,10 @@ public class WorkerRepository {
                 .limit(pageSize)
                 .offset((pageNum-1)*pageSize)
                 .fetch();
+    }
+    @Transactional(readOnly = true)
+    public TreeNode<WorkerTreeListElement> getTree(int maxDepth, Integer root_id) {
+        throw new NotImplementedException();
     }
 
     @Transactional

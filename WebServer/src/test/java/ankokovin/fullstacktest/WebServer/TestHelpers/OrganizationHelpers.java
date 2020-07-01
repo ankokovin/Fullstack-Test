@@ -71,7 +71,7 @@ public class OrganizationHelpers {
                         )
                 ));
         push(given, dslContext);
-        Organization[] check_added = unroll(given, dslContext).toArray(new Organization[0]);
+        Organization[] check_added = unroll(given).toArray(new Organization[0]);
         Organization[] res = dslContext.selectFrom(organization).fetchInto(Organization.class).toArray(new Organization[0]);
         assertArrayEquals(check_added, res);
         return given;
@@ -85,12 +85,12 @@ public class OrganizationHelpers {
         if (orgs.children != null) orgs.children.forEach(it->push(it, dslContext));
     }
 
-    public static List<Organization> unroll(TreeNode<Organization> orgs,  DSLContext dslContext) {
+    public static List<Organization> unroll(TreeNode<Organization> orgs) {
         ArrayList<Organization> result = new ArrayList<>();
         if (orgs.item != null) result.add(orgs.item);
         if (orgs.children != null && orgs.children.size() > 0) result.addAll(
                 orgs.children.stream()
-                        .map(x -> unroll(x, dslContext))
+                        .map(OrganizationHelpers::unroll)
                         .reduce((x, y) -> {
                             x.addAll(y);
                             return x;

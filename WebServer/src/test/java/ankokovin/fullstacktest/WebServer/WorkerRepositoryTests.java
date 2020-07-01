@@ -6,6 +6,9 @@ import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Table;
+import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
+import ankokovin.fullstacktest.WebServer.Models.WorkerTreeListElement;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
@@ -20,7 +23,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers.setUp;
 import static org.junit.jupiter.api.Assertions.*;
 
 @JooqTest
@@ -288,6 +293,31 @@ public class WorkerRepositoryTests {
                     assertEquals(1, actual.get(i).component5());
                     assertEquals("Test", actual.get(i).component6());
                 }
+            }
+        }
+        @Nested
+        class GetTree{
+            @Test
+            void returns() throws BaseException {
+                TreeNode<WorkerTreeListElement> expected = setUp(organizationRepository, dslContext);
+                TreeNode<WorkerTreeListElement> actual = workerRepository.getTree(5,null);
+                assertEquals(expected, actual);
+            }
+
+            @Test
+            void depth_limit() throws BaseException {
+                TreeNode<WorkerTreeListElement> given = setUp(organizationRepository, dslContext);
+                TreeNode<WorkerTreeListElement> expected = new TreeNode<>(given.item,
+                        given.children.stream().map(x->new TreeNode<>(x.item)).collect(Collectors.toList()));
+                TreeNode<WorkerTreeListElement> actual = workerRepository.getTree(1,null);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void custom_head() throws BaseException {
+                TreeNode<WorkerTreeListElement> given = setUp(organizationRepository, dslContext);
+                TreeNode<WorkerTreeListElement> expected = given.children.get(1);
+                TreeNode<WorkerTreeListElement> actual = workerRepository.getTree(5, expected.item.id);
+                assertEquals(expected, actual);
             }
         }
     }
