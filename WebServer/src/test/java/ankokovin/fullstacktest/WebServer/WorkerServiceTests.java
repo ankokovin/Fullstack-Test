@@ -5,10 +5,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
-import ankokovin.fullstacktest.WebServer.Models.Table;
-import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
-import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
+import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
 import org.assertj.core.util.Lists;
@@ -257,6 +254,29 @@ public class WorkerServiceTests {
                 List<WorkerListElement> actual = workerService.get(page, pageSize,name_format,org_name);
                 assertEquals(expected.size(), actual.size());
                 assertIterableEquals(expected, actual);
+            }
+        }
+        @Nested
+        class GetTree {
+            @Test
+            void whenCalled_returns() throws NoSuchRecordException {
+                int id = 42;
+                int depth = 1;
+                TreeNode<WorkerTreeListElement> expected = new TreeNode<>(
+                        new WorkerTreeListElement(42, "Hi",1,"test"));
+                Mockito.when(workerRepository.getTree(depth, id)).thenReturn(expected);
+                TreeNode<WorkerTreeListElement> actual = workerService.getTree(depth, id);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void whenThrows_thenThrows() throws NoSuchRecordException {
+                int id = 42;
+                int depth = 1;
+                NoSuchRecordException expected = new NoSuchRecordException(id);
+                Mockito.when(workerRepository.getTree(depth, id)).thenThrow(expected);
+                NoSuchRecordException actual = assertThrows(NoSuchRecordException.class
+                        ,() -> workerService.getTree(depth, id));
+                assertEquals(expected, actual);
             }
         }
     }

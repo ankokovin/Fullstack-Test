@@ -149,12 +149,13 @@ public class WorkerRepository {
     }
 
     @Transactional(readOnly = true)
-    public TreeNode<WorkerTreeListElement> getTree(int maxDepth, Integer root_id) {
+    public TreeNode<WorkerTreeListElement> getTree(int maxDepth, Integer root_id) throws NoSuchRecordException {
         assert maxDepth > 0;
         if (root_id != null) {
             Record3<String, Integer, String> org = dsl.select(worker.WORKER_NAME, organization.ID, organization.ORG_NAME)
                     .from(worker).join(organization).on(worker.ORG_ID.eq(organization.ID))
                     .where(worker.ID.eq(root_id)).fetchOne();
+            if (org == null) throw new NoSuchRecordException(root_id);
             return getTree(maxDepth,
                     new WorkerTreeListElement(root_id, org.component1(), org.component2(), org.component3()));
         }

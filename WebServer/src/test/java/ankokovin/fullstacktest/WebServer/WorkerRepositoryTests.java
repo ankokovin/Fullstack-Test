@@ -319,6 +319,13 @@ public class WorkerRepositoryTests {
                 TreeNode<WorkerTreeListElement> actual = workerRepository.getTree(5, expected.item.id);
                 assertEquals(expected, actual);
             }
+            @Test
+            void wrongId_thenThrowsNoSuchRecord() {
+                int id = 42;
+                NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                        () -> workerRepository.getTree(1,id));
+                assertEquals(id, e.id);
+            }
         }
     }
 }

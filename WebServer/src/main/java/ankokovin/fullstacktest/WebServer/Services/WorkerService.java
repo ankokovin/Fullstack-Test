@@ -5,9 +5,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.WebServer.Models.CreateWorkerInput;
-import ankokovin.fullstacktest.WebServer.Models.UpdateWorkerInput;
-import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
+import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +57,10 @@ public class WorkerService {
 
     public Worker getById(Integer id) throws NoSuchRecordException {
         return rep.getById(id);
+    }
+
+    public TreeNode<WorkerTreeListElement> getTree(int depth, Integer root) throws NoSuchRecordException {
+        return rep.getTree(depth, root);
     }
 
 }
