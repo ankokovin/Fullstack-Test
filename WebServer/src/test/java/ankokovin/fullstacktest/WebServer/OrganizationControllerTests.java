@@ -22,8 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -195,14 +194,14 @@ class OrganizationControllerTests {
                 int page = 2;
                 int pageSize = 10;
                 Organization[] expected_orgs = Arrays.copyOfRange(given, (page-1) * pageSize, page*pageSize);
-                Object[] expected = Arrays.stream(expected_orgs)
+                OrgListElement[] expected = Arrays.stream(expected_orgs)
                         .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
-                        .toArray();
+                        .toArray(OrgListElement[]::new);
                 String url = endPoint+String.format("?page=%d&pageSize=%d",page, pageSize);
                 ResponseEntity<OrgListElement[]> response
                         = restTemplate.getForEntity(url, OrgListElement[].class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertEquals(expected, response.getBody());
+                assertArrayEquals(expected, response.getBody());
             }
             @Test
             public void whenSearchOk_thenReturns() {
@@ -210,15 +209,15 @@ class OrganizationControllerTests {
                 int page = 1;
                 int pageSize = 1;
                 Organization[] expected_orgs =  new Organization[]{given[42]};
-                Object[] expected = Arrays.stream(expected_orgs)
+                OrgListElement[] expected = Arrays.stream(expected_orgs)
                         .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
-                        .toArray();
-                String url = endPoint+String.format("?page=%d&pageSize=%d?searchName=%s",
-                        page, pageSize, expected_orgs[0].getOrgName());
+                        .toArray(OrgListElement[]::new);
+                String url = endPoint+String.format("?page=%d&pageSize=%d&searchName=%s",
+                        page, pageSize, "42");
                 ResponseEntity<OrgListElement[]> response
                         = restTemplate.getForEntity(url, OrgListElement[].class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertEquals(expected, response.getBody());
+                assertArrayEquals(expected, response.getBody());
             }
         }
     }

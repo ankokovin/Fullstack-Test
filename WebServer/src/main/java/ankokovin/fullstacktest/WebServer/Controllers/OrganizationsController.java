@@ -32,9 +32,10 @@ public class OrganizationsController {
     @GetMapping
     public ResponseEntity<List<OrgListElement>> getAll(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageLength,
+            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageSize,
             @RequestParam(value = "searchName", required = false) String name) {
-        throw new NotImplementedException();
+        if (page <= 0 || pageSize <= 0) return ResponseEntity.badRequest().body(null);
+        return ResponseEntity.ok(service.getAllWithCount(page, pageSize, name));
     }
 
     @PostMapping

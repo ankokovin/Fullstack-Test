@@ -29,4 +29,13 @@ public class OrgListElement {
     public int hashCode() {
         return Objects.hash(id, name, count);
     }
+
+    @Override
+    public String toString() {
+        return "OrgListElement{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", count=" + count +
+                '}';
+    }
 }
