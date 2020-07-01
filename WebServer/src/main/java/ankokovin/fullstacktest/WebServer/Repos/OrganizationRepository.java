@@ -1,16 +1,15 @@
 package ankokovin.fullstacktest.WebServer.Repos;
-
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.OrganizationRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.Result;
+import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.defaultValue;
@@ -24,11 +23,21 @@ public class OrganizationRepository {
     public DSLContext dsl;
 
     @Transactional(readOnly = true)
-    public Result<Record2<String, Integer>> getAllWithCount() {
-        return dsl.select(organization.ORG_NAME, count(worker.ID))
-                .from(organization.join(worker).on(worker.ORG_ID.eq(organization.ID)))
-                .groupBy(organization.ORG_NAME)
-                .fetch();
+    public List<Record3<Integer, String, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
+
+        SelectJoinStep<Record3<Integer, String, Integer>> s =  dsl.select(organization.ID, organization.ORG_NAME, count(worker.ID))
+                .from(organization.leftJoin(worker).on(worker.ORG_ID.eq(organization.ID)));
+        SelectConditionStep<Record3<Integer, String, Integer>> cond =
+                searchName != null
+                ?
+                s.where(organization.ORG_NAME.contains(searchName))
+                : (SelectConditionStep<Record3<Integer, String, Integer>>) s;
+                return cond
+                        .groupBy(organization.ID)
+                        .orderBy(organization.ID)
+                        .limit(pageSize)
+                        .offset((pageNum - 1) * pageSize)
+                        .fetch();
 
     }
 

@@ -9,6 +9,7 @@ import ankokovin.fullstacktest.WebServer.Models.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import org.jooq.Record2;
+import org.jooq.Record3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,10 @@ public class OrganizationService {
     @Autowired
     private OrganizationRepository rep;
 
-    public List<OrgListElement> getAllWithCount() {
+    public List<OrgListElement> getAllWithCount(int pageNum, int pageSize, String searchName) {
         List<OrgListElement> result = new ArrayList<>();
-        for (Record2<String, Integer> rec : rep.getAllWithCount()) {
-            result.add(new OrgListElement(rec.component1(), rec.component2()));
+        for (Record3<Integer, String, Integer> rec : rep.getAllWithCount(pageNum, pageSize, searchName)) {
+            result.add(new OrgListElement(rec.component1(), rec.component2(), rec.component3()));
         }
         return result;
     }

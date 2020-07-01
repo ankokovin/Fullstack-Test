@@ -21,14 +21,19 @@ import java.util.List;
         produces = "application/json")
 public class OrganizationsController {
 
+    private final String defaultPageCount = "25";
+    private final int maxPageCount = 100;
+
     @Autowired
     private OrganizationService service;
 
-    @GetMapping("/{page}")
+
+
+    @GetMapping("/getAll")
     public ResponseEntity<List<OrgListElement>> getAll(
-            @PathVariable(value = "page") Long page,
+            @RequestParam(value = "pageNum", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageLength,
             @RequestParam(value = "searchName", required = false) String name) {
-        // TODO: пагинация и поиск
         throw new NotImplementedException();
     }
 
