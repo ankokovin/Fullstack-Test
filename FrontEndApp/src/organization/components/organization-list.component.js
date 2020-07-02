@@ -1,5 +1,3 @@
-const { default: organizationListModule } = require("./organization-list.module");
-
 let organizationListComponent = {
     componentName: 'organizationListComponent',
     template: '<h2>I\'m a list of organizations!</h2>',
