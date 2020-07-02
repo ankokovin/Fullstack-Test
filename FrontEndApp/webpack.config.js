@@ -1,10 +1,13 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
+const path = require('path');
 
 
 module.exports = {    
-    devtool: 'source-map', // for debug purposes on production
+    entry:{
+        path: path.resolve(__dirname, 'src/app.js')
+    },
     module: {
         rules: [
             {
