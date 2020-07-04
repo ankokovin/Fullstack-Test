@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
 import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Table;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
@@ -11,7 +12,9 @@ import ankokovin.fullstacktest.WebServer.Models.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Models.WorkerTreeListElement;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
+import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record6;
 import org.junit.jupiter.api.BeforeEach;
@@ -294,6 +297,40 @@ public class WorkerRepositoryTests {
                     assertEquals("Test", actual.get(i).component6());
                 }
             }
+            @Test
+            void whenSearchOrg_hasExact_thenExactReturnedFirst() throws BaseException {
+                int startCnt = 5;
+                String targetOrgName = "World";
+                String otherOrgName = "Hello"+targetOrgName;
+                Organization target = OrganizationHelpers.create(1,0,targetOrgName,
+                        organizationRepository,dslContext)[0];
+                Organization other = OrganizationHelpers.create(1,1,otherOrgName,organizationRepository,
+                        dslContext)[0];
+                Organization[] orgs = new Organization[]{null, target, other};
+                Worker[] given = WorkerHelpers.insert(startCnt,other.getId(),0,workerRepository);
+                int targetWorkersCnt = 7;
+                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, target.getId(), startCnt,
+                        workerRepository);
+                int endCnt = 4;
+                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,other.getId(), startCnt +
+                        targetWorkersCnt,workerRepository));
+                Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
+                int cnt = startCnt + targetWorkersCnt + endCnt;
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, cnt, null, null);
+                assertEquals(cnt, actual.size());
+                for (int i = 0; i < cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(expected[i].getOrgId(), actual.get(i).component5());
+                    assertEquals(orgs[expected[i].getOrgId()].getOrgName(), actual.get(i).component6());
+                }
+            }
+            // TODO: test on worker name search
+            // TODO: test not exact
+            // TODO: test prioroty of workername over orgname
         }
         @Nested
         class GetTree{
