@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -197,12 +198,25 @@ public class WorkerControllerTests {
             private final String treeEndpoint = endPoint + "/tree";
             @Test
             void get_returns() throws BaseException {
-                WorkerTreeNode expected = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository,dsl));
+                WorkerTreeNode given = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository,dsl));
+                WorkerTreeNode expected = new WorkerTreeNode(
+                        given.item,
+                        given.children.stream()
+                                .map(x->new WorkerTreeNode(x.item, new ArrayList<>()))
+                                .collect(Collectors.toList())
+                );
                 ResponseEntity<WorkerTreeNode> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=5",
+                        treeEndpoint+"?depth=1",
                         WorkerTreeNode.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertEquals(expected, response.getBody());
+            }
+            @Test
+            void get_bigDepth_errors() throws BaseException {
+                WorkerTreeNode given = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository,dsl));
+                ResponseEntity<Object> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=3", Object.class);
+                assertEquals(400, response.getStatusCodeValue());
             }
             @Test
             void getNegativeDepth(){

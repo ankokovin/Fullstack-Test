@@ -59,7 +59,7 @@ public class WorkerController {
             @RequestParam(required = false) Integer id,
             @RequestParam Integer depth
     ) throws NoSuchRecordException {
-        if (depth <= 0) return ResponseEntity.badRequest().build();
+        if (depth <= 0 || depth > 2) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(workerService.getTree(depth, id));
     }
 }

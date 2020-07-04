@@ -1,10 +1,13 @@
 package ankokovin.fullstacktest.WebServer;
 
+import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
+import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -17,8 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
 import static org.junit.jupiter.api.Assertions.*;
@@ -225,9 +230,15 @@ class OrganizationControllerTests {
             private final String treeEndpoint = endPoint + "/tree";
             @Test
             void get_returns() {
-                OrganizationTreeNode expected = new OrganizationTreeNode(setUp(dsl));
+                OrganizationTreeNode given = new OrganizationTreeNode(setUp(dsl));
+                OrganizationTreeNode expected = new OrganizationTreeNode(
+                        given.item,
+                        given.children.stream()
+                                .map(x->new OrganizationTreeNode(x.item, new ArrayList<>()))
+                                .collect(Collectors.toList())
+                );
                 ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=5",
+                        treeEndpoint+"?depth=1",
                         OrganizationTreeNode.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertEquals(expected, response.getBody());
@@ -247,6 +258,13 @@ class OrganizationControllerTests {
                         NoSuchRecordResponse.class);
                 assertEquals(404, response.getStatusCodeValue());
                 assertEquals(id, response.getBody().id);
+            }
+            @Test
+            void get_bigDepth_errors() {
+                OrganizationTreeNode given = new OrganizationTreeNode(OrganizationHelpers.setUp(dsl));
+                ResponseEntity<Object> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=3", Object.class);
+                assertEquals(400, response.getStatusCodeValue());
             }
         }
     }
