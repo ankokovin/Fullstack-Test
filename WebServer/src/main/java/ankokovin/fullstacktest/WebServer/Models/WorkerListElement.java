@@ -32,21 +32,4 @@ public class WorkerListElement {
                 Objects.equals(head_id, that.head_id) &&
                 Objects.equals(head_name, that.head_name);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, org_id, org_name, head_id, head_name);
-    }
-
-    @Override
-    public String toString() {
-        return "WorkerListElement{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", org_id=" + org_id +
-                ", org_name='" + org_name + '\'' +
-                ", head_id=" + head_id +
-                ", head_name='" + head_name + '\'' +
-                '}';
-    }
 }

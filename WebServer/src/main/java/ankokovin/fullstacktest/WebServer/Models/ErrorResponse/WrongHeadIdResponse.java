@@ -28,11 +28,6 @@ public class WrongHeadIdResponse extends ErrorResponse {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), id, to);
-    }
-
-    @Override
     public String toString() {
         return "WrongHeadIdResponse{" +
                 "id=" + id +

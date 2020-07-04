@@ -26,19 +26,4 @@ public class WorkerTreeListElement {
                 org_id.equals(element.org_id) &&
                 org_name.equals(element.org_name);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, org_id, org_name);
-    }
-
-    @Override
-    public String toString() {
-        return "WorkerTreeListElement{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", org_id=" + org_id +
-                ", org_name='" + org_name + '\'' +
-                '}';
-    }
 }

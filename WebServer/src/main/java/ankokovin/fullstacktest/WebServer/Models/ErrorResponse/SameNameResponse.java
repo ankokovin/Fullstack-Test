@@ -22,10 +22,6 @@ public class SameNameResponse extends ErrorResponse {
         return name.equals(that.name);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), name);
-    }
 
     @Override
     public String toString() {
