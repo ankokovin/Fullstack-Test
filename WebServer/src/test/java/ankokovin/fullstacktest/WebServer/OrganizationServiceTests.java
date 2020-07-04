@@ -4,6 +4,7 @@ package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.*;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.jooq.Record3;
@@ -61,7 +62,9 @@ public class OrganizationServiceTests {
 
             Mockito.when(organizationRepository.insert(name3, 3))
                     .thenThrow(new WrongHeadIdException(3, Table.ORGANIZATION));
-
+            String name4 = "ООО Тест-4";
+            Mockito.when(organizationRepository.insert(name4, 4)).thenReturn(4);
+            Mockito.when(organizationRepository.getById(4)).thenThrow(new NoSuchRecordException(4));
         }
 
         @Test
@@ -98,6 +101,14 @@ public class OrganizationServiceTests {
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationService.create(new CreateOrganizationInput("ООО Тест-3", expected)));
             assertEquals(expected, e.id);
+        }
+        @Test
+        public void whenCreateNoSuchRecord_thenThrowsUnexpected() {
+            int expected = 4;
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> organizationService.create(new CreateOrganizationInput("ООО Тест-4", expected)));
+            assertTrue(e.getCause() instanceof NoSuchRecordException);
+            assertEquals(expected, ((NoSuchRecordException) e.getCause()).id);
         }
     }
 
