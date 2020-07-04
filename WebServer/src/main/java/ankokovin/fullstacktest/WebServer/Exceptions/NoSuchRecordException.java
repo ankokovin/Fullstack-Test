@@ -13,6 +13,6 @@ public class NoSuchRecordException extends BaseException {
     }
 
     public NoSuchRecordException(Integer id) {
-        this(id, null, null);
+        this(id, null);
     }
 }
