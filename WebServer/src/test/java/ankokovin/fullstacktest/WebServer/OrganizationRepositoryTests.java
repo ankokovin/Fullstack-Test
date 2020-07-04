@@ -8,6 +8,7 @@ import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record3;
 import org.junit.jupiter.api.BeforeEach;
@@ -381,6 +382,29 @@ public class OrganizationRepositoryTests {
                 List<Record3<Integer, String, Integer>> actual
                         = organizationRepository.getAllWithCount(1,pageSize,null);
 
+                assertEquals(pageSize, actual.size());
+                for (int i = 0; i < pageSize; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getOrgName(), actual.get(i).component2());
+                    assertEquals(i, actual.get(i).component3());
+                }
+            }
+            @Test
+            void whenAskedSearch_hasExact_thenExactReturnedFirst() throws BaseException {
+                String target = "Hello";
+                String noise = "Noise "+target+"%d";
+                int startCnt = 10;
+                Organization[] given = OrganizationHelpers.create(startCnt,0,
+                        noise, organizationRepository, dslContext);
+                Organization exact_match_target = OrganizationHelpers.create(1,startCnt,target,organizationRepository,
+                        dslContext)[0];
+                int endCnt = 10;
+                int pageSize = startCnt + endCnt + 1;
+                given = ArrayUtils.addAll(given, OrganizationHelpers.create(endCnt, startCnt+1, noise,
+                        organizationRepository, dslContext));
+                Organization[] expected =  ArrayUtils.addAll(new Organization[]{exact_match_target}, given);
+                List<Record3<Integer, String, Integer>> actual = organizationRepository.getAllWithCount(1,
+                        pageSize, target);
                 assertEquals(pageSize, actual.size());
                 for (int i = 0; i < pageSize; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
