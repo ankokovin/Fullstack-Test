@@ -1,9 +1,6 @@
 package ankokovin.fullstacktest.WebServer;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Table;
@@ -225,6 +222,15 @@ public class WorkerRepositoryTests {
             NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                     () -> workerRepository.delete(id));
             assertEquals(id, e.id);
+        }
+        @Test
+        void whenHasChild_throws() throws BaseException {
+            Worker given = WorkerHelpers.insert(workerRepository, organizationRepository);
+            WorkerHelpers.insert(1, given.getOrgId(),1,given.getId(),"Hello",workerRepository);
+            DeleteHasChildException e = assertThrows(DeleteHasChildException.class,
+                    () -> workerRepository.delete(given.getId()));
+            assertEquals(given.getId(), e.id);
+            assertEquals(Table.WORKER, e.table);
         }
     }
 
