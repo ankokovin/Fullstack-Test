@@ -120,16 +120,10 @@ public class WorkerRepository {
                 .on(worker.ORG_ID.eq(organization.ID))
                 .leftJoin(headWorker)
                 .on(worker.HEAD_ID.eq(headWorker.ID));
-        Condition condition = DSL.falseCondition();
-        SelectConditionStep<Record6<Integer, String, Integer, String, Integer, String>> postCond;
-        if (org_name != null) condition = condition.or(lower(organization.ORG_NAME).contains(lower(org_name)));
-        if (worker_name != null) condition = condition.or(lower(worker.WORKER_NAME).contains(lower(worker_name)));
-        if (worker_name != null || org_name != null) {
-            postCond = preCond.where(condition);
-        } else {
-            postCond = preCond.where(trueCondition());
-        }
-        return postCond
+        Condition condition = DSL.trueCondition();
+        if (org_name != null) condition = condition.and(lower(organization.ORG_NAME).contains(lower(org_name)));
+        if (worker_name != null) condition = condition.and(lower(worker.WORKER_NAME).contains(lower(worker_name)));
+        return preCond.where(condition)
                 .orderBy(worker.ID)
                 .limit(pageSize)
                 .offset((pageNum-1)*pageSize)
