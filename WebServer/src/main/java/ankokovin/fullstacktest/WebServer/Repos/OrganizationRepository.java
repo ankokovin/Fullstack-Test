@@ -25,18 +25,15 @@ public class OrganizationRepository {
     public DSLContext dsl;
 
     @Transactional(readOnly = true)
-    public List<Record3<Integer, String, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
-
-        SelectJoinStep<Record3<Integer, String, Integer>> s =  dsl.select(organization.ID, organization.ORG_NAME, count(worker.ID))
+    public List<Record4<Integer, String, Integer, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
+        Field<Integer> subStringIdx = position(organization.ORG_NAME, val(searchName));
+        SelectJoinStep<Record4<Integer, String, Integer, Integer>> s =  dsl.select(
+                organization.ID, organization.ORG_NAME, count(worker.ID), subStringIdx)
                 .from(organization.leftJoin(worker).on(worker.ORG_ID.eq(organization.ID)));
-        SelectConditionStep<Record3<Integer, String, Integer>> cond =
-                searchName != null
-                ?
-                s.where(organization.ORG_NAME.contains(searchName))
-                : (SelectConditionStep<Record3<Integer, String, Integer>>) s;
-                return cond
+        Condition cond = searchName == null ? trueCondition() : subStringIdx.greaterThan(val(0));
+                return s.where(cond)
                         .groupBy(organization.ID)
-                        .orderBy(organization.ID)
+                        .orderBy(subStringIdx, organization.ID)
                         .limit(pageSize)
                         .offset((pageNum - 1) * pageSize)
                         .fetch();

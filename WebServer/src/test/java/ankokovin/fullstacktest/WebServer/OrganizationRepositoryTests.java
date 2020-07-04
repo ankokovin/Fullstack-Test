@@ -11,6 +11,7 @@ import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record3;
+import org.jooq.Record4;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -286,7 +287,7 @@ public class OrganizationRepositoryTests {
             void whenAskedAll_thenReturns() throws BaseException {
                 int pageSize = 42;
                 Organization[] expected = OrganizationHelpers.create(pageSize, organizationRepository, dslContext);
-                List<Record3<Integer, String, Integer>> actual
+                List<Record4<Integer, String, Integer, Integer>> actual
                         = organizationRepository.getAllWithCount(1, pageSize, null);
                 assertEquals(pageSize, actual.size());
                 for (int i = 0; i < pageSize; i++) {
@@ -301,7 +302,7 @@ public class OrganizationRepositoryTests {
                 OrganizationHelpers.create(pageSize, organizationRepository, dslContext);
                 Organization[] expected =
                         OrganizationHelpers.create(pageSize, pageSize, organizationRepository, dslContext);
-                List<Record3<Integer, String, Integer>> actual
+                List<Record4<Integer, String, Integer, Integer>> actual
                         = organizationRepository.getAllWithCount(2, pageSize, null);
                 assertEquals(pageSize, actual.size());
                 for (int i = 0; i < pageSize; i++) {
@@ -316,7 +317,7 @@ public class OrganizationRepositoryTests {
                 int pageSize = 100;
                 int pageNum = 2;
                 Organization[] expected = OrganizationHelpers.create(pageSize, organizationRepository, dslContext);
-                List<Record3<Integer, String, Integer>> actual
+                List<Record4<Integer, String, Integer, Integer>> actual
                         = organizationRepository.getAllWithCount(pageNum , expectedPageSize, null);
                 assertEquals(expectedPageSize, actual.size());
                 for (int i = 0; i < expectedPageSize; i++) {
@@ -333,7 +334,7 @@ public class OrganizationRepositoryTests {
                 int pageNum = 1;
                 Organization[] expected
                         = OrganizationHelpers.create(expectedPageSize, organizationRepository, dslContext);
-                List<Record3<Integer, String, Integer>> actual
+                List<Record4<Integer, String, Integer, Integer>> actual
                         = organizationRepository.getAllWithCount(pageNum , pageSize , null);
                 assertEquals(expectedPageSize, actual.size());
                 for (int i = 0; i < expectedPageSize; i++) {
@@ -361,7 +362,7 @@ public class OrganizationRepositoryTests {
                     }
                     offset +=c ;
                 }
-                List<Record3<Integer, String, Integer>> actual
+                List<Record4<Integer, String, Integer, Integer>> actual
                         = organizationRepository.getAllWithCount(pageNum , pageSize , searchTerm);
                 int expectedPageSize = Math.min(pageSize, expected.size());
                 for (int i = 0; i < expectedPageSize; i++) {
@@ -379,7 +380,7 @@ public class OrganizationRepositoryTests {
                     WorkerHelpers.insert(i, expected[i].getId(),offsetWorker, workerRepository);
                     offsetWorker += i;
                 }
-                List<Record3<Integer, String, Integer>> actual
+                List<Record4<Integer, String, Integer, Integer>> actual
                         = organizationRepository.getAllWithCount(1,pageSize,null);
 
                 assertEquals(pageSize, actual.size());
@@ -403,13 +404,14 @@ public class OrganizationRepositoryTests {
                 given = ArrayUtils.addAll(given, OrganizationHelpers.create(endCnt, startCnt+1, noise,
                         organizationRepository, dslContext));
                 Organization[] expected =  ArrayUtils.addAll(new Organization[]{exact_match_target}, given);
-                List<Record3<Integer, String, Integer>> actual = organizationRepository.getAllWithCount(1,
+                List<Record4<Integer, String, Integer, Integer>> actual = organizationRepository.getAllWithCount(1,
                         pageSize, target);
                 assertEquals(pageSize, actual.size());
                 for (int i = 0; i < pageSize; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertEquals(expected[i].getOrgName(), actual.get(i).component2());
-                    assertEquals(i, actual.get(i).component3());
+                    assertEquals(0, actual.get(i).component3());
+                    assertEquals(i == 0 ? 1 : 7, actual.get(i).component4());
                 }
             }
         }

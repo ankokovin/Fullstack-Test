@@ -7,6 +7,7 @@ import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.jooq.Record3;
+import org.jooq.Record4;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -272,8 +273,8 @@ public class OrganizationServiceTests {
                 int pageNum = 1;
                 int pageSize = 1;
                 OrgListElement el = new OrgListElement(1,"Test",42);
-                List<Record3<Integer, String, Integer>> repRes = new LinkedList<>();
-                Record3<Integer, String, Integer> mockResult = Mockito.mock(Record3.class);
+                List<Record4<Integer, String, Integer, Integer>> repRes = new LinkedList<>();
+                Record4<Integer, String, Integer, Integer> mockResult = Mockito.mock(Record4.class);
                 Mockito.when(mockResult.component1()).thenReturn(el.id);
                 Mockito.when(mockResult.component2()).thenReturn(el.name);
                 Mockito.when(mockResult.component3()).thenReturn(el.count);
