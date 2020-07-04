@@ -6,10 +6,10 @@ public class UnexpectedException extends BaseException {
     }
 
     public UnexpectedException(Exception cause) {
-        super(null, cause);
+        this(null, cause);
     }
 
     public UnexpectedException(String message) {
-        super(message, null);
+        this(message, null);
     }
 }

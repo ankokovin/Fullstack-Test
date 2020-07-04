@@ -1,9 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Repos;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.WorkerRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
@@ -92,13 +89,23 @@ public class WorkerRepository {
     }
 
     @Transactional
-    public Integer delete(Integer id) throws NoSuchRecordException {
-        WorkerRecord result = dsl.deleteFrom(worker)
-                .where(worker.ID.eq(id))
-                .returning(worker.ID)
-                .fetchOne();
-        if (result == null) throw new NoSuchRecordException(id);
-        return result.getValue(worker.ID);
+    public Integer delete(Integer id) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
+        try {
+            WorkerRecord result = dsl.deleteFrom(worker)
+                    .where(worker.ID.eq(id))
+                    .returning(worker.ID)
+                    .fetchOne();
+            if (result == null) throw new NoSuchRecordException(id);
+            return result.getValue(worker.ID);
+        } catch (NoSuchRecordException ex){ throw ex;}
+        catch(org.springframework.dao.DataIntegrityViolationException ex) {
+            String message = ex.getMessage();
+            if (message != null && message.contains(" is still referenced from table \"worker\"")) {
+                throw new DeleteHasChildException(id, Table.WORKER);
+            }
+            throw new UnexpectedException(ex);
+        }
+        catch (Exception ex) {throw new UnexpectedException(ex);}
     }
 
     @Transactional

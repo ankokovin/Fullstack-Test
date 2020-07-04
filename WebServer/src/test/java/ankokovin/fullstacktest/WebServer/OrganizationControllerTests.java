@@ -3,9 +3,11 @@ package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.*;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.DeleteHasChildResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.SameNameResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 import org.jooq.DSLContext;
@@ -16,13 +18,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
@@ -37,6 +38,8 @@ class OrganizationControllerTests {
     private TestRestTemplate restTemplate;
     @Autowired
     private DSLContext dsl;
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @BeforeEach
     void SetUp() {
@@ -173,6 +176,25 @@ class OrganizationControllerTests {
             Organization given = create();
             restTemplate.delete(endPoint, given.getId(), Organization.class);
         }
+        @Test
+        public void whenNoRecord_thenThrows() {
+            int id = 42;
+            ResponseEntity<NoSuchRecordResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                    new HttpEntity<>(id), NoSuchRecordResponse.class, new HashMap<>());
+            assertEquals(404, resp.getStatusCodeValue());
+            assertNotNull(resp.getBody());
+            assertEquals(id, resp.getBody().id);
+        }
+        @Test
+        public void whenHasChild_thenThrows() throws BaseException {
+            Organization given = create();
+            OrganizationHelpers.create(1,1,given.getId(),organizationRepository, dsl);
+            ResponseEntity<DeleteHasChildResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                    new HttpEntity<>(given.getId()), DeleteHasChildResponse.class, new HashMap<>());
+            assertEquals(403, resp.getStatusCodeValue());
+            assertNotNull(resp.getBody());
+            assertEquals(given.getId(), resp.getBody().id);
+        }
     }
 
     @Nested
@@ -257,6 +279,7 @@ class OrganizationControllerTests {
                         treeEndpoint+"?depth=1&id="+id.toString(),
                         NoSuchRecordResponse.class);
                 assertEquals(404, response.getStatusCodeValue());
+                assertNotNull(response.getBody());
                 assertEquals(id, response.getBody().id);
             }
             @Test

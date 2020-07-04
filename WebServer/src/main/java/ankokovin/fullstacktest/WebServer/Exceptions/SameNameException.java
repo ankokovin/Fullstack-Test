@@ -13,6 +13,6 @@ public class SameNameException extends BaseException {
     }
 
     public SameNameException(String name) {
-        this(name, null, null);
+        this(name, null);
     }
 }

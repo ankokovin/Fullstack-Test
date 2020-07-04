@@ -18,7 +18,7 @@ public class WrongHeadIdException extends BaseException {
     }
 
     public WrongHeadIdException(Integer id, Table to) {
-        this(id, to, null, null);
+        this(id, to, null);
     }
 
 

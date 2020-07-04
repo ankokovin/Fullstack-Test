@@ -30,18 +30,5 @@ public class TreeNode<T> {
         return Objects.equals(item, treeNode.item) &&
                 Objects.equals(children, treeNode.children);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(item, children);
-    }
-
-    @Override
-    public String toString() {
-        return "TreeNode{" +
-                "item=" + item +
-                ", children=" + children +
-                '}';
-    }
 }
 

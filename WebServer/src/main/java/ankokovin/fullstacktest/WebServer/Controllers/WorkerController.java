@@ -1,9 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
@@ -39,7 +36,7 @@ public class WorkerController {
     @DeleteMapping
     public ResponseEntity<Worker> delete(
             @RequestBody Integer id
-    ) throws NoSuchRecordException {
+    ) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
         return ResponseEntity.ok(workerService.delete(id));
     }
 

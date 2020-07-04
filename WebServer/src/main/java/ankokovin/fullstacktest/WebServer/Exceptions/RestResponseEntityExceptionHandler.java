@@ -29,7 +29,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(DeleteHasChildException.class)
     protected ResponseEntity<Object> handleDeleteChild(DeleteHasChildException ex, WebRequest request) {
         DeleteHasChildResponse response = new DeleteHasChildResponse(ex.id, ex.table);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NoSuchRecordException.class)
