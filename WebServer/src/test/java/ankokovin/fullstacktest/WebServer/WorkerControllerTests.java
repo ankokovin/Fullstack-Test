@@ -154,27 +154,31 @@ public class WorkerControllerTests {
                 int exp_1 = 12;
                 Organization[] orgs = OrganizationHelpers.create(2, organizationRepository, dsl);
                 String orgName = orgs[0].getOrgName();
-                Worker[] expectedWorker = WorkerHelpers.insert(exp_1, orgs[0].getId(), workerRepository);
-                WorkerListElement[] expected = Arrays.stream(expectedWorker)
-                        .map((x) -> new WorkerListElement(x.getId(), x.getWorkerName(),
-                                null, null,
-                                orgs[0].getId(), orgs[0].getOrgName())).toArray(WorkerListElement[]::new);
+                WorkerHelpers.insert(exp_1, orgs[0].getId(), workerRepository);
                 int r = 42;
                 WorkerHelpers.insert(r, orgs[1].getId(), exp_1, workerRepository);
-                Worker head = WorkerHelpers.insert(1, orgs[1].getId(), exp_1 + r, workerRepository)[0];
+                Worker[] heads = new Worker[]
+                        {
+                                WorkerHelpers.insert(1, orgs[0].getId(), exp_1 + r, workerRepository)[0],
+                                WorkerHelpers.insert(1, orgs[1].getId(), exp_1 + r + 1, workerRepository)[0]
+                        };
                 int exp_2 = 23;
                 String nameTemplate = "Find me%d";
-                expectedWorker = WorkerHelpers.insert(exp_2, orgs[1].getId(),
-                        r + exp_1 + 1, head.getId(), nameTemplate, workerRepository);
-                expected = ArrayUtils.addAll(expected, Arrays.stream(expectedWorker)
-                        .map((x) -> new WorkerListElement(x.getId(), x.getWorkerName(),
-                                head.getId(), head.getWorkerName(),
-                                orgs[1].getId(), orgs[1].getOrgName())).toArray(WorkerListElement[]::new));
-                int pageSize = exp_1 + exp_2 - 10;
-                int expSize_1 = pageSize;
-                int expSize_2 = 10;
-                WorkerListElement[] expectedFirstPage = Arrays.copyOfRange(expected, 0, expSize_1);
-                WorkerListElement[] expectedSecondPage = Arrays.copyOfRange(expected, expSize_1, expSize_1 + expSize_2);
+                Worker[] expectedWorker = WorkerHelpers.insert(exp_2, orgs[0].getId(),
+                        r + exp_1 + heads.length, heads[0].getId(), nameTemplate, workerRepository);
+                java.util.function.Function<Worker, WorkerListElement > mapToWorkerListElement =
+                        (w) -> new WorkerListElement(w.getId(), w.getWorkerName(),
+                        heads[w.getOrgId()-1].getId(), heads[w.getOrgId()-1].getWorkerName(),
+                        orgs[w.getOrgId()-1].getId(), orgs[w.getOrgId()-1].getOrgName());
+
+                WorkerListElement[] expected = Arrays.stream(expectedWorker)
+                        .map(mapToWorkerListElement)
+                        .toArray(WorkerListElement[]::new);
+                WorkerHelpers.insert(exp_2, orgs[1].getId(),
+                        r + exp_1 + exp_2 + heads.length, heads[1].getId(), nameTemplate, workerRepository);
+                int pageSize = 15;
+                WorkerListElement[] expectedFirstPage = Arrays.copyOfRange(expected, 0, pageSize);
+                WorkerListElement[] expectedSecondPage = Arrays.copyOfRange(expected, pageSize, exp_2);
                 String url = String.format("%s?page=%d&pageSize=%d&searchName=%s&searchOrgName=%s",
                         endPoint, 1, pageSize, nameTemplate.substring(0, 5), orgName);
                 ResponseEntity<WorkerListElement[]> response = restTemplate.getForEntity(url, WorkerListElement[].class);

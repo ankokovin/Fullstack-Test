@@ -102,35 +102,33 @@ public class WorkerRepository {
     }
 
     @Transactional
-    public List<Record6<Integer, String, Integer, String, Integer, String>> getAll(
+    public List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> getAll(
             Integer pageNum,
             Integer pageSize,
             String org_name,
             String worker_name) {
         ankokovin.fullstacktest.WebServer.Generated.tables.Worker headWorker = worker.as("headWorker");
-        SelectOnConditionStep<Record6<Integer, String, Integer, String, Integer, String>> preCond = dsl.select(worker.ID,
+        Field<Integer> workerNameSubstringId = position(lower(worker.WORKER_NAME), lower(val(worker_name)));
+        Field<Integer> organizationNameSubstringId = position(lower(organization.ORG_NAME), lower(val(org_name)));
+        SelectOnConditionStep<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> preCond = dsl.select(worker.ID,
                 worker.WORKER_NAME,
                 headWorker.ID,
                 headWorker.WORKER_NAME,
                 organization.ID,
-                organization.ORG_NAME
+                organization.ORG_NAME,
+                organizationNameSubstringId,
+                workerNameSubstringId
                 )
                 .from(worker)
                 .leftJoin(organization)
                 .on(worker.ORG_ID.eq(organization.ID))
                 .leftJoin(headWorker)
                 .on(worker.HEAD_ID.eq(headWorker.ID));
-        Condition condition = DSL.falseCondition();
-        SelectConditionStep<Record6<Integer, String, Integer, String, Integer, String>> postCond;
-        if (org_name != null) condition = condition.or(lower(organization.ORG_NAME).contains(lower(org_name)));
-        if (worker_name != null) condition = condition.or(lower(worker.WORKER_NAME).contains(lower(worker_name)));
-        if (worker_name != null || org_name != null) {
-            postCond = preCond.where(condition);
-        } else {
-            postCond = preCond.where(trueCondition());
-        }
-        return postCond
-                .orderBy(worker.ID)
+        Condition condition = DSL.trueCondition();
+        if (org_name != null) condition = condition.and(organizationNameSubstringId.greaterThan(0));
+        if (worker_name != null) condition = condition.and(workerNameSubstringId.greaterThan(0));
+        return preCond.where(condition)
+                .orderBy(workerNameSubstringId,organizationNameSubstringId,organization.ID,worker.ID)
                 .limit(pageSize)
                 .offset((pageNum-1)*pageSize)
                 .fetch();
