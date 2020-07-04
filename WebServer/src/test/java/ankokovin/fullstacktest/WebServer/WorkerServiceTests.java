@@ -1,9 +1,6 @@
 package ankokovin.fullstacktest.WebServer;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
@@ -173,7 +170,7 @@ public class WorkerServiceTests {
     @Nested
     class Delete {
         @Test
-        void whenDelete_Returns() throws NoSuchRecordException {
+        void whenDelete_Returns() throws BaseException {
             Worker expected = new Worker(1353, "test", 1, null);
             Mockito.when(workerRepository.getById(expected.getId()))
                     .thenReturn(expected);
@@ -184,7 +181,7 @@ public class WorkerServiceTests {
         }
 
         @Test
-        void whenNoSuchRecord_Throws() throws NoSuchRecordException {
+        void whenNoSuchRecord_Throws() throws BaseException {
             Integer id = 25265;
             Mockito.when(workerRepository.getById(id))
                     .thenThrow(new NoSuchRecordException(id));

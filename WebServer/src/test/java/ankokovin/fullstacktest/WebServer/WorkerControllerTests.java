@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.DeleteHasChildResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
@@ -18,18 +19,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.create;
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -114,6 +118,25 @@ public class WorkerControllerTests {
         public void deletes() {
             Worker given =  WorkerHelpers.create(restTemplate, endPoint);
             restTemplate.delete(endPoint, given.getId());
+        }
+        @Test
+        public void whenNoRecord_thenThrows() {
+            int id = 42;
+            ResponseEntity<NoSuchRecordResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                    new HttpEntity<>(id), NoSuchRecordResponse.class, new HashMap<>());
+            assertEquals(404, resp.getStatusCodeValue());
+            assertNotNull(resp.getBody());
+            assertEquals(id, resp.getBody().id);
+        }
+        @Test
+        public void whenHasChild_thenThrows() throws BaseException {
+            Worker given = WorkerHelpers.create(restTemplate, endPoint);
+            WorkerHelpers.insert(1,given.getOrgId(),1,given.getId(),"Hello",workerRepository);
+            ResponseEntity<DeleteHasChildResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                    new HttpEntity<>(given.getId()), DeleteHasChildResponse.class, new HashMap<>());
+            assertEquals(403, resp.getStatusCodeValue());
+            assertNotNull(resp.getBody());
+            assertEquals(given.getId(), resp.getBody().id);
         }
     }
     @Nested
@@ -232,6 +255,7 @@ public class WorkerControllerTests {
                         treeEndpoint+"?depth=1&id="+id.toString(),
                         NoSuchRecordResponse.class);
                 assertEquals(404, response.getStatusCodeValue());
+                assertNotNull(response.getBody());
                 assertEquals(id, response.getBody().id);
             }
         }

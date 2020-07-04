@@ -1,9 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Services;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
@@ -37,7 +34,7 @@ public class WorkerService {
         }
     }
 
-    public Worker delete(Integer id) throws NoSuchRecordException {
+    public Worker delete(Integer id) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
         Worker res = getById(id);
         rep.delete(id);
         return res;
