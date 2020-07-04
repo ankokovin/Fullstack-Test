@@ -11,6 +11,7 @@ import ankokovin.fullstacktest.WebServer.Services.WorkerService;
 import org.assertj.core.util.Lists;
 import org.jooq.Record3;
 import org.jooq.Record6;
+import org.jooq.Record8;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -237,10 +238,11 @@ public class WorkerServiceTests {
                                         org_id,
                                         org_name)
                         ).collect(Collectors.toList()));
-                List<Record6<Integer, String, Integer, String, Integer, String>> mockResult
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> mockResult
                         = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
                         .mapToObj((i) -> {
-                            Record6<Integer, String, Integer, String, Integer, String> res = Mockito.mock(Record6.class);
+                            Record8<Integer, String, Integer, String, Integer, String, Integer, Integer> res
+                                    = Mockito.mock(Record8.class);
                             Mockito.when(res.component1()).thenReturn(i);
                             Mockito.when(res.component2()).thenReturn(String.format(name_format+"%d",i));
                             Mockito.when(res.component3()).thenReturn(head_id);

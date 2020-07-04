@@ -17,6 +17,7 @@ import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record6;
+import org.jooq.Record8;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -245,7 +246,7 @@ public class WorkerRepositoryTests {
             void whenAskedAll_returns() throws BaseException {
                 int cnt = 10;
                 Worker[] expected = WorkerHelpers.insert(cnt, workerRepository, organizationRepository);
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, cnt, null, null);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
@@ -265,7 +266,7 @@ public class WorkerRepositoryTests {
                 String orgName = "Find me";
                 Worker[] expected = WorkerHelpers.insert(expected_cnt, cnt,
                         orgName,organizationRepository,"WorkerName%d", workerRepository);
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, expected_cnt+5,orgName.substring(1,6),null);
                 assertEquals(expected_cnt, actual.size());
                 for (int i = 0; i < expected_cnt; i++) {
@@ -284,7 +285,7 @@ public class WorkerRepositoryTests {
                 int expected_cnt = 14;
                 String workerNameTemplate = "Find me%d";
                 Worker[] expected = WorkerHelpers.insert(expected_cnt, 1, cnt,workerNameTemplate, workerRepository);
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, expected_cnt+5,
                         null,workerNameTemplate.substring(1,6));
                 assertEquals(expected_cnt, actual.size());
@@ -316,7 +317,7 @@ public class WorkerRepositoryTests {
                         targetWorkersCnt,workerRepository));
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, cnt, null, null);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
@@ -348,7 +349,7 @@ public class WorkerRepositoryTests {
                         targetWorkersCnt,workerRepository));
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, cnt, null, null);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
@@ -364,7 +365,8 @@ public class WorkerRepositoryTests {
             @Test
             void whenSearchName_hasExact_thenExactReturnedFirst() throws BaseException {
                 int startCnt = 5;
-                String targetName = "World%d";
+                String target = "World";
+                String targetName = target + "%d";
                 String otherName = "Hello"+targetName;
                 Organization org = OrganizationHelpers.create(organizationRepository, dslContext);
                 Worker[] given = WorkerHelpers.insert(startCnt,org.getId(),0,otherName, workerRepository);
@@ -376,8 +378,8 @@ public class WorkerRepositoryTests {
                         targetWorkersCnt,otherName, workerRepository));
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
-                        = workerRepository.getAll(1, cnt, null, null);
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
+                        = workerRepository.getAll(1, cnt, null, target);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
@@ -392,7 +394,8 @@ public class WorkerRepositoryTests {
             @Test
             void whenSearchName_hasNotExacts_thenReturnsSortedByStringEntryIndex() throws BaseException {
                 int startCnt = 5;
-                String targetName = "World%d";
+                String target = "World";
+                String targetName = target + "%d";
                 String closerName = "Hi"+targetName;
                 String otherName = "Hello"+targetName;
                 Organization org = OrganizationHelpers.create(organizationRepository, dslContext);
@@ -405,8 +408,8 @@ public class WorkerRepositoryTests {
                         targetWorkersCnt,otherName, workerRepository));
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
-                        = workerRepository.getAll(1, cnt, null, null);
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
+                        = workerRepository.getAll(1, cnt, null, target);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
@@ -442,8 +445,8 @@ public class WorkerRepositoryTests {
                 expected = ArrayUtils.addAll(expected, orgNameMatch);
                 expected = ArrayUtils.addAll(expected, othersWorkers);
                 int cnt = fullMatchCnt + nameMatchCnt+ orgNameMatchCnt + others;
-                List<Record6<Integer, String, Integer, String, Integer, String>> actual
-                        = workerRepository.getAll(1, expected.length, null, null);
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
+                        = workerRepository.getAll(1, expected.length,  orgNameTarget, nameTarget);
                 assertEquals(expected.length, actual.size());
                 for (int i = 0; i < cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
@@ -451,7 +454,7 @@ public class WorkerRepositoryTests {
                     assertNull(actual.get(i).component3());
                     assertNull(actual.get(i).component4());
                     assertEquals(expected[i].getOrgId(), actual.get(i).component5());
-                    assertEquals(orgs[expected[i].getId()].getOrgName(), actual.get(i).component6());
+                    assertEquals(orgs[expected[i].getOrgId()-1].getOrgName(), actual.get(i).component6());
                 }
             }
         }

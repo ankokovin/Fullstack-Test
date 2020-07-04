@@ -26,7 +26,7 @@ public class OrganizationRepository {
 
     @Transactional(readOnly = true)
     public List<Record4<Integer, String, Integer, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
-        Field<Integer> subStringIdx = position(organization.ORG_NAME, val(searchName));
+        Field<Integer> subStringIdx = position(lower(organization.ORG_NAME), lower(val(searchName)));
         SelectJoinStep<Record4<Integer, String, Integer, Integer>> s =  dsl.select(
                 organization.ID, organization.ORG_NAME, count(worker.ID), subStringIdx)
                 .from(organization.leftJoin(worker).on(worker.ORG_ID.eq(organization.ID)));
