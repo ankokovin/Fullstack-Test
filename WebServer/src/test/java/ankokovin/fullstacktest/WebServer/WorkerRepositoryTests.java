@@ -328,9 +328,132 @@ public class WorkerRepositoryTests {
                     assertEquals(orgs[expected[i].getOrgId()].getOrgName(), actual.get(i).component6());
                 }
             }
-            // TODO: test on worker name search
-            // TODO: test not exact
-            // TODO: test prioroty of workername over orgname
+            @Test
+            void whenSearchOrg_hasNotExacts_thenReturnsSortedByStringEntryIndex() throws BaseException{
+                int startCnt = 5;
+                String targetOrgName = "World";
+                String closerOrgName = "Hi"+targetOrgName;
+                String otherOrgName = "Hello"+targetOrgName;
+                Organization target = OrganizationHelpers.create(1,0,closerOrgName,
+                        organizationRepository,dslContext)[0];
+                Organization other = OrganizationHelpers.create(1,1,otherOrgName,organizationRepository,
+                        dslContext)[0];
+                Organization[] orgs = new Organization[]{null, target, other};
+                Worker[] given = WorkerHelpers.insert(startCnt,other.getId(),0,workerRepository);
+                int targetWorkersCnt = 7;
+                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, target.getId(), startCnt,
+                        workerRepository);
+                int endCnt = 4;
+                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,other.getId(), startCnt +
+                        targetWorkersCnt,workerRepository));
+                Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
+                int cnt = startCnt + targetWorkersCnt + endCnt;
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, cnt, null, null);
+                assertEquals(cnt, actual.size());
+                for (int i = 0; i < cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(expected[i].getOrgId(), actual.get(i).component5());
+                    assertEquals(orgs[expected[i].getOrgId()].getOrgName(), actual.get(i).component6());
+                }
+            }
+
+            @Test
+            void whenSearchName_hasExact_thenExactReturnedFirst() throws BaseException {
+                int startCnt = 5;
+                String targetName = "World%d";
+                String otherName = "Hello"+targetName;
+                Organization org = OrganizationHelpers.create(organizationRepository, dslContext);
+                Worker[] given = WorkerHelpers.insert(startCnt,org.getId(),0,otherName, workerRepository);
+                int targetWorkersCnt = 7;
+                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, org.getId(), startCnt, targetName,
+                        workerRepository);
+                int endCnt = 4;
+                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,org.getId(), startCnt +
+                        targetWorkersCnt,otherName, workerRepository));
+                Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
+                int cnt = startCnt + targetWorkersCnt + endCnt;
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, cnt, null, null);
+                assertEquals(cnt, actual.size());
+                for (int i = 0; i < cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(expected[i].getOrgId(), actual.get(i).component5());
+                    assertEquals(org.getOrgName(), actual.get(i).component6());
+                }
+            }
+
+            @Test
+            void whenSearchName_hasNotExacts_thenReturnsSortedByStringEntryIndex() throws BaseException {
+                int startCnt = 5;
+                String targetName = "World%d";
+                String closerName = "Hi"+targetName;
+                String otherName = "Hello"+targetName;
+                Organization org = OrganizationHelpers.create(organizationRepository, dslContext);
+                Worker[] given = WorkerHelpers.insert(startCnt,org.getId(),0,otherName, workerRepository);
+                int targetWorkersCnt = 7;
+                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, org.getId(), startCnt, closerName,
+                        workerRepository);
+                int endCnt = 4;
+                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,org.getId(), startCnt +
+                        targetWorkersCnt,otherName, workerRepository));
+                Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
+                int cnt = startCnt + targetWorkersCnt + endCnt;
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, cnt, null, null);
+                assertEquals(cnt, actual.size());
+                for (int i = 0; i < cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(expected[i].getOrgId(), actual.get(i).component5());
+                    assertEquals(org.getOrgName(), actual.get(i).component6());
+                }
+            }
+            @Test
+            void whenSearchedBoth_thenNameOverOrgName() throws BaseException {
+                String nameTarget = "Hi";
+                String orgNameTarget = "Hello";
+                Organization[] orgs = ArrayUtils.addAll(
+                        OrganizationHelpers.create(1,0,orgNameTarget,organizationRepository,dslContext),
+                        OrganizationHelpers.create(1,1,"test"+orgNameTarget,
+                                organizationRepository,dslContext));
+
+                int fullMatchCnt = 12;
+                int nameMatchCnt = 5;
+                int orgNameMatchCnt = 4;
+                int others = 7;
+                Worker[] othersWorkers = WorkerHelpers.insert(others, orgs[1].getId(),0,
+                        "test"+nameTarget, workerRepository);
+                Worker[] nameMatchWorkers = WorkerHelpers.insert(nameMatchCnt, orgs[1].getId(),others,
+                        nameTarget,workerRepository);
+                Worker[] fullMatchWorkers = WorkerHelpers.insert(fullMatchCnt, orgs[0].getId(),
+                        others+nameMatchCnt, nameTarget, workerRepository);
+                Worker[] orgNameMatch = WorkerHelpers.insert(orgNameMatchCnt, orgs[0].getId(),
+                        others+nameMatchCnt+fullMatchCnt, "test"+nameTarget, workerRepository);
+                Worker[] expected = ArrayUtils.addAll(fullMatchWorkers, nameMatchWorkers);
+                expected = ArrayUtils.addAll(expected, orgNameMatch);
+                expected = ArrayUtils.addAll(expected, othersWorkers);
+                int cnt = fullMatchCnt + nameMatchCnt+ orgNameMatchCnt + others;
+                List<Record6<Integer, String, Integer, String, Integer, String>> actual
+                        = workerRepository.getAll(1, expected.length, null, null);
+                assertEquals(expected.length, actual.size());
+                for (int i = 0; i < cnt; i++) {
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertNull(actual.get(i).component3());
+                    assertNull(actual.get(i).component4());
+                    assertEquals(expected[i].getOrgId(), actual.get(i).component5());
+                    assertEquals(orgs[expected[i].getId()].getOrgName(), actual.get(i).component6());
+                }
+            }
         }
         @Nested
         class GetTree{

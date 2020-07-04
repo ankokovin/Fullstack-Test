@@ -151,6 +151,7 @@ public class WorkerControllerTests {
 
             @Test
             public void whenSearch_thenReturns() throws BaseException {
+                // TODO: fix this test
                 int exp_1 = 12;
                 Organization[] orgs = OrganizationHelpers.create(2, organizationRepository, dsl);
                 String orgName = orgs[0].getOrgName();
