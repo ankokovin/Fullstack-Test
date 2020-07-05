@@ -27,6 +27,9 @@ public class WorkerRepository {
     @Autowired
     private DSLContext dsl;
 
+    public WorkerRepository(){}
+    public WorkerRepository(DSLContext dsl){this.dsl = dsl;}
+
     @Transactional
     public Integer insert(String name, Integer org_id, Integer head_id) throws WrongHeadIdException, UnexpectedException {
         try {
