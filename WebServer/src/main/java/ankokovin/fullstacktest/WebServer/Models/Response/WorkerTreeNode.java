@@ -1,4 +1,4 @@
-package ankokovin.fullstacktest.WebServer.Models;
+package ankokovin.fullstacktest.WebServer.Models.Response;
 
 import java.util.List;
 import java.util.stream.Collectors;

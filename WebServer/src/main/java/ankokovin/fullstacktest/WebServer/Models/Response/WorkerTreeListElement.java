@@ -1,6 +1,4 @@
-package ankokovin.fullstacktest.WebServer.Models;
-
-import java.util.Objects;
+package ankokovin.fullstacktest.WebServer.Models.Response;
 
 public class WorkerTreeListElement {
     public int id;

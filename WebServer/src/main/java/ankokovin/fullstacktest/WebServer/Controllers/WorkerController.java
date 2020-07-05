@@ -2,9 +2,11 @@ package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeListElement;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

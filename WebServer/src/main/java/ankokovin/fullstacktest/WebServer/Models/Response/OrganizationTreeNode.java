@@ -1,4 +1,4 @@
-package ankokovin.fullstacktest.WebServer.Models;
+package ankokovin.fullstacktest.WebServer.Models.Response;
 
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 

@@ -4,7 +4,7 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.Worker;
 import ankokovin.fullstacktest.WebServer.Generated.tables.records.OrganizationRecord;
 import ankokovin.fullstacktest.WebServer.Models.Table;
-import ankokovin.fullstacktest.WebServer.Models.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
