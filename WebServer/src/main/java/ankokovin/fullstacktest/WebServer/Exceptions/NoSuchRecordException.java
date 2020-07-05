@@ -1,6 +1,12 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
+/**
+ * Отсутствует запись с данным идентификатором
+ */
 public class NoSuchRecordException extends BaseException {
+    /**
+     * Идентификатор
+     */
     public final Integer id;
 
     public NoSuchRecordException(Integer id, String message, Throwable cause) {
