@@ -10,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 
+/**
+ * Репозиторий работы с организациями
+ */
 @Repository
 public class OrganizationRepository {
 
@@ -24,6 +28,14 @@ public class OrganizationRepository {
     @Autowired
     public DSLContext dsl;
 
+    /**
+     * Получение списка организаций с количеством работников с поддержкой поиска
+     * @param pageNum - Номер страницы (нумерация с единицы)
+     * @param pageSize - Количество записей на одной странице
+     * @param searchName - Строка поиска организации
+     * @return Список записей.
+     * Состав записи: ID, Name, Количество организаций, позиция вхождения строки поиска организации
+     */
     @Transactional(readOnly = true)
     public List<Record4<Integer, String, Integer, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
         Field<Integer> subStringIdx = position(lower(organization.ORG_NAME), lower(val(searchName)));
@@ -39,8 +51,16 @@ public class OrganizationRepository {
                         .fetch();
 
     }
+
+    /**
+     * Получение вершины дерева
+     * @param root - Организация, находящаяся в вершине
+     * @param maxDepth - Текущая глубина поиска
+     * @return Вершина дерева
+     */
     @Transactional(readOnly = true)
     private TreeNode<Organization> getTree(
+            @NotNull
             Organization root,
             Integer maxDepth) {
         if (maxDepth == 0) return new TreeNode<>(root);
@@ -52,6 +72,13 @@ public class OrganizationRepository {
                 .collect(Collectors.toList()));
     }
 
+    /**
+     * Получение вершины дерева
+     * @param maxDepth - максимально допустимая глубина
+     * @param rootId - идентификатор вершины, с которой происходит обход. Null - обход со всех коренных вершин
+     * @return Вершина дерева
+     * @throws NoSuchRecordException - в случае отсутствия вершины с идентификатором rootId
+     */
     @Transactional(readOnly = true)
     public TreeNode<Organization> getTree(
             int maxDepth,
@@ -66,6 +93,15 @@ public class OrganizationRepository {
         return getTree(getById(rootId), maxDepth);
     }
 
+    /**
+     * Внесение организации в базу данных
+     * @param name - название организации
+     * @param org_id - идентификатор головной организации (может быть Null)
+     * @return идентификатор созданной организации
+     * @throws SameNameException - при попытке создания организации с повторяющимся названием
+     * @throws WrongHeadIdException - при попытке указать несущесвующий идентификатор головной организации
+     * @throws UnexpectedException - при неожиданной ошибке во время внесения записи в базу данных
+     */
     @Transactional
     public Integer insert(String name, Integer org_id) throws
             SameNameException,
@@ -93,6 +129,17 @@ public class OrganizationRepository {
         }
     }
 
+    /**
+     * Обновление данных организации в базе данных
+     * @param id - идентификатор организации
+     * @param name - название организации
+     * @param org_id - идентификатор головной организации (может быть Null)
+     * @return идентификатор организации
+     * @throws SameNameException - при попытке изменения название организации на уже существующее
+     * @throws WrongHeadIdException - при попытке указать несуществующий идентификатор головной организации или при цикличной зависимости
+     * @throws NoSuchRecordException - при отсутствии записи с данным идентификатором
+     * @throws UnexpectedException - при неожиданной ошибке во время внесения записи в базу данных
+     */
     @Transactional
     public Integer update(Integer id, String name, Integer org_id) throws
             SameNameException,
@@ -133,6 +180,12 @@ public class OrganizationRepository {
         }
     }
 
+    /**
+     * Получение организации по её идентификатору
+     * @param id идентификатор организации
+     * @return Организация
+     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
+     */
     @Transactional
     public Organization getById(Integer id)
             throws NoSuchRecordException {
@@ -145,6 +198,14 @@ public class OrganizationRepository {
     }
 
 
+    /**
+     * Удаление организации из базы данных
+     * @param id - идентификатор организации
+     * @return идентификатор организации
+     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
+     * @throws UnexpectedException - при неожиданной ошибке в ходе удаления организации из базы данных
+     * @throws DeleteHasChildException - при наличии зависимых организаций
+     */
     @Transactional
     public Integer delete(Integer id) throws NoSuchRecordException, UnexpectedException, DeleteHasChildException {
         try {
