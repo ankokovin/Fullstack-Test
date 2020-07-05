@@ -67,7 +67,8 @@ public class WorkerService {
      */
     public Worker delete(Integer id) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
         Worker res = getById(id);
-        rep.delete(id);
+        int rid = rep.delete(id);
+        if (rid != id) throw new UnexpectedException("Delete returned wrong id");
         return res;
     }
 
