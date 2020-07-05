@@ -46,10 +46,11 @@ public class WorkerService {
      * @return обновлённый работник
      * @throws WrongHeadIdException - при указании несуществующего идентификатора начальника, из другой организации или при цикличной зависимости
      * @throws UnexpectedException - при неожиданной ошибке при обновлении работника
+     * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
      */
-    public Worker update(UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
+    public Worker update(UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException, NoSuchRecordException {
+        int id = rep.update(model.id, model.name, model.org_id, model.head_id);
         try {
-            int id = rep.update(model.id, model.name, model.org_id, model.head_id);
             return getById(id);
         } catch (NoSuchRecordException e) {
             throw new UnexpectedException(e);

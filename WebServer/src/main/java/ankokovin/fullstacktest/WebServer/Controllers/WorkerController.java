@@ -14,29 +14,58 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для работы с сотрудниками
+ */
 @RestController
 @RequestMapping(value = "/api/worker",
         headers = "Accept=application/json",
         produces = "application/json")
 public class WorkerController {
 
+    /**
+     * Количество сотрудников на странице по-умолчанию
+     */
     private final String defaultPageCount = "25";
 
     @Autowired
     WorkerService workerService;
 
+    /**
+     * Создание работника
+     * @param model Информация о создаваемом работнике
+     * @return Созданный работник
+     * @throws WrongHeadIdException - при ошибке в идентификаторе начальника
+     * @throws UnexpectedException - при неожиданной ошибке при создании работника
+     */
     @PostMapping
     public ResponseEntity<Worker> create(
             @RequestBody CreateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
         return ResponseEntity.ok(workerService.create(model));
     }
 
+    /**
+     * Обновление информации о работнике
+     * @param model Информация об обновляемом работнике
+     * @return Обновлённый работник
+     * @throws WrongHeadIdException - при ошибке в идентификаторе начальника
+     * @throws UnexpectedException - при неожиданной ошибке при создании работника
+     * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
+     */
     @PostMapping("/update")
     public ResponseEntity<Worker> update(
-            @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
+            @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException, NoSuchRecordException {
         return ResponseEntity.ok(workerService.update(model));
     }
 
+    /**
+     * Удаление работника
+     * @param id Идентификатор работника
+     * @return Удалённый работник
+     * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
+     * @throws DeleteHasChildException - при наличии подчинённых
+     * @throws UnexpectedException - при неожиданной ошибке при удалении работника
+     */
     @DeleteMapping
     public ResponseEntity<Worker> delete(
             @RequestBody Integer id
@@ -44,7 +73,14 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.delete(id));
     }
 
-
+    /**
+     * Получение списка работников с поддержкой поиска
+     * @param page Номер страницы (нумерация с единицы)
+     * @param pageSize Количество работников на странице
+     * @param searchName Строка поиска работника
+     * @param searchOrgName Строка поиска организации
+     * @return Список работников
+     */
     @GetMapping
     public ResponseEntity<List<WorkerListElement>> get(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -55,6 +91,13 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.get(page, pageSize, searchName, searchOrgName));
     }
 
+    /**
+     * Получение древовидного списка работников
+     * @param id Идентификатор работника головной вершины (может быть Null)
+     * @param depth Глубина поиска
+     * @return Древовидный список работника
+     * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
+     */
     @GetMapping("/tree")
     public ResponseEntity<TreeNode<WorkerTreeListElement>> get(
             @RequestParam(required = false) Integer id,
