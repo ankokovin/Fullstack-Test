@@ -4,10 +4,12 @@ package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.*;
-import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Response.OrgListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
-import org.jooq.Record3;
 import org.jooq.Record4;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -161,6 +163,18 @@ public class OrganizationServiceUnitTests {
         }
 
         @Test
+        public void whenUpdateNotFound_thenThrows() throws BaseException {
+            Integer expected = 1;
+            UpdateOrganizationInput model = new UpdateOrganizationInput(1, "ООО Тест", expected);
+            Mockito.when(organizationRepository
+                    .update(model.id, model.name, model.org_id))
+                    .thenThrow(new NoSuchRecordException(expected));
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> organizationService.update(model));
+            assertEquals(expected, e.id);
+        }
+
+        @Test
         public void whenUpdateUnexpectedChange_thenThrows() throws BaseException {
             Integer expected = 1;
             UpdateOrganizationInput model = new UpdateOrganizationInput(expected, "ООО Тест", null);
@@ -243,6 +257,16 @@ public class OrganizationServiceUnitTests {
             DeleteHasChildException actual = (DeleteHasChildException) e.getCause();
             assertEquals(expected.id, actual.id);
             assertEquals(expected.table, actual.table);
+        }
+        @Test
+        public void whenDeleteReturnedWrongId() throws BaseException {
+            DeleteHasChildException expected = new DeleteHasChildException(42, Table.UNKNOWN);
+            Mockito.when(organizationRepository.delete(expected.id))
+                    .thenReturn(expected.id+1);
+
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> organizationService.delete(expected.id));
+
         }
     }
 

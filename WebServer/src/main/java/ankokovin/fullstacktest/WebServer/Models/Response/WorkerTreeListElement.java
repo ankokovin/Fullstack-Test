@@ -1,11 +1,24 @@
-package ankokovin.fullstacktest.WebServer.Models;
+package ankokovin.fullstacktest.WebServer.Models.Response;
 
-import java.util.Objects;
-
+/**
+ * Информация о работнике
+ */
 public class WorkerTreeListElement {
+    /**
+     * Идентификатор работника
+     */
     public int id;
+    /**
+     * Имя работника
+     */
     public String name;
+    /**
+     * Идентификатор организации
+     */
     public Integer org_id;
+    /**
+     * Название организации
+     */
     public String org_name;
     public WorkerTreeListElement(){}
     public WorkerTreeListElement(int id, String name,
