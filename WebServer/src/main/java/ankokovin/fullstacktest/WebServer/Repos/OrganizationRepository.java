@@ -24,6 +24,9 @@ public class OrganizationRepository {
     @Autowired
     public DSLContext dsl;
 
+    public OrganizationRepository() {}
+    public OrganizationRepository(DSLContext dsl){this.dsl = dsl;}
+
     @Transactional(readOnly = true)
     public List<Record4<Integer, String, Integer, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
         Field<Integer> subStringIdx = position(lower(organization.ORG_NAME), lower(val(searchName)));
