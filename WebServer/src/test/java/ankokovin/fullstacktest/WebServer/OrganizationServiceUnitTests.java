@@ -23,7 +23,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class OrganizationServiceTests {
+public class OrganizationServiceUnitTests {
 
     @SuppressWarnings({"unused", "InnerClassMayBeStatic"})
     abstract class OrganizationServiceTestClassTemplate {
