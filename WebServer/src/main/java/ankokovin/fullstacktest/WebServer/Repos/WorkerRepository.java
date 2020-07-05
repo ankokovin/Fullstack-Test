@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 
+/**
+ * Репозиторий работы с работниками
+ */
 @Repository
 public class WorkerRepository {
 
@@ -27,6 +30,15 @@ public class WorkerRepository {
     @Autowired
     private DSLContext dsl;
 
+    /**
+     * Внесение работника в базу данных
+     * @param name Имя работника
+     * @param org_id Идентификатор организации
+     * @param head_id Идентификатор начальника (может быть Null)
+     * @return идентификатор созданного работника
+     * @throws WrongHeadIdException - при попытке указать несущесвующий идентификатор начальника или начальника из другой организации
+     * @throws UnexpectedException - при неожиданной ошибке при внесении записи в базу данных
+     */
     @Transactional
     public Integer insert(String name, Integer org_id, Integer head_id) throws WrongHeadIdException, UnexpectedException {
         try {
@@ -50,6 +62,17 @@ public class WorkerRepository {
         }
     }
 
+    /**
+     * Обновление данных о работнике
+     * @param id - идентификатор работника
+     * @param name - имя работника
+     * @param org_id - идентификатор организации
+     * @param head_id - идентификатор начальника (может быть Null)
+     * @return идентификатор работника
+     * @throws WrongHeadIdException - при попытке указать несущесвующий идентификатор начальника или начальника из другой организации
+     * @throws NoSuchRecordException - при отсутствии записи с данным идентификатором
+     * @throws UnexpectedException - при неожиданной ошибке во время внесения записи в базу данных
+     */
     @Transactional
     public Integer update(Integer id, String name, Integer org_id, Integer head_id) throws
             WrongHeadIdException,
@@ -88,6 +111,14 @@ public class WorkerRepository {
         }
     }
 
+    /**
+     * Удаление работника из системы
+     * @param id - идентификатор работника
+     * @return идентификатор работника
+     * @throws NoSuchRecordException - при отсутствии записи с данным идентификатором
+     * @throws DeleteHasChildException - при наличии работников, имеющих данного в качестве начальника
+     * @throws UnexpectedException- при неожиданной ошибке во время удаления записи из базы данных
+     */
     @Transactional
     public Integer delete(Integer id) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
         try {
@@ -108,6 +139,22 @@ public class WorkerRepository {
         catch (Exception ex) {throw new UnexpectedException(ex);}
     }
 
+    /**
+     * Получение списка работников с поддержкой поиска
+     * @param pageNum - номер страницы (нумерация с единицы)
+     * @param pageSize - количество записей на одной странице
+     * @param org_name - строка поиска организации (может быть Null)
+     * @param worker_name - строка поиска работника (может быть Null)
+     * @return Запись о работнике:
+     * 1) идентификатор
+     * 2) имя
+     * 3) идентификатор начальника
+     * 4) имя начальника
+     * 5) идентификатор организации
+     * 6) название организации
+     * 7) позиция вхождения строки поиска организации
+     * 8) позиция вхождения строки поиска работника
+     */
     @Transactional
     public List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> getAll(
             Integer pageNum,
@@ -140,6 +187,13 @@ public class WorkerRepository {
                 .offset((pageNum-1)*pageSize)
                 .fetch();
     }
+
+    /**
+     * Получение вершины дерева
+     * @param maxDepth текущая глубина
+     * @param element информация о работнике в текущей вершине
+     * @return Вершина дерева
+     */
     @Transactional(readOnly = true)
     private TreeNode<WorkerTreeListElement> getTree(int maxDepth, WorkerTreeListElement element) {
         if (maxDepth == 0) return new TreeNode<>(element);
@@ -153,6 +207,13 @@ public class WorkerRepository {
                                 element.org_name))));
     }
 
+    /**
+     * Получение вершины дерева
+     * @param maxDepth максимальная глубина поиска
+     * @param root_id идентификатор работника (может быть Null)
+     * @return Вершина дерева
+     * @throws NoSuchRecordException - при отсутствии записи работника с данным идентификатором
+     */
     @Transactional(readOnly = true)
     public TreeNode<WorkerTreeListElement> getTree(int maxDepth, Integer root_id) throws NoSuchRecordException {
         assert maxDepth > 0;
@@ -174,6 +235,12 @@ public class WorkerRepository {
                 .collect(Collectors.toList()));
     }
 
+    /**
+     * Получение работника по идентификатору
+     * @param id идентификатор работника
+     * @return Работник
+     * @throws NoSuchRecordException - при отсутствии записи работника с данным идентификатором
+     */
     @Transactional
     public Worker getById(Integer id) throws NoSuchRecordException {
         Worker result = dsl.selectFrom(worker).where(worker.ID.eq(id)).fetchOneInto(Worker.class);
