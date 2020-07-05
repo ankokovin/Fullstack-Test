@@ -3,12 +3,33 @@ package ankokovin.fullstacktest.WebServer.Models.Response;
 
 import java.util.Objects;
 
+/**
+ * Информация о работнике
+ */
 public class WorkerListElement {
+    /**
+     * Идентификатор работника
+     */
     public int id;
+    /**
+     * Имя работника
+     */
     public String name;
+    /**
+     * Идентификатор организации
+     */
     public Integer org_id;
+    /**
+     * Название организации
+     */
     public String org_name;
+    /**
+     * Идентификатор начальника
+     */
     public Integer head_id;
+    /**
+     * Имя начальника
+     */
     public String head_name;
     public WorkerListElement(){}
     public WorkerListElement(int id, String name, Integer head_id, String head_name, Integer org_id, String org_name){

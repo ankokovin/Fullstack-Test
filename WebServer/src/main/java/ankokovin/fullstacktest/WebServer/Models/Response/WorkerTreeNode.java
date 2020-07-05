@@ -3,6 +3,9 @@ package ankokovin.fullstacktest.WebServer.Models.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Дерево работников
+ */
 public class WorkerTreeNode extends TreeNode<WorkerTreeListElement> {
     public WorkerTreeNode(){super(null);}
     public WorkerTreeNode(WorkerTreeListElement item, List<WorkerTreeNode>children) {
