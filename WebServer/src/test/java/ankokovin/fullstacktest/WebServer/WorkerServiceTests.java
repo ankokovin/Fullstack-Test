@@ -146,7 +146,17 @@ public class WorkerServiceTests {
         }
 
         @Test
-        void whenNotFound_Throws() throws BaseException {
+        void whenNotFound_thenThrows() throws BaseException {
+            UpdateWorkerInput model = new UpdateWorkerInput(1,"test",1,null);
+            Mockito.when(workerRepository.update(model.id, model.name, model.org_id, model.head_id))
+                    .thenThrow(new NoSuchRecordException(model.id));
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> workerService.update(model));
+            assertEquals(model.id, e.id);
+        }
+
+        @Test
+        void whenUnexpectedNotFound_Throws() throws BaseException {
             String name = "Test";
             Integer id = 3;
             Integer head_id = 4;

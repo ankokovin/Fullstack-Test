@@ -163,6 +163,18 @@ public class OrganizationServiceTests {
         }
 
         @Test
+        public void whenUpdateNotFound_thenThrows() throws BaseException {
+            Integer expected = 1;
+            UpdateOrganizationInput model = new UpdateOrganizationInput(1, "ООО Тест", expected);
+            Mockito.when(organizationRepository
+                    .update(model.id, model.name, model.org_id))
+                    .thenThrow(new NoSuchRecordException(expected));
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> organizationService.update(model));
+            assertEquals(expected, e.id);
+        }
+
+        @Test
         public void whenUpdateUnexpectedChange_thenThrows() throws BaseException {
             Integer expected = 1;
             UpdateOrganizationInput model = new UpdateOrganizationInput(expected, "ООО Тест", null);
