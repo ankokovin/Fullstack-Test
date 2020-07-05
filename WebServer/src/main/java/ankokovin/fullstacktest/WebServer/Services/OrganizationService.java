@@ -82,12 +82,10 @@ public class OrganizationService {
             SameNameException,
             UnexpectedException,
             NoSuchRecordException {
+        int id = rep.update(model.id, model.name, model.org_id);
         try {
-            int id = rep.update(model.id, model.name, model.org_id);
             return getById(id);
-        } catch (SameNameException | WrongHeadIdException | NoSuchRecordException ex) {
-            throw ex;
-        } catch (Exception ex) {
+        } catch (NoSuchRecordException ex) {
             throw new UnexpectedException(ex);
         }
     }
