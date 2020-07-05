@@ -1,7 +1,6 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.OrgListElement;
@@ -14,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для работы с организациями
+ */
 @RestController
 @RequestMapping(
         value = "/api/organization",
@@ -21,14 +23,23 @@ import java.util.List;
         produces = "application/json")
 public class OrganizationsController {
 
+    /**
+     * Количество организаций на странице по-умолчанию
+     */
     private final String defaultPageCount = "25";
-    private final int maxPageCount = 100;
+
 
     @Autowired
     private OrganizationService service;
 
 
-
+    /**
+     * Получение списка организаций с поддержкой поиска
+     * @param page номер страницы (нумерация с единицы)
+     * @param pageSize количество организаций на странице
+     * @param name строка поиска организации
+     * @return Список информации об организациях
+     */
     @GetMapping
     public ResponseEntity<List<OrgListElement>> getAll(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
@@ -38,24 +49,60 @@ public class OrganizationsController {
         return ResponseEntity.ok(service.getAllWithCount(page, pageSize, name));
     }
 
+    /**
+     * Создание организации
+     * @param model входная информация об организации
+     * @return созданная организация
+     * @throws SameNameException - при наличии организации с данным названием
+     * @throws WrongHeadIdException - при ошибке в идентификаторе головной организации
+     * @throws UnexpectedException - при неожиданной ошибке при создании организации
+     */
     @PostMapping
     public ResponseEntity<Organization> create(
-            @RequestBody CreateOrganizationInput model) throws BaseException {
+            @RequestBody CreateOrganizationInput model) throws SameNameException,
+            WrongHeadIdException,
+            UnexpectedException {
         return ResponseEntity.ok(service.create(model));
 
     }
 
+    /**
+     * Обновление данных организации
+     * @param model входная информация об организации
+     * @return Обновлённая организация
+     * @throws SameNameException - при наличии организации с данным названием
+     * @throws WrongHeadIdException - при ошибке в идентификаторе головной организации
+     * @throws UnexpectedException - при неожиданной ошибке при обновлении данных организации
+     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
+     */
     @PostMapping("/update")
     public ResponseEntity<Organization> update(
-            @RequestBody UpdateOrganizationInput model) throws BaseException {
+            @RequestBody UpdateOrganizationInput model) throws SameNameException,
+            WrongHeadIdException, UnexpectedException, NoSuchRecordException {
         return ResponseEntity.ok(service.update(model));
     }
 
+    /**
+     * Удаление организации
+     * @param id идентификатор организации
+     * @return Удалённая организация
+     * @throws DeleteHasChildException - при наличии дочерних элементов
+     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
+     * @throws UnexpectedException - при неожиданной ошибке при удалении организации
+     */
     @DeleteMapping
-    public ResponseEntity<Organization> delete(@RequestBody Integer id) throws BaseException {
+    public ResponseEntity<Organization> delete(@RequestBody Integer id) throws DeleteHasChildException,
+            NoSuchRecordException, UnexpectedException {
         return ResponseEntity.ok(service.delete(id));
     }
 
+    /**
+     * Получение древовидного списка организаций
+     * @param id идентификатор организации (null для всех головных)
+     * @param depth глубина поиска
+     * @return Древовидный список
+     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
+     */
     @GetMapping("/tree")
     public ResponseEntity<TreeNode<Organization>> getTree(
             @RequestParam(required = false) Integer id,

@@ -75,15 +75,17 @@ public class OrganizationService {
      * @throws WrongHeadIdException - при указании несуществующего идентификатора головной организации или при цикличной зависимости
      * @throws SameNameException - при наличии организации с данным именем
      * @throws UnexpectedException - при неожиданной ошибке в ходе создания организации
+     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
      */
     public Organization update(UpdateOrganizationInput model) throws
             WrongHeadIdException,
             SameNameException,
-            UnexpectedException {
+            UnexpectedException,
+            NoSuchRecordException {
         try {
             int id = rep.update(model.id, model.name, model.org_id);
             return getById(id);
-        } catch (SameNameException | WrongHeadIdException ex) {
+        } catch (SameNameException | WrongHeadIdException | NoSuchRecordException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new UnexpectedException(ex);
