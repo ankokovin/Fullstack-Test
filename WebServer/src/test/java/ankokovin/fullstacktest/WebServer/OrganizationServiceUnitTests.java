@@ -258,6 +258,16 @@ public class OrganizationServiceUnitTests {
             assertEquals(expected.id, actual.id);
             assertEquals(expected.table, actual.table);
         }
+        @Test
+        public void whenDeleteReturnedWrongId() throws BaseException {
+            DeleteHasChildException expected = new DeleteHasChildException(42, Table.UNKNOWN);
+            Mockito.when(organizationRepository.delete(expected.id))
+                    .thenReturn(expected.id+1);
+
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> organizationService.delete(expected.id));
+
+        }
     }
 
     @Nested

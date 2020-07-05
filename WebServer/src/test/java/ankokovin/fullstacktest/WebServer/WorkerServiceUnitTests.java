@@ -202,6 +202,13 @@ public class WorkerServiceUnitTests {
                     () -> workerService.delete(id));
             assertEquals(id, e.id);
         }
+        @Test
+        void whenDeleteThrowsUnexpected_ThrowsUnexpected() throws BaseException {
+            int id = 42;
+            Mockito.when(workerRepository.delete(id)).thenReturn(id+1);
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> workerService.delete(id));
+        }
     }
 
     @Nested
