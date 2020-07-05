@@ -28,6 +28,9 @@ public class OrganizationRepository {
     @Autowired
     public DSLContext dsl;
 
+
+    public OrganizationRepository() {}
+    public OrganizationRepository(DSLContext dsl){this.dsl = dsl;}
     /**
      * Получение списка организаций с количеством работников с поддержкой поиска
      * @param pageNum - Номер страницы (нумерация с единицы)

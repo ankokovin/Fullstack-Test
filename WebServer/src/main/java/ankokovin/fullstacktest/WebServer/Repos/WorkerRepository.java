@@ -30,6 +30,9 @@ public class WorkerRepository {
     @Autowired
     private DSLContext dsl;
 
+    public WorkerRepository(){}
+    public WorkerRepository(DSLContext dsl){this.dsl = dsl;}
+
     /**
      * Внесение работника в базу данных
      * @param name Имя работника
@@ -58,6 +61,8 @@ public class WorkerRepository {
             if (message == null) throw ex;
             if (message.contains("Key (org_id)"))
                 throw new WrongHeadIdException(org_id, Table.ORGANIZATION);
+            throw new UnexpectedException(ex);
+        } catch (Exception ex) {
             throw new UnexpectedException(ex);
         }
     }
@@ -94,7 +99,7 @@ public class WorkerRepository {
             if (message.contains("check_worker_head")) {
                 throw new WrongHeadIdException(head_id, Table.WORKER);
             }
-            throw ex;
+            throw new UnexpectedException(ex);
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
             String message = ex.getMessage();
             if (message == null) throw new UnexpectedException(ex);
@@ -131,8 +136,13 @@ public class WorkerRepository {
         } catch (NoSuchRecordException ex){ throw ex;}
         catch(org.springframework.dao.DataIntegrityViolationException ex) {
             String message = ex.getMessage();
-            if (message != null && message.contains(" is still referenced from table \"worker\"")) {
-                throw new DeleteHasChildException(id, Table.WORKER);
+            if (message != null && message.contains("is still referenced")) {
+                int child_id = Integer.parseInt(message.split("\\)=\\(")[1].split("\\)")[0]);
+                if (message.contains("from table \"worker\"")) {
+                    throw new DeleteHasChildException(child_id, Table.WORKER);
+                }
+                throw new UnexpectedException(new DeleteHasChildException(child_id, Table.UNKNOWN));
+
             }
             throw new UnexpectedException(ex);
         }
