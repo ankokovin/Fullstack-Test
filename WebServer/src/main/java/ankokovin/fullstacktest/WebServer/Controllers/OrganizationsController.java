@@ -2,12 +2,11 @@ package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
 import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NotImplementedException;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
-import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

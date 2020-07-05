@@ -3,13 +3,11 @@ package ankokovin.fullstacktest.WebServer.Services;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.WebServer.Models.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.OrgListElement;
 import ankokovin.fullstacktest.WebServer.Models.TreeNode;
-import ankokovin.fullstacktest.WebServer.Models.UpdateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
-import org.jooq.Record2;
-import org.jooq.Record3;
 import org.jooq.Record4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

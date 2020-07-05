@@ -7,10 +7,11 @@ import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.DeleteHasChildResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -28,11 +29,9 @@ import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.create;
-import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)

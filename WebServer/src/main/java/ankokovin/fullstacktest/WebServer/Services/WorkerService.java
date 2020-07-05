@@ -3,6 +3,8 @@ package ankokovin.fullstacktest.WebServer.Services;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
