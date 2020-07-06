@@ -35,7 +35,9 @@ export default class OrganizationListCtrl{
 
     load_children(){
 
-        this.http.get('api/organization-tree.json').then((response) => {
+        this.http.get('api/organization/tree',{params:{
+            'id':this.id
+        }}).then((response) => {
             console.log(response);
             this.id = response.data.item.id;
             this.name = response.data.item.orgName;
