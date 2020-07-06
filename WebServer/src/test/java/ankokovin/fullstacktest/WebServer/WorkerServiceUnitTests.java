@@ -5,6 +5,7 @@ import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Response.Page;
 import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeListElement;
@@ -255,6 +256,7 @@ public class WorkerServiceUnitTests {
                                         org_id,
                                         org_name)
                         ).collect(Collectors.toList()));
+                Mockito.when(workerRepository.getCount(name_format,org_name)).thenReturn(expected.size());
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> mockResult
                         = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
                         .mapToObj((i) -> {
@@ -270,9 +272,10 @@ public class WorkerServiceUnitTests {
                         }).collect(Collectors.toList()));
                 Mockito.when(workerRepository.getAll(page, pageSize,org_name,name_format))
                         .thenReturn(mockResult);
-                List<WorkerListElement> actual = workerService.get(page, pageSize,name_format,org_name);
-                assertEquals(expected.size(), actual.size());
-                assertIterableEquals(expected, actual);
+                Page<List<WorkerListElement>> actual = workerService.get(page, pageSize,name_format,org_name);
+                assertEquals(expected.size(), actual.total);
+                assertEquals(expected.size(), actual.list.size());
+                assertIterableEquals(expected, actual.list);
             }
         }
         @Nested

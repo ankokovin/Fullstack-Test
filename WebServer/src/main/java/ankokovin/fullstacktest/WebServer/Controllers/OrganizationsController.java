@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.OrgListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.Page;
 import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
@@ -41,7 +42,7 @@ public class OrganizationsController {
      * @return Список информации об организациях
      */
     @GetMapping
-    public ResponseEntity<List<OrgListElement>> getAll(
+    public ResponseEntity<Page<List<OrgListElement>>> getAll(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageSize,
             @RequestParam(value = "searchName", required = false) String name) {

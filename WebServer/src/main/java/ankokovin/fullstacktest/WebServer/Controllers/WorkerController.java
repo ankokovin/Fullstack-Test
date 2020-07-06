@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Response.Page;
 import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeListElement;
@@ -82,7 +83,7 @@ public class WorkerController {
      * @return Список работников
      */
     @GetMapping
-    public ResponseEntity<List<WorkerListElement>> get(
+    public ResponseEntity<Page<List<WorkerListElement>>> get(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) Integer pageSize,
             @RequestParam(value = "searchName", required = false) String searchName,

@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.create;
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.setUp;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -277,6 +278,36 @@ public class OrganizationRepositoryTests {
 
                 NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                         () -> organizationRepository.getById(expected.getId() + 1));
+            }
+        }
+
+        @Nested
+        class GetCount {
+            @Test
+            void whenNoSearch_thenReturnsCount() throws BaseException {
+                int expected = 42;
+                OrganizationHelpers.create(expected,organizationRepository,dslContext);
+                int actual = organizationRepository.getCount(null);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void whenSearch_thenReturnCountCorrect() throws BaseException {
+                int[] cnts = new int[]{23, 42,54,13};
+                String searchPattern = "Find me";
+                String namePattern = searchPattern+"%d";
+                int expected = 0;
+                int cur = 0;
+                for (int i = 0; i < cnts.length; i++) {
+                    if (i%2 == 0) {
+                        OrganizationHelpers.create(cnts[i], cur, organizationRepository,dslContext);
+                    } else {
+                        OrganizationHelpers.create(cnts[i],cur,namePattern,organizationRepository,dslContext);
+                        expected += cnts[i];
+                    }
+                    cur += cnts[i];
+                }
+                int actual = organizationRepository.getCount(searchPattern);
+                assertEquals(expected, actual);
             }
         }
 

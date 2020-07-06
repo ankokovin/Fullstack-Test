@@ -33,6 +33,24 @@ public class WorkerRepository {
     public WorkerRepository(){}
     public WorkerRepository(DSLContext dsl){this.dsl = dsl;}
 
+    public Integer getCount(String workerName, String orgName) {
+        Condition workerCond = lower(worker.WORKER_NAME).contains(lower(val(workerName)));
+        Condition orgCond = lower(organization.ORG_NAME).contains(lower(val(orgName)));
+        if (orgName == null) {
+            SelectJoinStep<Record1<Integer>> step =  dsl.select(count()).from(worker);
+            if (workerName == null) return step.fetchOneInto(Integer.class);
+            return step.where(workerCond).fetchOneInto(Integer.class);
+        } else {
+            SelectJoinStep<Record1<Integer>> step =  dsl.select(count())
+                    .from(worker)
+                    .join(organization)
+                    .on(worker.ORG_ID.eq(organization.ID));
+            Condition cond = orgCond;
+            if (workerName != null) cond = cond.and(workerCond);
+            return step.where(cond).fetchOneInto(Integer.class);
+        }
+    }
+
     /**
      * Внесение работника в базу данных
      * @param name Имя работника
