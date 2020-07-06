@@ -1,16 +1,17 @@
 package ankokovin.fullstacktest.WebServer;
 
-import ankokovin.fullstacktest.WebServer.Exceptions.BaseException;
-import ankokovin.fullstacktest.WebServer.Exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.WebServer.Exceptions.UnexpectedException;
-import ankokovin.fullstacktest.WebServer.Exceptions.WrongHeadIdException;
+import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.*;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
+import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeListElement;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
 import org.assertj.core.util.Lists;
-import org.jooq.Record3;
-import org.jooq.Record6;
+import org.jooq.Record8;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,7 +26,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class WorkerServiceTests {
+public class WorkerServiceUnitTests {
 
     @Autowired
     protected WorkerService workerService;
@@ -145,7 +146,17 @@ public class WorkerServiceTests {
         }
 
         @Test
-        void whenNotFound_Throws() throws BaseException {
+        void whenNotFound_thenThrows() throws BaseException {
+            UpdateWorkerInput model = new UpdateWorkerInput(1,"test",1,null);
+            Mockito.when(workerRepository.update(model.id, model.name, model.org_id, model.head_id))
+                    .thenThrow(new NoSuchRecordException(model.id));
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
+                    () -> workerService.update(model));
+            assertEquals(model.id, e.id);
+        }
+
+        @Test
+        void whenUnexpectedNotFound_Throws() throws BaseException {
             String name = "Test";
             Integer id = 3;
             Integer head_id = 4;
@@ -172,7 +183,7 @@ public class WorkerServiceTests {
     @Nested
     class Delete {
         @Test
-        void whenDelete_Returns() throws NoSuchRecordException {
+        void whenDelete_Returns() throws BaseException {
             Worker expected = new Worker(1353, "test", 1, null);
             Mockito.when(workerRepository.getById(expected.getId()))
                     .thenReturn(expected);
@@ -183,13 +194,20 @@ public class WorkerServiceTests {
         }
 
         @Test
-        void whenNoSuchRecord_Throws() throws NoSuchRecordException {
+        void whenNoSuchRecord_Throws() throws BaseException {
             Integer id = 25265;
             Mockito.when(workerRepository.getById(id))
                     .thenThrow(new NoSuchRecordException(id));
             NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                     () -> workerService.delete(id));
             assertEquals(id, e.id);
+        }
+        @Test
+        void whenDeleteThrowsUnexpected_ThrowsUnexpected() throws BaseException {
+            int id = 42;
+            Mockito.when(workerRepository.delete(id)).thenReturn(id+1);
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> workerService.delete(id));
         }
     }
 
@@ -237,10 +255,11 @@ public class WorkerServiceTests {
                                         org_id,
                                         org_name)
                         ).collect(Collectors.toList()));
-                List<Record6<Integer, String, Integer, String, Integer, String>> mockResult
+                List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> mockResult
                         = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
                         .mapToObj((i) -> {
-                            Record6<Integer, String, Integer, String, Integer, String> res = Mockito.mock(Record6.class);
+                            Record8<Integer, String, Integer, String, Integer, String, Integer, Integer> res
+                                    = Mockito.mock(Record8.class);
                             Mockito.when(res.component1()).thenReturn(i);
                             Mockito.when(res.component2()).thenReturn(String.format(name_format+"%d",i));
                             Mockito.when(res.component3()).thenReturn(head_id);

@@ -1,14 +1,35 @@
-package ankokovin.fullstacktest.WebServer.Models;
+package ankokovin.fullstacktest.WebServer.Models.Response;
 
 
 import java.util.Objects;
 
+/**
+ * Информация о работнике
+ */
 public class WorkerListElement {
+    /**
+     * Идентификатор работника
+     */
     public int id;
+    /**
+     * Имя работника
+     */
     public String name;
+    /**
+     * Идентификатор организации
+     */
     public Integer org_id;
+    /**
+     * Название организации
+     */
     public String org_name;
+    /**
+     * Идентификатор начальника
+     */
     public Integer head_id;
+    /**
+     * Имя начальника
+     */
     public String head_name;
     public WorkerListElement(){}
     public WorkerListElement(int id, String name, Integer head_id, String head_name, Integer org_id, String org_name){
@@ -31,22 +52,5 @@ public class WorkerListElement {
                 Objects.equals(org_name, that.org_name) &&
                 Objects.equals(head_id, that.head_id) &&
                 Objects.equals(head_name, that.head_name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, org_id, org_name, head_id, head_name);
-    }
-
-    @Override
-    public String toString() {
-        return "WorkerListElement{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", org_id=" + org_id +
-                ", org_name='" + org_name + '\'' +
-                ", head_id=" + head_id +
-                ", head_name='" + head_name + '\'' +
-                '}';
     }
 }

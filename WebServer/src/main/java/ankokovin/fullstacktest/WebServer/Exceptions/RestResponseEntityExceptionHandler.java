@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/**
+ * Обработчик ошибок - преобразование в Response
+ */
 @SuppressWarnings("unused")
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
@@ -29,7 +32,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(DeleteHasChildException.class)
     protected ResponseEntity<Object> handleDeleteChild(DeleteHasChildException ex, WebRequest request) {
         DeleteHasChildResponse response = new DeleteHasChildResponse(ex.id, ex.table);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NoSuchRecordException.class)

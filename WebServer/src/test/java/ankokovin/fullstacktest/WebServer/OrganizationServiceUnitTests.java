@@ -4,9 +4,13 @@ package ankokovin.fullstacktest.WebServer;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.*;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
+import ankokovin.fullstacktest.WebServer.Models.Response.OrgListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
-import org.jooq.Record3;
+import org.jooq.Record4;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,7 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class OrganizationServiceTests {
+public class OrganizationServiceUnitTests {
 
     @SuppressWarnings({"unused", "InnerClassMayBeStatic"})
     abstract class OrganizationServiceTestClassTemplate {
@@ -60,7 +64,9 @@ public class OrganizationServiceTests {
 
             Mockito.when(organizationRepository.insert(name3, 3))
                     .thenThrow(new WrongHeadIdException(3, Table.ORGANIZATION));
-
+            String name4 = "ООО Тест-4";
+            Mockito.when(organizationRepository.insert(name4, 4)).thenReturn(4);
+            Mockito.when(organizationRepository.getById(4)).thenThrow(new NoSuchRecordException(4));
         }
 
         @Test
@@ -97,6 +103,14 @@ public class OrganizationServiceTests {
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
                     () -> organizationService.create(new CreateOrganizationInput("ООО Тест-3", expected)));
             assertEquals(expected, e.id);
+        }
+        @Test
+        public void whenCreateNoSuchRecord_thenThrowsUnexpected() {
+            int expected = 4;
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> organizationService.create(new CreateOrganizationInput("ООО Тест-4", expected)));
+            assertTrue(e.getCause() instanceof NoSuchRecordException);
+            assertEquals(expected, ((NoSuchRecordException) e.getCause()).id);
         }
     }
 
@@ -144,6 +158,18 @@ public class OrganizationServiceTests {
                     .update(model.id, model.name, model.org_id))
                     .thenThrow(new WrongHeadIdException(expected, Table.ORGANIZATION));
             WrongHeadIdException e = assertThrows(WrongHeadIdException.class,
+                    () -> organizationService.update(model));
+            assertEquals(expected, e.id);
+        }
+
+        @Test
+        public void whenUpdateNotFound_thenThrows() throws BaseException {
+            Integer expected = 1;
+            UpdateOrganizationInput model = new UpdateOrganizationInput(1, "ООО Тест", expected);
+            Mockito.when(organizationRepository
+                    .update(model.id, model.name, model.org_id))
+                    .thenThrow(new NoSuchRecordException(expected));
+            NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
                     () -> organizationService.update(model));
             assertEquals(expected, e.id);
         }
@@ -232,6 +258,16 @@ public class OrganizationServiceTests {
             assertEquals(expected.id, actual.id);
             assertEquals(expected.table, actual.table);
         }
+        @Test
+        public void whenDeleteReturnedWrongId() throws BaseException {
+            DeleteHasChildException expected = new DeleteHasChildException(42, Table.UNKNOWN);
+            Mockito.when(organizationRepository.delete(expected.id))
+                    .thenReturn(expected.id+1);
+
+            UnexpectedException e = assertThrows(UnexpectedException.class,
+                    () -> organizationService.delete(expected.id));
+
+        }
     }
 
     @Nested
@@ -272,8 +308,8 @@ public class OrganizationServiceTests {
                 int pageNum = 1;
                 int pageSize = 1;
                 OrgListElement el = new OrgListElement(1,"Test",42);
-                List<Record3<Integer, String, Integer>> repRes = new LinkedList<>();
-                Record3<Integer, String, Integer> mockResult = Mockito.mock(Record3.class);
+                List<Record4<Integer, String, Integer, Integer>> repRes = new LinkedList<>();
+                Record4<Integer, String, Integer, Integer> mockResult = Mockito.mock(Record4.class);
                 Mockito.when(mockResult.component1()).thenReturn(el.id);
                 Mockito.when(mockResult.component2()).thenReturn(el.name);
                 Mockito.when(mockResult.component3()).thenReturn(el.count);

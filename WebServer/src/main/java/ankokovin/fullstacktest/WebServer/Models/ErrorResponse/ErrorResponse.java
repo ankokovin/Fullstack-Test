@@ -21,10 +21,6 @@ public class ErrorResponse {
         return message.equals(that.message);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(message);
-    }
 
     @Override
     public String toString() {
