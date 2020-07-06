@@ -1,0 +1,9 @@
+<li ng-controller="OrganizationNodeCtrl" class="list-group-item" ng-class="$ctrl.visible?'d-block':'d-none'">
+    <div  ng-click="$ctrl.unfold($event)">
+        <span>ID: {{$ctrl.id}}</span>
+        <span>Name: {{$ctrl.name}}</span>
+    </div>
+    <ul class="list-group" ng-class="$ctrl.childrenVisible?'d-block':'d-none'">
+        <organization-node-component  node="child" ng-repeat="child in $ctrl.children" visible="$ctrl.childrenVisible"></organization-node-component >
+    </ul>
+</li>
