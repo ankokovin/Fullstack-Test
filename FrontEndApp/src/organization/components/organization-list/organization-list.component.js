@@ -1,8 +1,10 @@
+import OrganizationListTemplate from './organization-list.template.html';
+
 import OrganizationListCtrl from './organization-list.controller';
 
 let organizationListComponent = {
     componentName: 'organizationListComponent',
-    templateUrl: 'src/organization/components/organization-list/organization-list.template.html',
+    template: OrganizationListTemplate,
     controller: OrganizationListCtrl,
 };
 

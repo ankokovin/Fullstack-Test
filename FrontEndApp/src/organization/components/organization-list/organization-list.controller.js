@@ -1,4 +1,5 @@
 export default function OrganizationListCtrl($scope, $http, $routeParams) {
+    "ngInject";
     console.log($routeParams);
     let pageNum = 'pageNum' in $routeParams ? $routeParams['pageNum'] : '1'; 
     let pageSize = 'pageSize' in $routeParams ? $routeParams['pageSize'] : '25';

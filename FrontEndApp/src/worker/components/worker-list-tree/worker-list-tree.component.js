@@ -1,6 +1,8 @@
+import WorkerListTreeTemplate from './worker-list-tree.template.html';
+
 let workerListTreeComponent = {
     componentName: 'workerListTreeComponent',
-    templateUrl: 'src/worker/components/worker-list-tree/worker-list-tree.template.html',
+    template: WorkerListTreeTemplate,
     controller: function LoadworkerListTree() {
         console.log('LoadworkerList')
     }

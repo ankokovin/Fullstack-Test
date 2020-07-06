@@ -1,6 +1,8 @@
+import WorkerListTemplate from './worker-list.template.html';
+
 let workerListComponent = {
     componentName: 'workerListComponent',
-    templateUrl: 'src/worker/components/worker-list/worker-list.template.html',
+    template: WorkerListTemplate,
     controller: function LoadworkerList() {
         console.log('LoadworkerList')
     }

@@ -1,3 +1,5 @@
+import OrganizationListTreeTemplate from './organization-list-tree.template.html';
+
 let OrganizationListTreeComponent = {
     componentName: 'organizationListTreeComponent',
     templateUrl: 'src/organization/components/organization-list-tree/organization-list-tree.template.html',

@@ -1,6 +1,8 @@
+import WorkerCreateTemplate from './worker-create-template.html';
+
 let workerCreateComponent = {
     componentName: 'workerCreateComponent',
-    templateUrl: 'src/worker/components/worker-create/worker-create.template.html',
+    template: WorkerCreateTemplate,
     controller: function LoadworkerListTree() {
         console.log('LoadworkerList')
     }

@@ -2,6 +2,7 @@ import 'angular-route';
 import OrganizationRouting from './organization/organization.routing';
 import WorkerRouting from './worker/worker.routing';
 let routingConfig = function config($routeProvider) {
+  "ngInject";
   WorkerRouting($routeProvider);
   OrganizationRouting($routeProvider);
   $routeProvider.when('/', {
