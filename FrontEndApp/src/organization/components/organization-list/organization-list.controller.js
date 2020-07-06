@@ -1,13 +1,15 @@
-export default function OrganizationListCtrl($scope, $http, $routeParams) {
-    "ngInject";
-    console.log($routeParams);
-    let params = {
-        pageNum : 'pageNum' in $routeParams ? $routeParams['pageNum'] : '1',
-        pageSize : 'pageSize' in $routeParams ? $routeParams['pageSize'] : '25',
-        searchString : $routeParams['search']
+export default class OrganizationListCtrl{
+    constructor($scope, $http, $routeParams) {
+        "ngInject";
+        console.log($routeParams);
+        this.params = {
+            pageNum : 'pageNum' in $routeParams ? $routeParams['pageNum'] : '1',
+            pageSize : 'pageSize' in $routeParams ? $routeParams['pageSize'] : '25',
+            searchName : $routeParams['search']
+        }
+        $http.get('api/organization',{ params: this.params }).then((response) => {
+            console.log(response);
+            this.organizationList = response.data;
+        });    
     }
-    $http.get('api/organization',{ params:params }).then((response) => {
-        console.log(response);
-        $scope.organizationList = response.data;
-    });    
 }
