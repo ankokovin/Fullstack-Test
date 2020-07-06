@@ -31,6 +31,15 @@ public class OrganizationRepository {
 
     public OrganizationRepository() {}
     public OrganizationRepository(DSLContext dsl){this.dsl = dsl;}
+
+    public Integer getCount(String searchName) {
+        if (searchName == null) return dsl.select(count()).from(organization).fetchOneInto(Integer.class);
+        return dsl.select(count())
+                .from(organization)
+                .where(lower(organization.ORG_NAME).contains(lower(val(searchName))))
+                .fetchOneInto(Integer.class);
+    }
+
     /**
      * Получение списка организаций с количеством работников с поддержкой поиска
      * @param pageNum - Номер страницы (нумерация с единицы)

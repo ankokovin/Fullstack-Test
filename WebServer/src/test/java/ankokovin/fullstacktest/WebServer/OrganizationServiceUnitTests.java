@@ -7,6 +7,7 @@ import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.OrgListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.Page;
 import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
@@ -313,12 +314,16 @@ public class OrganizationServiceUnitTests {
                 Mockito.when(mockResult.component1()).thenReturn(el.id);
                 Mockito.when(mockResult.component2()).thenReturn(el.name);
                 Mockito.when(mockResult.component3()).thenReturn(el.count);
+                Mockito.when(organizationRepository.getCount(null)).thenReturn(1);
                 repRes.add(mockResult);
                 Mockito.when(organizationRepository.getAllWithCount(pageNum, pageSize, null))
                         .thenReturn(repRes);
-                List<OrgListElement> actual = organizationService.getAllWithCount(pageNum, pageSize, null);
-                assertEquals(1, actual.size());
-                assertEquals(el, actual.get(0));
+                Page<List<OrgListElement>> actual = organizationService.getAllWithCount(pageNum, pageSize, null);
+                assertEquals(1, actual.total);
+                assertEquals(pageNum, actual.page);
+                assertEquals(pageSize, actual.pageSize);
+                assertEquals(1, actual.list.size());
+                assertEquals(el, actual.list.get(0));
             }
         }
 

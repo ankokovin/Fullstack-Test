@@ -9,9 +9,7 @@ import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordRespon
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
-import ankokovin.fullstacktest.WebServer.Models.Response.OrganizationTreeNode;
-import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
-import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeNode;
+import ankokovin.fullstacktest.WebServer.Models.Response.*;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.Repos.WorkerRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
@@ -32,6 +30,7 @@ import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.create;
@@ -161,7 +160,8 @@ public class WorkerControllerTests {
 
             @Test
             public void whenOk_thenReturns() {
-                Worker[] given = WorkerHelpers.create(100, restTemplate, endPoint);
+                int cnt = 100;
+                Worker[] given = WorkerHelpers.create(cnt, restTemplate, endPoint);
                 int page = 2;
                 int pageSize = 10;
                 String url = endPoint + String.format("?page=%d&pageSize=%d", page, pageSize);
@@ -170,9 +170,13 @@ public class WorkerControllerTests {
                         .map((x) -> new WorkerListElement(x.getId(), x.getWorkerName(),
                                 null, null,
                                 1, "TestOrg")).toArray(WorkerListElement[]::new);
-                ResponseEntity<WorkerListElement[]> response = restTemplate.getForEntity(url, WorkerListElement[].class);
+                ResponseEntity<WorkerPage> response = restTemplate.getForEntity(url, WorkerPage.class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertArrayEquals(expected, response.getBody());
+                assertNotNull(response.getBody());
+                assertEquals(page, response.getBody().page);
+                assertEquals(pageSize, response.getBody().pageSize);
+                assertEquals(cnt, response.getBody().total);
+                assertArrayEquals(expected, response.getBody().list.toArray(new WorkerListElement[0]));
             }
 
             @Test
@@ -207,14 +211,16 @@ public class WorkerControllerTests {
                 WorkerListElement[] expectedSecondPage = Arrays.copyOfRange(expected, pageSize, exp_2);
                 String url = String.format("%s?page=%d&pageSize=%d&searchName=%s&searchOrgName=%s",
                         endPoint, 1, pageSize, nameTemplate.substring(0, 5), orgName);
-                ResponseEntity<WorkerListElement[]> response = restTemplate.getForEntity(url, WorkerListElement[].class);
+                ResponseEntity<WorkerPage> response = restTemplate.getForEntity(url, WorkerPage.class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertArrayEquals(expectedFirstPage, response.getBody());
+                assertNotNull(response.getBody());
+                assertArrayEquals(expectedFirstPage, response.getBody().list.toArray(new WorkerListElement[0]));
                 url = String.format("%s?page=%d&pageSize=%d&searchName=%s&searchOrgName=%s",
                         endPoint, 2, pageSize, nameTemplate.substring(0, 5), orgName);
-                response = restTemplate.getForEntity(url, WorkerListElement[].class);
+                response = restTemplate.getForEntity(url, WorkerPage.class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertArrayEquals(expectedSecondPage, response.getBody());
+                assertNotNull(response.getBody());
+                assertArrayEquals(expectedSecondPage, response.getBody().list.toArray(new WorkerListElement[0]));
             }
         }
 
