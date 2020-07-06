@@ -273,6 +273,7 @@ public class WorkerServiceUnitTests {
                 Mockito.when(workerRepository.getAll(page, pageSize,org_name,name_format))
                         .thenReturn(mockResult);
                 Page<List<WorkerListElement>> actual = workerService.get(page, pageSize,name_format,org_name);
+                assertEquals(expected.size(), actual.total);
                 assertEquals(expected.size(), actual.list.size());
                 assertIterableEquals(expected, actual.list);
             }

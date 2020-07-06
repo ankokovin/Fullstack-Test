@@ -160,7 +160,8 @@ public class WorkerControllerTests {
 
             @Test
             public void whenOk_thenReturns() {
-                Worker[] given = WorkerHelpers.create(100, restTemplate, endPoint);
+                int cnt = 100;
+                Worker[] given = WorkerHelpers.create(cnt, restTemplate, endPoint);
                 int page = 2;
                 int pageSize = 10;
                 String url = endPoint + String.format("?page=%d&pageSize=%d", page, pageSize);
@@ -172,6 +173,9 @@ public class WorkerControllerTests {
                 ResponseEntity<WorkerPage> response = restTemplate.getForEntity(url, WorkerPage.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertNotNull(response.getBody());
+                assertEquals(page, response.getBody().page);
+                assertEquals(pageSize, response.getBody().pageSize);
+                assertEquals(cnt, response.getBody().total);
                 assertArrayEquals(expected, response.getBody().list.toArray(new WorkerListElement[0]));
             }
 

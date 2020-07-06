@@ -218,7 +218,8 @@ class OrganizationControllerTests {
             }
             @Test
             public void whenOk_thenReturns() {
-                Organization[] given = create(100);
+                int cnt = 100;
+                Organization[] given = create(cnt);
                 int page = 2;
                 int pageSize = 10;
                 Organization[] expected_orgs = Arrays.copyOfRange(given, (page-1) * pageSize, page*pageSize);
@@ -230,6 +231,9 @@ class OrganizationControllerTests {
                         = restTemplate.getForEntity(url, OrganizationPage.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertNotNull(response.getBody());
+                assertEquals(page, response.getBody().page);
+                assertEquals(pageSize, response.getBody().pageSize);
+                assertEquals(cnt, response.getBody().total);
                 assertArrayEquals(expected, response.getBody().list.toArray(new OrgListElement[0]));
             }
             @Test

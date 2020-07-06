@@ -319,6 +319,9 @@ public class OrganizationServiceUnitTests {
                 Mockito.when(organizationRepository.getAllWithCount(pageNum, pageSize, null))
                         .thenReturn(repRes);
                 Page<List<OrgListElement>> actual = organizationService.getAllWithCount(pageNum, pageSize, null);
+                assertEquals(1, actual.total);
+                assertEquals(pageNum, actual.page);
+                assertEquals(pageSize, actual.pageSize);
                 assertEquals(1, actual.list.size());
                 assertEquals(el, actual.list.get(0));
             }
