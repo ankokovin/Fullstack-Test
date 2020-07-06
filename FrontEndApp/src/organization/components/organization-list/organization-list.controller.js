@@ -7,7 +7,8 @@ export default class OrganizationListCtrl{
         this.searchString = $routeParams['search'];
         $http.get('api/organization.json').then((response) => {
             console.log(response);
-            this.organizationList = response.data;
+            this.organizationList = response.data.list;
+            this.total = response.data.total;
         });    
     }
 }
