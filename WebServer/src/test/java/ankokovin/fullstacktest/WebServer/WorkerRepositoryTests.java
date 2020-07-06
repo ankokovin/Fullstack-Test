@@ -244,6 +244,73 @@ public class WorkerRepositoryTests {
                 assertEquals(id, e.id);
             }
         }
+
+        @Nested
+        class GetCount {
+            @Test
+            void whenNoSearch_thenReturnsCount() throws BaseException {
+                int expected = 42;
+                WorkerHelpers.insert(expected,workerRepository,organizationRepository);
+                int actual = workerRepository.getCount(null, null);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void whenWorkerSearch_thenReturnCountCorrect() throws BaseException {
+                int[] cnts = new int[]{23, 42,54,13};
+                String searchPattern = "Find me";
+                String namePattern = searchPattern+"%d";
+                int org_id = OrganizationHelpers.create(organizationRepository, dslContext).getId();
+                int expected = 0;
+                int cur = 0;
+                for (int i = 0; i < cnts.length; i++) {
+                    if (i%2 == 0) {
+                        WorkerHelpers.insert(cnts[i], org_id, cur,workerRepository);
+                    } else {
+                        WorkerHelpers.insert(cnts[i], org_id, cur, namePattern, workerRepository);
+                        expected += cnts[i];
+                    }
+                    cur += cnts[i];
+                }
+                int actual = workerRepository.getCount(searchPattern, null);
+                assertEquals(expected, actual);
+            }
+            @Test
+            void whenOrganizationSearch_thenReturnCountCorrect() throws BaseException {
+                int[] cnts = new int[]{23, 42,54,13};
+                Organization[] orgs = OrganizationHelpers.create(2, organizationRepository, dslContext);
+                int expected = 0;
+                int cur = 0;
+                for (int i = 0; i < cnts.length; i++) {
+                    WorkerHelpers.insert(cnts[i], orgs[i%2].getId(), cur, workerRepository);
+                    if (i%2 == 0)
+                        expected += cnts[i];
+                    cur += cnts[i];
+                }
+                int actual = workerRepository.getCount(null, orgs[0].getOrgName());
+                assertEquals(expected, actual);
+            }
+            @Test
+            void whenBothSearch_thenReturnCountCorrect() throws BaseException {
+                int[] cnts = new int[]{23, 42,54,13, 52,15,63,42};
+                String searchPattern = "Find me";
+                String namePattern = searchPattern+"%d";
+                Organization[] orgs =  OrganizationHelpers.create(2, organizationRepository, dslContext);
+                int expected = 0;
+                int cur = 0;
+                for (int i = 0; i < cnts.length; i++) {
+                    int org_id = i % 4 > 1 ? orgs[1].getId() : orgs[0].getId();
+                    if (i%2 == 0) {
+                        WorkerHelpers.insert(cnts[i], org_id, cur, namePattern, workerRepository);
+                    } else {
+                        WorkerHelpers.insert(cnts[i], org_id, cur, workerRepository);
+                    }
+                    if (i%4 == 0) expected += cnts[i];
+                    cur += cnts[i];
+                }
+                int actual = workerRepository.getCount(searchPattern, orgs[0].getOrgName());
+                assertEquals(expected, actual);
+            }
+        }
         @Nested
         class GetAll {
             @Test

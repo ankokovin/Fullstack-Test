@@ -5,6 +5,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.OrgListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.Page;
 import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
@@ -30,12 +31,14 @@ public class OrganizationService {
      * @param searchName - строка поиска
      * @return Список информации об организациях
      */
-    public List<OrgListElement> getAllWithCount(int pageNum, int pageSize, String searchName) {
+    public Page<List<OrgListElement>> getAllWithCount(int pageNum, int pageSize, String searchName) {
+        Integer total = rep.getCount(searchName);
+        if (total == 0) return new Page<>(pageNum, pageSize, total, null);
         List<OrgListElement> result = new ArrayList<>();
         for (Record4<Integer, String, Integer, Integer> rec : rep.getAllWithCount(pageNum, pageSize, searchName)) {
             result.add(new OrgListElement(rec.component1(), rec.component2(), rec.component3()));
         }
-        return result;
+        return new Page<>(pageNum,pageSize, total, result);
     }
 
     /**

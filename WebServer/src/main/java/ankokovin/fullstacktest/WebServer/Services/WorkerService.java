@@ -4,6 +4,7 @@ import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
+import ankokovin.fullstacktest.WebServer.Models.Response.Page;
 import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeListElement;
@@ -22,6 +23,7 @@ public class WorkerService {
 
     @Autowired
     private WorkerRepository rep;
+
 
 
     /**
@@ -80,8 +82,10 @@ public class WorkerService {
      * @param searchOrgName - строка поиска организации
      * @return список информации о работниках
      */
-    public List<WorkerListElement> get(Integer page, Integer pageSize, String searchName, String searchOrgName) {
-        return rep.getAll(page, pageSize, searchOrgName, searchName).stream()
+    public Page<List<WorkerListElement>> get(Integer page, Integer pageSize, String searchName, String searchOrgName) {
+        Integer total = rep.getCount(searchName,searchOrgName);
+        if (total == 0) return new Page<>(page, pageSize,0,null);
+        List<WorkerListElement> resultList =  rep.getAll(page, pageSize, searchOrgName, searchName).stream()
                 .map(x-> new WorkerListElement(
                         x.component1(),
                         x.component2(),
@@ -90,6 +94,7 @@ public class WorkerService {
                         x.component5(),
                         x.component6()))
                 .collect(Collectors.toList());
+        return new Page<>(page, pageSize,total,resultList);
     }
 
     /**
