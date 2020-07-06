@@ -1,10 +1,13 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
+const path = require('path');
 
 
 module.exports = {    
-    devtool: 'source-map', // for debug purposes on production
+    entry:{
+        path: path.resolve(__dirname, 'src/app.js')
+    },
     module: {
         rules: [
             {
@@ -36,17 +39,13 @@ module.exports = {
                 ]
             },
             {
+                test: /\.css$/,
+                use: ['css-loader']
+            },
+            {
                 test: /\.js$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'ng-annotate-loader'
-                    },
-                    {
-                        loader: 'babel-loader'
-                    }
-                ]
-                                                        
+                exclude: /node_modules/,    
+                loader: 'babel-loader'                                      
             }
         ]
     },

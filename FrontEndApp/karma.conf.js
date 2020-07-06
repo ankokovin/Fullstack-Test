@@ -2,7 +2,7 @@ const path = require('path');
 const webpackConfig = require('./webpack.config');
 webpackConfig.mode = 'development';
 
-const entry = path.resolve(__dirname, './src/index.js');
+const entry = path.resolve(__dirname, './src/app.js');
 const preprocessor = {};
 preprocessor[entry] = ['webpack'];
 
@@ -23,7 +23,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      entry
+      "src/**/*.spec.js"
     ],
 
     webpack: webpackConfig,
