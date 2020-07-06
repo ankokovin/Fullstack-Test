@@ -1,6 +1,6 @@
 let organizationListComponent = {
     componentName: 'organizationListComponent',
-    template: '<h2>I\'m a list of organizations!</h2>',
+    templateUrl: 'src/organization/components/organization-list/organization-list.template.html',
     controller: function LoadOrganizationList() {
         console.log('LoadOrganizationList')
     }

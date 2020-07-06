@@ -1,6 +1,6 @@
 let workerListTreeComponent = {
     componentName: 'workerListTreeComponent',
-    template: '<h2>I\'m an worker list tree component!</h2>',
+    templateUrl: 'src/worker/components/worker-list-tree/worker-list-tree.template.html',
     controller: function LoadworkerListTree() {
         console.log('LoadworkerList')
     }

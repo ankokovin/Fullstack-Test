@@ -1,6 +1,6 @@
 let OrganizationListTreeComponent = {
     componentName: 'organizationListTreeComponent',
-    template: '<h2>I\'m an organization list tree component!</h2>',
+    templateUrl: 'src/organization/components/organization-list-tree/organization-list-tree.template.html',
     controller: function LoadOrganizationListTree() {
         console.log('LoadOrganizationList')
     }

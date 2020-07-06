@@ -1,6 +1,6 @@
 let workerListComponent = {
     componentName: 'workerListComponent',
-    template: '<h2>I\'m a list of workers!</h2>',
+    templateUrl: 'src/worker/components/worker-list/worker-list.template.html',
     controller: function LoadworkerList() {
         console.log('LoadworkerList')
     }
