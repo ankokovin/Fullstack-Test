@@ -10,6 +10,7 @@ import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdRespons
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.OrgListElement;
+import ankokovin.fullstacktest.WebServer.Models.Response.OrganizationPage;
 import ankokovin.fullstacktest.WebServer.Models.Response.OrganizationTreeNode;
 import ankokovin.fullstacktest.WebServer.Repos.OrganizationRepository;
 import ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers;
@@ -225,10 +226,11 @@ class OrganizationControllerTests {
                         .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
                         .toArray(OrgListElement[]::new);
                 String url = endPoint+String.format("?page=%d&pageSize=%d",page, pageSize);
-                ResponseEntity<OrgListElement[]> response
-                        = restTemplate.getForEntity(url, OrgListElement[].class);
+                ResponseEntity<OrganizationPage> response
+                        = restTemplate.getForEntity(url, OrganizationPage.class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertArrayEquals(expected, response.getBody());
+                assertNotNull(response.getBody());
+                assertArrayEquals(expected, response.getBody().list.toArray(new OrgListElement[0]));
             }
             @Test
             public void whenSearchOk_thenReturns() {
@@ -241,10 +243,11 @@ class OrganizationControllerTests {
                         .toArray(OrgListElement[]::new);
                 String url = endPoint+String.format("?page=%d&pageSize=%d&searchName=%s",
                         page, pageSize, "42");
-                ResponseEntity<OrgListElement[]> response
-                        = restTemplate.getForEntity(url, OrgListElement[].class);
+                ResponseEntity<OrganizationPage> response
+                        = restTemplate.getForEntity(url, OrganizationPage.class);
                 assertEquals(200, response.getStatusCodeValue());
-                assertArrayEquals(expected, response.getBody());
+                assertNotNull(response.getBody());
+                assertArrayEquals(expected, response.getBody().list.toArray(new OrgListElement[0]));
             }
         }
 
