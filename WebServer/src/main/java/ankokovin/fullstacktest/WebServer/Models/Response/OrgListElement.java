@@ -1,14 +1,29 @@
-package ankokovin.fullstacktest.WebServer.Models;
+package ankokovin.fullstacktest.WebServer.Models.Response;
 
-
-import java.util.Objects;
-
+/**
+ * Информация об организации
+ */
 @SuppressWarnings("unused")
 public class OrgListElement {
+    /**
+     * Идентификатор организации
+     */
     public final Integer id;
+    /**
+     * Название организации
+     */
     public final String name;
+    /**
+     * Количество сотрудников организации
+     */
     public final Integer count;
 
+    /**
+     * Информация об организации
+     * @param id Идентификатор организации
+     * @param name Название организации
+     * @param count Количество сотрудников организации
+     */
     public OrgListElement(int id, String name, Integer count) {
         this.id = id;
         this.count = count;
@@ -23,19 +38,5 @@ public class OrgListElement {
         return id.equals(that.id) &&
                 name.equals(that.name) &&
                 count.equals(that.count);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, count);
-    }
-
-    @Override
-    public String toString() {
-        return "OrgListElement{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", count=" + count +
-                '}';
     }
 }

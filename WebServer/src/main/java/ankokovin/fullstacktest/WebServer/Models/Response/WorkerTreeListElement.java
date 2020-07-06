@@ -1,11 +1,24 @@
-package ankokovin.fullstacktest.WebServer.Models;
+package ankokovin.fullstacktest.WebServer.Models.Response;
 
-import java.util.Objects;
-
+/**
+ * Информация о работнике
+ */
 public class WorkerTreeListElement {
+    /**
+     * Идентификатор работника
+     */
     public int id;
+    /**
+     * Имя работника
+     */
     public String name;
+    /**
+     * Идентификатор организации
+     */
     public Integer org_id;
+    /**
+     * Название организации
+     */
     public String org_name;
     public WorkerTreeListElement(){}
     public WorkerTreeListElement(int id, String name,
@@ -25,20 +38,5 @@ public class WorkerTreeListElement {
                 name.equals(element.name) &&
                 org_id.equals(element.org_id) &&
                 org_name.equals(element.org_name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, org_id, org_name);
-    }
-
-    @Override
-    public String toString() {
-        return "WorkerTreeListElement{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", org_id=" + org_id +
-                ", org_name='" + org_name + '\'' +
-                '}';
     }
 }

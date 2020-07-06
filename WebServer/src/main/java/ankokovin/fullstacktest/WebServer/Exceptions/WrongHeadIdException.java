@@ -2,9 +2,18 @@ package ankokovin.fullstacktest.WebServer.Exceptions;
 
 import ankokovin.fullstacktest.WebServer.Models.Table;
 
+/**
+ * Неверный идентификатор сущности
+ */
 public class WrongHeadIdException extends BaseException {
 
+    /**
+     * Идентификатор
+     */
     public final Integer id;
+    /**
+     * Таблица сущности
+     */
     public final Table to;
 
     public WrongHeadIdException(Integer id, Table to, String message, Throwable cause) {
@@ -18,7 +27,7 @@ public class WrongHeadIdException extends BaseException {
     }
 
     public WrongHeadIdException(Integer id, Table to) {
-        this(id, to, null, null);
+        this(id, to, null);
     }
 
 

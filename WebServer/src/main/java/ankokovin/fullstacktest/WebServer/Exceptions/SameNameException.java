@@ -1,6 +1,12 @@
 package ankokovin.fullstacktest.WebServer.Exceptions;
 
+/**
+ * Уже имеется сущность с данным именем
+ */
 public class SameNameException extends BaseException {
+    /**
+     * Имя
+     */
     public final String name;
 
     public SameNameException(String name, String message, Throwable cause) {
@@ -13,6 +19,6 @@ public class SameNameException extends BaseException {
     }
 
     public SameNameException(String name) {
-        this(name, null, null);
+        this(name, null);
     }
 }
