@@ -27,7 +27,7 @@ public class OrganizationsController {
     /**
      * Количество организаций на странице по-умолчанию
      */
-    private final String defaultPageCount = "25";
+    private final String defaultPageCount = "10";
 
 
     @Autowired
@@ -107,7 +107,7 @@ public class OrganizationsController {
     @GetMapping("/tree")
     public ResponseEntity<TreeNode<Organization>> getTree(
             @RequestParam(required = false) Integer id,
-            @RequestParam Integer depth) throws NoSuchRecordException {
+            @RequestParam(required = false, defaultValue = "2") Integer depth) throws NoSuchRecordException {
         if (depth <= 0 || depth > 2) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(service.getTree(id, depth));
     }
