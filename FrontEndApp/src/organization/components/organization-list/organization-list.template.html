@@ -1,8 +1,20 @@
-<h2>This is a list of organizations</h2>
-<ul ng-controller="OrganizationListCtrl">
-    <li ng-repeat="organization in organizationList">
-        <span>{{organization.id}}</span>
-        <p>{{organization.name}}</p>
-        <p>{{organization.count}}</p>
-    </li>
-</ul>
+<div ng-controller="OrganizationListCtrl">
+    <input ng-model="$ctrl.searchString" >
+    <a class="btn" ng-href="#!/organization/list?search={{$ctrl.searchString}}">Искать</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Название</th>
+                <th scope="col">Количество сотрудников</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="organization in $ctrl.organizationList">
+                <th scope="row">{{organization.id}}</th>
+                <td>{{organization.name}}</td>
+                <td>{{organization.count}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
