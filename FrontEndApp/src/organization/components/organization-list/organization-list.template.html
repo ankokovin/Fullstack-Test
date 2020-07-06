@@ -17,4 +17,21 @@
             </tr>
         </tbody>
     </table>
+    <p>Всего записей: {{$ctrl.total}}</p>
+    <ul class="pagination">
+        <li class="page-item" ng-class="$ctrl.pageNum==1?'disabled':''">
+          <a class="page-link" ng-href="#!/organization/list?pageNum={{$ctrl.pageNum-1}}&pageSize{{$ctrl.pageSize}}&search={{$ctrl.searchString}}" 
+          tabindex="-1">Предыдущая</a>
+        </li>
+        <li class="page-item" 
+          ng-repeat="x in [].constructor($ctrl.pageShowCnt) track by $index"
+          ng-class="$index+1==$ctrl.pageNum?'active':''">
+          <a class="page-link" ng-href="#!/organization/list?pageNum={{$index+1}}&pageSize{{$ctrl.pageSize}}&search={{$ctrl.searchString}}">
+            {{$index+1}}</a>
+        </li>
+        <li class="page-item" ng-class="$ctrl.pageNum==$ctrl.pageShowCnt?'disabled':''">
+          <a class="page-link" ng-href="#!/organization/list?pageNum={{$ctrl.pageNum-0+1}}&pageSize{{$ctrl.pageSize}}&search={{$ctrl.searchString}}">
+            Следующая</a>
+        </li>
+      </ul>
 </div>

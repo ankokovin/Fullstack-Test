@@ -9,7 +9,11 @@ export default class OrganizationListCtrl{
         }
         $http.get('api/organization',{ params: this.params }).then((response) => {
             console.log(response);
-            this.organizationList = response.data;
+            this.organizationList = response.data.list;
+            this.total = response.data.total;
+            if (this.pageNum != response.data.page) alert('API returned wrong page');
+            if (this.pageSize != response.data.pageSize) alert('API returned wrong page size');
+            this.pageShowCnt = Math.ceil(this.total/this.pageSize);
         });    
     }
 }
