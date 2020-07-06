@@ -1,4 +1,4 @@
-import WorkerCreateTemplate from './worker-create-template.html';
+import WorkerCreateTemplate from './worker-create.template.html';
 
 let workerCreateComponent = {
     componentName: 'workerCreateComponent',
