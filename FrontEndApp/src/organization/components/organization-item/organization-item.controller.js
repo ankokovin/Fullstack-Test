@@ -22,4 +22,11 @@ export default class OrganizationItemCtrl{
             this.organization.head_id = Object.keys(this.scope.organizationList).find(key => this.scope.organizationList[key] === this.searchName);
         });  
     }
+
+    create() {
+        console.log(this.organization);
+        this.OrganizationService.create(this.organization.name, this.organization.head_id).then(
+            (response) => console.log('Nice') //TODO: show some message, redirect?
+        );
+    }
 }

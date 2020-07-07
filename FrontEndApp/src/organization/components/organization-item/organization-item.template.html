@@ -2,7 +2,7 @@
     <form novalidate class="simple-form">
         <div class="form-group">
             <label>Название:</label>
-            <input type="text" ng-model="$ctrl.organization.orgName" class="form-control" placeholder="ООО Тест"/>
+            <input type="text" ng-model="$ctrl.organization.name" class="form-control" placeholder="ООО Тест"/>
         </div>
         <div class="form-group"> <!--TODO: OrganizationSearch must be a separate component-->
             <label>Головная организация:</label>
@@ -15,7 +15,7 @@
             </div>
            
         </div>
-        <button class="btn btn-primary" ng-hide="$ctrl.new">Создать</button>
+        <button class="btn btn-primary" ng-hide="$ctrl.new" ng-click="$ctrl.create()">Создать</button>
         <button class="btn btn-primary"  ng-hide="!$ctrl.new">Обновить</button>
         <button class="btn btn-danger"  ng-hide="!$ctrl.new">Удалить</button>
     </form>
