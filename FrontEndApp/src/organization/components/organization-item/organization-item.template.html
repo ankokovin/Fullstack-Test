@@ -4,16 +4,16 @@
             <label>Название:</label>
             <input type="text" ng-model="$ctrl.organization.name" class="form-control" placeholder="ООО Тест"/>
         </div>
+        <label>Головная организация:</label>
         <div class="form-group"> <!--TODO: OrganizationSearch must be a separate component-->
-            <label>Головная организация:</label>
-            <div class="dropdown" >
-                <input type="text" ng-model="$ctrl.searchName" ng-change="$ctrl.load()" data-toggle="dropdown" ng-focus="$ctrl.searchNameFocus()"/>
-                <div class="dropdown-menu">
-                    <button class="dropdown-item">Нет</button>
-                    <button class="dropdown-item" ng-repeat="(id, name) in organizationList" ng-click="$ctrl.select(id)">{{name}}</button>
-                </div>
-            </div>
-           
+                <input type="text" ng-model="$ctrl.searchName" class="form-control" ng-change="$ctrl.load()" ng-focus="$ctrl.searchNameFocus()" 
+                placeholder="Нет"/>
+                <ol ng-hide="!$ctrl.showList" class="list-group">
+                    <li ng-repeat="(id, name) in organizationList" 
+                        class="list-group-item" 
+                        ng-click="$ctrl.select(id)"
+                        ng-class="id === $ctrl.organization.head_id ? 'active':''">{{name}}</li>
+                </ol>           
         </div>
         <button class="btn btn-primary" ng-hide="$ctrl.new" ng-click="$ctrl.create()">Создать</button>
         <button class="btn btn-primary"  ng-hide="!$ctrl.new">Обновить</button>
