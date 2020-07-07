@@ -1,20 +1,14 @@
 export default class OrganizationListCtrl{
-    constructor($scope, $http, $routeParams) {
+    constructor(OrganizationService, $routeParams) {
         "ngInject";
-        this.params = {
-            page : 'page' in $routeParams ? $routeParams['page'] : '1',
-            pageSize : 'pageSize' in $routeParams ? $routeParams['pageSize'] : '25',
-            searchName : $routeParams['search']
-        }
-        console.log(this.params);
-
-        $http.get('api/organization',{ params: this.params }).then((response) => {
-            console.log(response);
-            this.organizationList = response.data.list;
-            this.total = response.data.total;
-            if (this.params.page != response.data.page) alert('API returned wrong page');
-            if (this.params.pageSize != response.data.pageSize) alert('API returned wrong page size');
-            this.pageShowCnt = Array(this.total/this.params.pageSize);
+        this.page = 'page' in $routeParams ? $routeParams['page'] : '1';
+        this.pageSize = 'pageSize' in $routeParams ? $routeParams['pageSize'] : '25';
+        this.searchName = $routeParams['search'];
+        
+        OrganizationService.get_paged(this.page, this.pageSize, this.searchName).then((data) => {
+            this.organizationList = data.list;
+            this.total = data.total;
+            this.pageShowCnt = Array(Math.ceil(this.total/this.pageSize));
         });    
     }
 }

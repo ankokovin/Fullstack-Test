@@ -1,8 +1,7 @@
 export default class OrganizationListCtrl{
-    constructor($http) {
+    constructor(OrganizationService) {
         "ngInject";
-        console.log('called node constructor');
-        this.http = $http;
+        this.OrganizationService = OrganizationService;
         this.load = false;
         this.visible = false;
         this.childrenVisible = false;
@@ -33,15 +32,11 @@ export default class OrganizationListCtrl{
         console.log(this.children);
     }
 
-    load_children(){
-
-        this.http.get('api/organization/tree',{params:{
-            'id':this.id
-        }}).then((response) => {
-            console.log(response);
-            this.id = response.data.item.id;
-            this.name = response.data.item.orgName;
-            this.children = response.data.children;
+    load_children() {
+        this.OrganizationService.get_node(this.id).then((data) => {
+            this.id = data.item.id;
+            this.name = data.item.orgName;
+            this.children = data.children;
         });    
     }
 

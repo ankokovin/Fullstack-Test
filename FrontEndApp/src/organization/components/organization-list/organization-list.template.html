@@ -1,6 +1,6 @@
 <div ng-controller="OrganizationListCtrl">
-    <input ng-model="$ctrl.params.searchString" >
-    <a class="btn" ng-href="#!/organization/list?search={{$ctrl.params.searchString}}">Искать</a>
+    <input ng-model="$ctrl.searchString" >
+    <a class="btn" ng-href="#!/organization/list?search={{$ctrl.searchString}}">Искать</a>
     <table class="table">
         <thead>
             <tr>
@@ -20,17 +20,17 @@
     <p>Всего записей: {{$ctrl.total}}</p>
     <ul class="pagination">
         <li class="page-item" ng-class="$ctrl.page==1?'disabled':''">
-          <a class="page-link" ng-href="#!/organization/list?page={{$ctrl.params.page-1}}&pageSize{{$ctrl.params.pageSize}}&search={{$ctrl.params.searchName}}" 
+          <a class="page-link" ng-href="#!/organization/list?page={{$ctrl.page-1}}&pageSize{{$ctrl.pageSize}}&search={{$ctrl.searchName}}" 
           tabindex="-1">Предыдущая</a>
         </li>
         <li class="page-item" 
           ng-repeat="x in $ctrl.pageShowCnt track by $index"
-          ng-class="$index+1==$ctrl.params.page?'active':''">
-          <a class="page-link" ng-href="#!/organization/list?page={{$index+1}}&pageSize={{$ctrl.params.pageSize}}&search={{$ctrl.params.searchName}}">
+          ng-class="$index+1==$ctrl.page?'active':''">
+          <a class="page-link" ng-href="#!/organization/list?page={{$index+1}}&pageSize={{$ctrl.pageSize}}&search={{$ctrl.searchName}}">
             {{$index+1}}</a>
         </li>
         <li class="page-item" ng-class="$ctrl.page==$ctrl.pageShowCnt.length?'disabled':''">
-          <a class="page-link" ng-href="#!/organization/list?page={{$ctrl.params.page-0+1}}&pageSize{{$ctrl.params.pageSize}}&search={{$ctrl.params.searchName}}">
+          <a class="page-link" ng-href="#!/organization/list?page={{$ctrl.page-0+1}}&pageSize{{$ctrl.pageSize}}&search={{$ctrl.searchName}}">
             Следующая</a>
         </li>
       </ul>
