@@ -5,10 +5,10 @@ export default class OrganizationListCtrl{
         this.pageSize = 'pageSize' in $routeParams ? $routeParams['pageSize'] : '25';
         this.searchName = $routeParams['search'];
         
-        OrganizationService.get_paged(this.page, this.pagaSize, this.searchName).then((data) => {
-            this.organizationList = response.data.list;
-            this.total = response.data.total;
-            this.pageShowCnt = Array(this.total/this.params.pageSize);
+        OrganizationService.get_paged(this.page, this.pageSize, this.searchName).then((data) => {
+            this.organizationList = data.list;
+            this.total = data.total;
+            this.pageShowCnt = Array(Math.ceil(this.total/this.pageSize));
         });    
     }
 }
