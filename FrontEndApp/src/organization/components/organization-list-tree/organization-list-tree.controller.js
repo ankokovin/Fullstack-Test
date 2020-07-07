@@ -1,15 +1,15 @@
 export default class OrganizationListTreeCtrl{
-    constructor($http) {
+    constructor(OrganizationService) {
         "ngInject";
-        this.http = $http;
+        this.OrganizationService = OrganizationService;
+        
     }
 
     $onInit() {
         "ngInject";
-        this.http.get('api/organization/tree').then((response) => {
-            console.log(response);
-            this.children = response.data['children'];
-            console.log(this.children)
+        this.OrganizationService.get_node().then((data) => {
+            this.children = data.children;
+            console.log(this.children);
         });
     }    
     
