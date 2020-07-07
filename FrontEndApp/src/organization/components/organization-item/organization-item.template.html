@@ -6,11 +6,14 @@
         </div>
         <div class="form-group"> <!--TODO: OrganizationSearch must be a separate component-->
             <label>Головная организация:</label>
-            <input type="text" ng-model="$ctrl.searchName" ng-change="$ctrl.load()"/>
-            <select class="form-control" size="6">
-                <option selected value> Нет </option>
-                <option ng-repeat="organization in organizationList" value="{{organization.id}}">{{organization.name}}</option>
-            </select>
+            <div class="dropdown" >
+                <input type="text" ng-model="$ctrl.searchName" ng-change="$ctrl.load()" data-toggle="dropdown" ng-focus="$ctrl.searchNameFocus()"/>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item">Нет</button>
+                    <button class="dropdown-item" ng-repeat="(id, name) in organizationList" ng-click="$ctrl.select(id)">{{name}}</button>
+                </div>
+            </div>
+           
         </div>
         <button class="btn btn-primary" ng-hide="$ctrl.new">Создать</button>
         <button class="btn btn-primary"  ng-hide="!$ctrl.new">Обновить</button>
