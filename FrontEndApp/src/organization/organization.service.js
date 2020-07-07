@@ -10,6 +10,7 @@ export default class OrganizationService {
             {
                 params:{
                     id: id
+                }
             })
             .then((response) => {
                 console.log(response);
