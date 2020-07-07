@@ -6,8 +6,10 @@ export default class OrganizationService {
 
     get_node(id) {
         return new Promise((resolve, reject) => {
-            this.$http.get('api/organization/tree',params={
-                id: id
+            this.$http.get('api/organization/tree',
+            {
+                params:{
+                    id: id
             })
             .then((response) => {
                 console.log(response);
