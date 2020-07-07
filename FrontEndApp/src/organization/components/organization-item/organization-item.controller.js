@@ -4,6 +4,13 @@ export default class OrganizationItemCtrl{
         this.new =  'id' in $routeParams;
         this.scope = $scope;
         this.OrganizationService = OrganizationService;
+        this.id =  $routeParams.id;
+    }
+
+    $onInit() {
+        if (this.new) {
+            //TODO: this.OrganizationService.get(this.id)...    
+        }
     }
 
     create() {
