@@ -21,6 +21,8 @@ import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -316,10 +318,13 @@ public class WorkerRepositoryTests {
             @Test
             void whenAskedAll_returns() throws BaseException {
                 int cnt = 10;
-                Worker[] expected = WorkerHelpers.insert(cnt, workerRepository, organizationRepository);
+                Worker[] expected = Arrays.stream(WorkerHelpers.insert(cnt, workerRepository, organizationRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, cnt, null, null);
                 assertEquals(cnt, actual.size());
+                System.out.println(actual);
                 for (int i = 0; i < cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
@@ -340,6 +345,7 @@ public class WorkerRepositoryTests {
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, expected_cnt+5,orgName.substring(1,6),null);
                 assertEquals(expected_cnt, actual.size());
+                System.out.println(actual);
                 for (int i = 0; i < expected_cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
@@ -360,6 +366,7 @@ public class WorkerRepositoryTests {
                         = workerRepository.getAll(1, expected_cnt+5,
                         null,workerNameTemplate.substring(1,6));
                 assertEquals(expected_cnt, actual.size());
+                System.out.println(actual);
                 for (int i = 0; i < expected_cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
@@ -381,16 +388,22 @@ public class WorkerRepositoryTests {
                 Organization[] orgs = new Organization[]{null, target, other};
                 Worker[] given = WorkerHelpers.insert(startCnt,other.getId(),0,workerRepository);
                 int targetWorkersCnt = 7;
-                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, target.getId(), startCnt,
-                        workerRepository);
+                Worker[] targetWorkers = Arrays.stream(WorkerHelpers.insert(targetWorkersCnt, target.getId(), startCnt,
+                        workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 int endCnt = 4;
-                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,other.getId(), startCnt +
-                        targetWorkersCnt,workerRepository));
+                given = Arrays.stream(ArrayUtils.addAll(given,
+                        WorkerHelpers.insert(endCnt,other.getId(), startCnt + targetWorkersCnt,workerRepository)))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
-                        = workerRepository.getAll(1, cnt, null, null);
+                        = workerRepository.getAll(1, cnt, targetOrgName, null);
                 assertEquals(cnt, actual.size());
+                System.out.println(Arrays.toString(expected));
+                System.out.println(actual);
                 for (int i = 0; i < cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
@@ -413,15 +426,20 @@ public class WorkerRepositoryTests {
                 Organization[] orgs = new Organization[]{null, target, other};
                 Worker[] given = WorkerHelpers.insert(startCnt,other.getId(),0,workerRepository);
                 int targetWorkersCnt = 7;
-                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, target.getId(), startCnt,
-                        workerRepository);
+                Worker[] targetWorkers = Arrays.stream(
+                        WorkerHelpers.insert(targetWorkersCnt, target.getId(), startCnt, workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 int endCnt = 4;
-                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,other.getId(), startCnt +
-                        targetWorkersCnt,workerRepository));
+                given = Arrays.stream(
+                        ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,other.getId(),
+                                startCnt + targetWorkersCnt,workerRepository)))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
-                        = workerRepository.getAll(1, cnt, null, null);
+                        = workerRepository.getAll(1, cnt, targetOrgName, null);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
@@ -442,19 +460,25 @@ public class WorkerRepositoryTests {
                 Organization org = OrganizationHelpers.create(organizationRepository, dslContext);
                 Worker[] given = WorkerHelpers.insert(startCnt,org.getId(),0,otherName, workerRepository);
                 int targetWorkersCnt = 7;
-                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, org.getId(), startCnt, targetName,
-                        workerRepository);
+                Worker[] targetWorkers = Arrays.stream(
+                        WorkerHelpers.insert(targetWorkersCnt, org.getId(), startCnt, targetName, workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 int endCnt = 4;
-                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,org.getId(), startCnt +
-                        targetWorkersCnt,otherName, workerRepository));
+                given = Arrays.stream(
+                        ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,org.getId(), startCnt +
+                        targetWorkersCnt,otherName, workerRepository)))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, cnt, null, target);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
-                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    System.out.printf("%s %s%n", expected[i].getWorkerName(), actual.get(i).component2());
                     assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertNull(actual.get(i).component3());
                     assertNull(actual.get(i).component4());
                     assertEquals(expected[i].getOrgId(), actual.get(i).component5());
@@ -472,19 +496,24 @@ public class WorkerRepositoryTests {
                 Organization org = OrganizationHelpers.create(organizationRepository, dslContext);
                 Worker[] given = WorkerHelpers.insert(startCnt,org.getId(),0,otherName, workerRepository);
                 int targetWorkersCnt = 7;
-                Worker[] targetWorkers = WorkerHelpers.insert(targetWorkersCnt, org.getId(), startCnt, closerName,
-                        workerRepository);
+                Worker[] targetWorkers = Arrays.stream(
+                        WorkerHelpers.insert(targetWorkersCnt, org.getId(), startCnt, closerName, workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 int endCnt = 4;
-                given = ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,org.getId(), startCnt +
-                        targetWorkersCnt,otherName, workerRepository));
+                given = Arrays.stream(
+                        ArrayUtils.addAll(given, WorkerHelpers.insert(endCnt,org.getId(),
+                                startCnt + targetWorkersCnt,otherName, workerRepository)))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 Worker[] expected = ArrayUtils.addAll(targetWorkers, given);
                 int cnt = startCnt + targetWorkersCnt + endCnt;
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> actual
                         = workerRepository.getAll(1, cnt, null, target);
                 assertEquals(cnt, actual.size());
                 for (int i = 0; i < cnt; i++) {
-                    assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertEquals(expected[i].getWorkerName(), actual.get(i).component2());
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
                     assertNull(actual.get(i).component3());
                     assertNull(actual.get(i).component4());
                     assertEquals(expected[i].getOrgId(), actual.get(i).component5());
@@ -504,14 +533,22 @@ public class WorkerRepositoryTests {
                 int nameMatchCnt = 5;
                 int orgNameMatchCnt = 4;
                 int others = 7;
-                Worker[] othersWorkers = WorkerHelpers.insert(others, orgs[1].getId(),0,
-                        "test"+nameTarget, workerRepository);
-                Worker[] nameMatchWorkers = WorkerHelpers.insert(nameMatchCnt, orgs[1].getId(),others,
-                        nameTarget,workerRepository);
-                Worker[] fullMatchWorkers = WorkerHelpers.insert(fullMatchCnt, orgs[0].getId(),
-                        others+nameMatchCnt, nameTarget, workerRepository);
-                Worker[] orgNameMatch = WorkerHelpers.insert(orgNameMatchCnt, orgs[0].getId(),
-                        others+nameMatchCnt+fullMatchCnt, "test"+nameTarget, workerRepository);
+                Worker[] othersWorkers = Arrays.stream(WorkerHelpers.insert(others, orgs[1].getId(),0,
+                        "test"+nameTarget, workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
+                Worker[] nameMatchWorkers = Arrays.stream(WorkerHelpers.insert(nameMatchCnt, orgs[1].getId(),others,
+                        nameTarget,workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
+                Worker[] fullMatchWorkers = Arrays.stream(WorkerHelpers.insert(fullMatchCnt, orgs[0].getId(),
+                        others+nameMatchCnt, nameTarget, workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
+                Worker[] orgNameMatch = Arrays.stream(WorkerHelpers.insert(orgNameMatchCnt, orgs[0].getId(),
+                        others+nameMatchCnt+fullMatchCnt, "test"+nameTarget, workerRepository))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 Worker[] expected = ArrayUtils.addAll(fullMatchWorkers, nameMatchWorkers);
                 expected = ArrayUtils.addAll(expected, orgNameMatch);
                 expected = ArrayUtils.addAll(expected, othersWorkers);

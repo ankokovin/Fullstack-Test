@@ -16,7 +16,13 @@ CREATE TABLE Worker (
     CHECK (id != head_id)
 );
 
+
+
 CREATE INDEX ON Worker(worker_name);
+CREATE INDEX ON Organization(org_name);
+
+
+
 
 
 CREATE OR REPLACE FUNCTION check_worker_head() RETURNS TRIGGER AS $worker_head$

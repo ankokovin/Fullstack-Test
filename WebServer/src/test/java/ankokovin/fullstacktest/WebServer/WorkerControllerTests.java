@@ -28,10 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ankokovin.fullstacktest.WebServer.TestHelpers.WorkerHelpers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ankokovin.fullstacktest.WebServer.TestHelpers.OrganizationHelpers.create;
@@ -208,7 +205,9 @@ public class WorkerControllerTests {
             @Test
             public void whenOk_thenReturns() {
                 int cnt = 100;
-                Worker[] given = WorkerHelpers.create(cnt, restTemplate, endPoint);
+                Worker[] given = Arrays.stream(WorkerHelpers.create(cnt, restTemplate, endPoint))
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
+                        .toArray(Worker[]::new);
                 int page = 2;
                 int pageSize = 10;
                 String url = endPoint + String.format("?page=%d&pageSize=%d", page, pageSize);
@@ -249,6 +248,7 @@ public class WorkerControllerTests {
                         orgs[w.getOrgId()-1].getId(), orgs[w.getOrgId()-1].getOrgName());
 
                 WorkerListElement[] expected = Arrays.stream(expectedWorker)
+                        .sorted(Comparator.comparing(Worker::getWorkerName))
                         .map(mapToWorkerListElement)
                         .toArray(WorkerListElement[]::new);
                 WorkerHelpers.insert(exp_2, orgs[1].getId(),

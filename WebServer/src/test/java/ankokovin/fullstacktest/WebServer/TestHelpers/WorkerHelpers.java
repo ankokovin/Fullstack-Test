@@ -49,7 +49,7 @@ public class WorkerHelpers {
         Worker[] expected = new Worker[n];
         Worker[] actual = new Worker[n];
         for (int i = 0; i < n; ++i) {
-            String name = String.format(workerNameTemplate, i);
+            String name = String.format(workerNameTemplate, i + 1 + offset);
             expected[i] = new Worker(i + 1 + offset, name, org_id, head_id);
             actual[i] = workerRepository.getById(workerRepository.insert(name, org_id, head_id));
         }

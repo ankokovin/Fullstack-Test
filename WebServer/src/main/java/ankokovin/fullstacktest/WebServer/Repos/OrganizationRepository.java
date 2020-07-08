@@ -62,7 +62,7 @@ public class OrganizationRepository {
         Condition cond = searchName == null ? trueCondition() : subStringIdx.greaterThan(val(0));
                 return s.where(cond)
                         .groupBy(organization.ID)
-                        .orderBy(subStringIdx, organization.ID)
+                        .orderBy(subStringIdx, organization.ORG_NAME)
                         .limit(pageSize)
                         .offset((pageNum - 1) * pageSize)
                         .fetch();

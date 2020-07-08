@@ -274,7 +274,9 @@ class OrganizationControllerTests {
             @Test
             public void whenOk_thenReturns() {
                 int cnt = 100;
-                Organization[] given = create(cnt);
+                Organization[] given = Arrays.stream(create(cnt))
+                        .sorted(Comparator.comparing(Organization::getOrgName))
+                        .toArray(Organization[]::new);
                 int page = 2;
                 int pageSize = 10;
                 Organization[] expected_orgs = Arrays.copyOfRange(given, (page-1) * pageSize, page*pageSize);
