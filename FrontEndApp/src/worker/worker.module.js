@@ -1,10 +1,26 @@
+import WorkerService from './worker.service';
+
 import workerListComponent from './components/worker-list/worker-list.component';
 import workerListTreeComponent from './components/worker-list-tree/worker-list-tree.component';
-import workerCreateComponent from './components/worker-create/worker-create.component';
+import workerItemComponent from './components/worker-item/worker-item.component';
+import WorkerPickerComponent from './components/worker-picker/worker-picker.component';
+
+import WorkerListCtrl from './components/worker-list/worker-list.controller';
+import WorkerListTreeCtrl from './components/worker-list-tree/worker-list-tree.controller';
+import WorkerItemCtrl from './components/worker-item/worker-item.controller';
+import WorkerPickerCtrl from './components/worker-picker/worker-picker.controller';
 let workerModule = angular.module('workerModule',[]);
 
-workerModule.component(workerListComponent.componentName, workerListComponent);
-workerModule.component(workerListTreeComponent.componentName, workerListTreeComponent);
-workerModule.component(workerCreateComponent.componentName, workerCreateComponent);
+workerModule.service('WorkerService', WorkerService);
+
+
+workerModule.component(workerListComponent.componentName, workerListComponent)
+    .controller('WorkerListCtrl', WorkerListCtrl);
+workerModule.component(workerListTreeComponent.componentName, workerListTreeComponent)
+    .controller('WorkerListTreeCtrl', WorkerListTreeCtrl);
+workerModule.component(workerItemComponent.componentName, workerItemComponent)
+    .controller('WorkerItemCtrl', WorkerItemCtrl);
+workerModule.component(WorkerPickerComponent.componentName, WorkerPickerComponent)
+    .controller('WorkerPickerCtrl', WorkerPickerCtrl);
 
 export default workerModule;
