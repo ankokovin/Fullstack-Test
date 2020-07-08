@@ -216,7 +216,11 @@ public class WorkerRepository {
         if (org_name != null) condition = condition.and(organizationNameSubstringId.greaterThan(0));
         if (worker_name != null) condition = condition.and(workerNameSubstringId.greaterThan(0));
         return preCond.where(condition)
-                .orderBy(workerNameSubstringId,organizationNameSubstringId,organization.ID,worker.ID)
+                .orderBy(
+                        workerNameSubstringId,
+                        organizationNameSubstringId,
+                        worker.WORKER_NAME,
+                        organization.ORG_NAME)
                 .limit(pageSize)
                 .offset((pageNum-1)*pageSize)
                 .fetch();
