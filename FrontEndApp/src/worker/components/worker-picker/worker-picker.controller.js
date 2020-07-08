@@ -1,7 +1,7 @@
-export default class OrganizationPickerCtrl {
-    constructor(OrganizationService, $scope) {
+export default class WorkerPickerCtrl {
+    constructor(WorkerService, $scope) {
         "ngInject";
-        this.OrganizationService = OrganizationService;
+        this.WorkerService = WorkerService;
         this.$scope = $scope;
         this.showList = false;
         this.error_ids = new Set();
@@ -10,10 +10,10 @@ export default class OrganizationPickerCtrl {
 
     loadCur() {
         if (this.headid) {
-            this.OrganizationService.get(this.headid).then((data) => {
-                this.searchName = data.orgName;
+            this.WorkerService.get(this.headid).then((data) => {
+                this.searchName = data.workerName;
                 console.log(this.searchName);
-                document.getElementById('org-search-name-field').value = this.searchName;
+                document.getElementById('wor-search-name-field').value = this.searchName;
             })
         }
     }
@@ -30,23 +30,28 @@ export default class OrganizationPickerCtrl {
         }
         if (changesObj.init){
             this.headid = changesObj.init.currentValue;
+            console.log(this.headid);
             this.loadCur();
         }
         if (changesObj.required){
-            this.required = changesObj.required.currentValue;
+            this.reqired = changesObj.required.currentValue;
+        }
+        if (changesObj.org_id){
+            this.org_id = changesObj.org_id.currentValue;
         }
     }
 
     select(id) {
         this.headid = id;
-        this.searchName = this.$scope.organizationList[id];
+        this.searchName = this.$scope.workerList[id];
         this.showList = false;
     }
 
     load() {
-        this.OrganizationService.get_paged(1, 5, this.searchName).then((data) => {
-            this.$scope.organizationList = Object.fromEntries(data.list.slice(0,5).map(x=>[x.id, x.name]));
-            this.headid = Object.keys(this.$scope.organizationList).find(key => this.$scope.organizationList[key] === this.searchName);
+        this.WorkerService.get_paged(1, 5, this.searchName, this.org_id).then((data) => {
+            console.log(data);
+            this.$scope.workerList = Object.fromEntries(data.list.slice(0,5).map(x=>[x.id, x.name]));
+            this.headid = Object.keys(this.$scope.workerList).find(key => this.$scope.workerList[key] === this.searchName);
             this.$scope.$apply();
         });  
     }
@@ -72,7 +77,7 @@ export default class OrganizationPickerCtrl {
             if (this.error_ids.has(this.headid.toString())) return 'is-invalid';
             return 'is-valid';
         }
-        if (this.required === true) return 'is-invalid';
+        if (this.reqired === true) return 'is-invalid';
         return '';
     }
 

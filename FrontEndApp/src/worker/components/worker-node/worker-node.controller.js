@@ -1,16 +1,20 @@
-export default class OrganizationListCtrl{
-    constructor(OrganizationService) {
+export default class WorkerListCtrl{
+    constructor(WorkerService) {
         "ngInject";
-        this.OrganizationService = OrganizationService;
+        this.WorkerService = WorkerService;
         this.load = false;
         this.visible = false;
         this.childrenVisible = false;
     }
 
     $onChanges(changesObj) {
+        console.log(changesObj);
         if (changesObj.node) {
+            this.node = changesObj.node.currentValue;
             this.id = this.node.item.id;
-            this.name = this.node.item.orgName;
+            this.name = this.node.item.name;
+            this.org_id =  this.node.item.org_id;
+            this.org_name =  this.node.item.org_name;
             this.children = this.node.children;
         }
         if (changesObj.load) {
@@ -28,12 +32,16 @@ export default class OrganizationListCtrl{
                 }
             })
         }
+        console.log(this.children);
     }
 
     load_children() {
-        this.OrganizationService.get_node(this.id).then((data) => {
+        this.WorkerService.get_node(this.id).then((data) => {
             this.id = data.item.id;
-            this.name = data.item.orgName;
+            this.name = data.item.name;
+            this.org_id = data.item.org_id;
+            this.org_name = data.item.org_name;
+            console.log(this.org_id , this.org_name);
             this.children = data.children;
         });    
     }

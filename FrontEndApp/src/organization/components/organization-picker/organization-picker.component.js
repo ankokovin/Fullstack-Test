@@ -10,7 +10,8 @@ let OrganizationPickerComponent = {
         headid: '=',
         errormsg: '<',
         errorid: '<',
-        init: '<'
+        init: '<',
+        required: '<'
     }
 }
 

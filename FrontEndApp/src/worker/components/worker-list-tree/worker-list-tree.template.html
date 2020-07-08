@@ -1,1 +1,6 @@
-<h2>I'm tree list of workers</h2>
+<div ng-controller="WorkerListTreeCtrl">    
+    <ul class="list-group" >
+        <div ng-repeat="node in $ctrl.children"> {{node.id}}</div>
+        <worker-node-component node="node" visible="true" ng-repeat="node in $ctrl.children"></worker-node-component>
+    </ul>    
+</div>

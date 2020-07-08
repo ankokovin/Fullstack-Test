@@ -1,7 +1,7 @@
-<div ng-controller="OrganizationPickerCtrl">
+<div ng-controller="WorkerPickerCtrl">
     <label>{{$ctrl.message}}</label>
     <div class="form-group">
-        <input  id="org-search-name-field"
+        <input  id="wor-search-name-field"
                 type="text" 
                 ng-model="$ctrl.searchName" 
                 class="form-control" 
@@ -13,10 +13,10 @@
             {{$ctrl.error_msg}}
         </div>
         <div class="valid-feedback">
-             Организация выбрана
+            Начальник выбран
         </div>
         <ol ng-hide="!$ctrl.showList" class="list-group">
-            <li ng-repeat="(id, name) in organizationList" 
+            <li ng-repeat="(id, name) in workerList" 
                 class="list-group-item" 
                 ng-click="$ctrl.select(id)"
                 ng-class="$ctrl.listItemClass(id)">{{name}}</li>
