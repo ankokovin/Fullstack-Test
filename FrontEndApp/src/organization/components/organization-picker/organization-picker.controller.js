@@ -18,7 +18,6 @@ export default class OrganizationPickerCtrl {
     }
 
     $onChanges(changesObj) {
-        console.log(changesObj);
         if (changesObj.message){
             this.message = changesObj.message.currentValue;
         }
@@ -35,7 +34,6 @@ export default class OrganizationPickerCtrl {
     }
 
     select(id) {
-        console.log(id);
         this.headid = id;
         this.searchName = this.$scope.organizationList[id];
         this.showList = false;
@@ -55,7 +53,6 @@ export default class OrganizationPickerCtrl {
     }
 
     searchNameBlur(event) {
-        console.log(event);
         this.showList = false;
     }
 
@@ -67,7 +64,6 @@ export default class OrganizationPickerCtrl {
     }
 
     inputClass() {
-        console.log(this.headid);
         if (this.headid) {
             if (this.error_ids.has(this.headid.toString())) return 'is-invalid';
             return 'is-valid';

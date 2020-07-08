@@ -89,4 +89,19 @@ export default class OrganizationService {
             );
         });
     }
+
+    delete(id) {
+        return new Promise((resolve, reject) => {
+            this.$http.delete('api/organization',{data:id.toString(),headers: {'Content-Type': 'application/json;charset=utf-8'}}).then(
+                (response) => {
+                    console.log(response);
+                    resolve(response);
+                },
+                (error) => {
+                    console.log(error);
+                    reject(error);
+                }
+            )
+        });
+    }
 }

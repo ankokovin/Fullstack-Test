@@ -54,6 +54,19 @@ export default class OrganizationItemCtrl{
         )
     }
 
+    delete() {
+        this.OrganizationService.delete(this.id).then(
+            (response) => console.log('Nice'), //TODO: show some message, redirect?
+            (error) => {
+                if (error.status === 404) {
+                    alert('Record was already deleted');
+                }else if (error.status === 403) {
+                    alert('Record has children');                    
+                }
+            }
+        )
+    }
+
     updateHeadError(id) {
         this.head_error_id = id;   
         this.$scope.$apply();  
