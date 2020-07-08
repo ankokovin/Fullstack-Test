@@ -90,14 +90,6 @@ public class WorkerControllerTests {
                     Worker.class);
             assertEquals(400, response.getStatusCodeValue());
         }
-
-        @Test
-        public void whenCreateOrgIdNull_thenReturnsBadRequest() {
-            CreateWorkerInput input = new CreateWorkerInput("Name", null, null);
-            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
-                    Worker.class);
-            assertEquals(400, response.getStatusCodeValue());
-        }
     }
 
     @Nested
@@ -134,15 +126,6 @@ public class WorkerControllerTests {
         public void whenUpdateNameNull_thenReturnsBadRequest() {
             Worker given =  WorkerHelpers.create(restTemplate, endPoint);
             UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),null, given.getOrgId(), null);
-            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
-                    Worker.class);
-            assertEquals(400, response.getStatusCodeValue());
-        }
-
-        @Test
-        public void whenUpdateIdNull_thenReturnsBadRequest() {
-            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
-            UpdateWorkerInput input = new UpdateWorkerInput(null,given.getWorkerName(), given.getOrgId(), null);
             ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
                     Worker.class);
             assertEquals(400, response.getStatusCodeValue());

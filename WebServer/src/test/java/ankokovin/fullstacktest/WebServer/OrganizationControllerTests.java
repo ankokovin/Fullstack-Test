@@ -132,14 +132,6 @@ class OrganizationControllerTests {
     class Update {
         private final String endPointUpdate = endPoint + "/update";
 
-        @Test
-        public void whenUpdateIdNull_thenReturnsBadRequest(){
-            CreateOrganizationInput input = new UpdateOrganizationInput(null,"test", null);
-            ResponseEntity<Organization> response = restTemplate.postForEntity(endPointUpdate, input,
-                    Organization.class);
-            assertEquals(400, response.getStatusCodeValue());
-        }
-
 
         @Test
         public void whenUpdateNameNull_thenReturnsBadRequest(){
