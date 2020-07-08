@@ -7,6 +7,7 @@ import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.DeleteHasChildResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.*;
@@ -80,6 +81,23 @@ public class WorkerControllerTests {
             WrongHeadIdResponse actual = response.getBody();
             assertEquals(expected, actual);
         }
+
+        @Test
+        public void whenCreateNameNull_thenReturnsBadRequest() throws BaseException {
+            Organization given = OrganizationHelpers.create(organizationRepository, dsl);
+            CreateWorkerInput input = new CreateWorkerInput(null,given.getId(), null);
+            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
+                    Worker.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+        @Test
+        public void whenCreateOrgIdNull_thenReturnsBadRequest() {
+            CreateWorkerInput input = new CreateWorkerInput("Name", null, null);
+            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
+                    Worker.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
     }
 
     @Nested
@@ -110,6 +128,33 @@ public class WorkerControllerTests {
             assertEquals(400, response.getStatusCodeValue());
             WrongHeadIdResponse actual = response.getBody();
             assertEquals(expected, actual);
+        }
+
+        @Test
+        public void whenUpdateNameNull_thenReturnsBadRequest() {
+            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
+            UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),null, given.getOrgId(), null);
+            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
+                    Worker.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+        @Test
+        public void whenUpdateIdNull_thenReturnsBadRequest() {
+            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
+            UpdateWorkerInput input = new UpdateWorkerInput(null,given.getWorkerName(), given.getOrgId(), null);
+            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
+                    Worker.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+        @Test
+        public void whenUpdateOrgIdNull_thenReturnsBadRequest() {
+            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
+            UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),given.getWorkerName(), null, null);
+            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
+                    Worker.class);
+            assertEquals(400, response.getStatusCodeValue());
         }
     }
 

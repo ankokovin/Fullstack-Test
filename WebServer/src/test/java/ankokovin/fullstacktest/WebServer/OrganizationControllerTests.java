@@ -74,6 +74,14 @@ class OrganizationControllerTests {
     @Nested
     class Create {
         @Test
+        public void whenCreateNameNull_thenReturnsBadRequest(){
+            CreateOrganizationInput input = new CreateOrganizationInput(null,null);
+            ResponseEntity<Organization> response = restTemplate.postForEntity(endPoint, input,
+                    Organization.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+        @Test
         public void whenCreateCorrectNoHead_thenOrganizationCreates() {
             create();
         }
@@ -125,6 +133,24 @@ class OrganizationControllerTests {
         private final String endPointUpdate = endPoint + "/update";
 
         @Test
+        public void whenUpdateIdNull_thenReturnsBadRequest(){
+            CreateOrganizationInput input = new UpdateOrganizationInput(null,"test", null);
+            ResponseEntity<Organization> response = restTemplate.postForEntity(endPointUpdate, input,
+                    Organization.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+
+        @Test
+        public void whenUpdateNameNull_thenReturnsBadRequest(){
+            Organization given = create();
+            CreateOrganizationInput input = new UpdateOrganizationInput(given.getId(),null, null);
+            ResponseEntity<Organization> response = restTemplate.postForEntity(endPointUpdate, input,
+                    Organization.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+        @Test
         public void whenUpdateCorrect_thenUpdates() {
             Organization given = create();
             String newName = "Aleksei";
@@ -173,6 +199,18 @@ class OrganizationControllerTests {
 
     @Nested
     class Delete {
+        @Test
+        public void whenDeleteIdEmpty_thenReturnsBadRequest(){
+            ResponseEntity<NoSuchRecordResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                    new HttpEntity<>(""), NoSuchRecordResponse.class, new HashMap<>());
+            assertEquals(400, resp.getStatusCodeValue());
+        }
+        @Test
+        public void whenDeleteIdNull_thenReturnsBadRequest(){
+            ResponseEntity<NoSuchRecordResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                   null, NoSuchRecordResponse.class, new HashMap<>());
+            assertEquals(400, resp.getStatusCodeValue());
+        }
         @Test
         public void whenDeleteSucceeds() {
             Organization given = create();
@@ -229,7 +267,6 @@ class OrganizationControllerTests {
 
         @Nested
         class GetAll {
-
             @Test
             public void whenWrongPage_thenReturnBadRequest() {
                 String url = endPoint+"?page=-1";
