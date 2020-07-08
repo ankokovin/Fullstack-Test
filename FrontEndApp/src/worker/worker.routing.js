@@ -4,8 +4,8 @@ export default function($routeProvider){
       }).when('/worker/tree-list', {
         template: '<worker-list-tree-component></worker-list-tree-component>'
       }).when('/worker/item', {
-        template: '<worker-create-component></worker-create-component>'
+        template: '<worker-item-component></worker-item-component>'
       }).when('/worker/item/:id', {
-        template: '<worker-create-component></worker-create-component>'
+        template: '<worker-item-component></worker-item-component>'
       });
 }
