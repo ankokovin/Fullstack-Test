@@ -74,4 +74,19 @@ export default class OrganizationService {
             );
         })
     }
+
+    update(id, name, head_id) {
+        return new Promise((resolve, reject) => {
+            this.$http.post('api/organization/update',{id:id, name:name, org_id:head_id}).then(
+                (response) => {
+                    console.log(response);
+                    resolve(response);
+                },
+                (error) => {
+                    console.log(error);
+                    reject(error);
+                }
+            );
+        });
+    }
 }

@@ -2,11 +2,20 @@
     <form novalidate class="simple-form">
         <div class="form-group">
             <label>Название:</label>
-            <input type="text" ng-model="$ctrl.name" class="form-control" placeholder="ООО Тест"/>
+            <input  type="text" 
+                    ng-model="$ctrl.name" 
+                    class="form-control" 
+                    ng-class="$ctrl.name_invalid ? 'is-invalid' : ''" 
+                    ng-change="$ctrl.nameInputChange()"
+                    placeholder="ООО Тест" 
+                    required/>
+            <div class="invalid-feedback">
+                 {{$ctrl.name_error_message}}
+            </div>
         </div>
         <organization-picker-component message="Головная организация:" headid="$ctrl.head_id"></organization-picker-component>
         <button class="btn btn-primary" ng-hide="$ctrl.new" ng-click="$ctrl.create()">Создать</button>
-        <button class="btn btn-primary"  ng-hide="!$ctrl.new">Обновить</button>
+        <button class="btn btn-primary"  ng-hide="!$ctrl.new" ng-click="$ctrl.update()">Обновить</button>
         <button class="btn btn-danger"  ng-hide="!$ctrl.new">Удалить</button>
     </form>
 
