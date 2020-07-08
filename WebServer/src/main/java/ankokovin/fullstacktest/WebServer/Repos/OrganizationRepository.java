@@ -32,6 +32,11 @@ public class OrganizationRepository {
     public OrganizationRepository() {}
     public OrganizationRepository(DSLContext dsl){this.dsl = dsl;}
 
+    /**
+     * Получить количество записей
+     * @param searchName Шаблон названия организации, может быть Null
+     * @return количество записей
+     */
     public Integer getCount(String searchName) {
         if (searchName == null) return dsl.select(count()).from(organization).fetchOneInto(Integer.class);
         return dsl.select(count())

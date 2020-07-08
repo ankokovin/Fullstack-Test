@@ -33,6 +33,12 @@ public class WorkerRepository {
     public WorkerRepository(){}
     public WorkerRepository(DSLContext dsl){this.dsl = dsl;}
 
+    /**
+     * Получить количество записей
+     * @param workerName шаблон имени работника
+     * @param orgName шаблон названия организации
+     * @return количество записей
+     */
     public Integer getCount(String workerName, String orgName) {
         Condition workerCond = lower(worker.WORKER_NAME).contains(lower(val(workerName)));
         Condition orgCond = lower(organization.ORG_NAME).contains(lower(val(orgName)));

@@ -75,6 +75,12 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.delete(id));
     }
 
+    /**
+     * Получение работника по идентификатору
+     * @param id идентификатор
+     * @return работник
+     * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Worker> get(@PathVariable int id) throws NoSuchRecordException {
         return ResponseEntity.ok(workerService.getById(id));
