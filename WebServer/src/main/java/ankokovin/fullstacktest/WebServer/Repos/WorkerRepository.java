@@ -196,8 +196,8 @@ public class WorkerRepository {
             String org_name,
             String worker_name) {
         ankokovin.fullstacktest.WebServer.Generated.tables.Worker headWorker = worker.as("headWorker");
-        Field<Integer> workerNameSubstringId = position(lower(worker.WORKER_NAME), lower(val(worker_name)));
-        Field<Integer> organizationNameSubstringId = position(lower(organization.ORG_NAME), lower(val(org_name)));
+        Field<Integer> workerNameSubstringId = position(lower(worker.WORKER_NAME), lower(inline(worker_name)));
+        Field<Integer> organizationNameSubstringId = position(lower(organization.ORG_NAME), lower(inline(org_name)));
         SelectOnConditionStep<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> preCond = dsl.select(worker.ID,
                 worker.WORKER_NAME,
                 headWorker.ID,
@@ -220,7 +220,8 @@ public class WorkerRepository {
                         workerNameSubstringId,
                         organizationNameSubstringId,
                         worker.WORKER_NAME,
-                        organization.ORG_NAME)
+                        organization.ORG_NAME,
+                        worker.ID)
                 .limit(pageSize)
                 .offset((pageNum-1)*pageSize)
                 .fetch();
