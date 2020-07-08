@@ -201,6 +201,32 @@ class OrganizationControllerTests {
 
     @Nested
     class Get {
+
+        @Nested
+        class GetById {
+            @Test
+            public void whenNoSuchRecord_thenReturnNotFound() {
+                int id = 42;
+                String url = endPoint+"/"+id;
+                ResponseEntity<NoSuchRecordResponse> response = restTemplate.getForEntity(url,
+                        NoSuchRecordResponse.class);
+                assertEquals(404, response.getStatusCodeValue());
+                assertNotNull(response.getBody());
+                assertEquals(id, response.getBody().id);
+            }
+
+            @Test
+            public void whenOk_thenReturns() {
+                Organization expected = create();
+                String url = endPoint+"/"+expected.getId();
+                ResponseEntity<Organization> response = restTemplate.getForEntity(url,
+                        Organization.class);
+                assertEquals(200, response.getStatusCodeValue());
+                assertNotNull(response.getBody());
+                assertEquals(expected, response.getBody());
+            }
+        }
+
         @Nested
         class GetAll {
 

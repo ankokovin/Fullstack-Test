@@ -31,8 +31,12 @@ public class OrganizationsController {
 
 
     @Autowired
-    private OrganizationService service;
+    private OrganizationService organizationService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Organization> get(@PathVariable int id) throws NoSuchRecordException {
+        return ResponseEntity.ok(organizationService.getById(id));
+    }
 
     /**
      * Получение списка организаций с поддержкой поиска
@@ -42,12 +46,12 @@ public class OrganizationsController {
      * @return Список информации об организациях
      */
     @GetMapping
-    public ResponseEntity<Page<List<OrgListElement>>> getAll(
+    public ResponseEntity<Page<List<OrgListElement>>> getPage(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageSize,
             @RequestParam(value = "searchName", required = false) String name) {
         if (page <= 0 || pageSize <= 0) return ResponseEntity.badRequest().body(null);
-        return ResponseEntity.ok(service.getAllWithCount(page, pageSize, name));
+        return ResponseEntity.ok(organizationService.getAllWithCount(page, pageSize, name));
     }
 
     /**
@@ -63,7 +67,7 @@ public class OrganizationsController {
             @RequestBody CreateOrganizationInput model) throws SameNameException,
             WrongHeadIdException,
             UnexpectedException {
-        return ResponseEntity.ok(service.create(model));
+        return ResponseEntity.ok(organizationService.create(model));
 
     }
 
@@ -80,7 +84,7 @@ public class OrganizationsController {
     public ResponseEntity<Organization> update(
             @RequestBody UpdateOrganizationInput model) throws SameNameException,
             WrongHeadIdException, UnexpectedException, NoSuchRecordException {
-        return ResponseEntity.ok(service.update(model));
+        return ResponseEntity.ok(organizationService.update(model));
     }
 
     /**
@@ -94,7 +98,7 @@ public class OrganizationsController {
     @DeleteMapping
     public ResponseEntity<Organization> delete(@RequestBody Integer id) throws DeleteHasChildException,
             NoSuchRecordException, UnexpectedException {
-        return ResponseEntity.ok(service.delete(id));
+        return ResponseEntity.ok(organizationService.delete(id));
     }
 
     /**
@@ -109,6 +113,6 @@ public class OrganizationsController {
             @RequestParam(required = false) Integer id,
             @RequestParam(required = false, defaultValue = "2") Integer depth) throws NoSuchRecordException {
         if (depth <= 0 || depth > 2) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(service.getTree(id, depth));
+        return ResponseEntity.ok(organizationService.getTree(id, depth));
     }
 }
