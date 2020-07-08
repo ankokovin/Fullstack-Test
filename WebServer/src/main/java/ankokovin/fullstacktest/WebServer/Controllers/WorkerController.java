@@ -11,9 +11,12 @@ import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeListElement;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.PositiveOrZero;
@@ -23,6 +26,7 @@ import java.util.List;
  * Контроллер для работы с сотрудниками
  */
 @RestController
+@Validated
 @RequestMapping(value = "/api/worker",
         headers = "Accept=application/json",
         produces = "application/json")
@@ -114,5 +118,11 @@ public class WorkerController {
             @RequestParam(required = false, defaultValue = "2") @PositiveOrZero @Max(2) Integer depth
     ) throws NoSuchRecordException {
         return ResponseEntity.ok(workerService.getTree(depth, id));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
+        return new ResponseEntity<>("not valid due to validation error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
