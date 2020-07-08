@@ -4,6 +4,24 @@ export default class OrganizationService {
         this.$http = $http;
     }
 
+    get(id) {
+        return new Promise((resolve, reject) => {
+            this.$http.get('api/organization/'+id)
+            .then((response) => {
+                console.log(response);
+                var errors = [];
+                if (response.data.id != id) {
+                    errors.push('api returned record with wrong id');
+                }
+                if (errors.length) reject(errors);
+                resolve(response.data);
+            },(error) => {
+                console.log(error);
+                reject(error);
+            })
+        });
+    }
+
     get_node(id) {
         return new Promise((resolve, reject) => {
             this.$http.get('api/organization/tree',

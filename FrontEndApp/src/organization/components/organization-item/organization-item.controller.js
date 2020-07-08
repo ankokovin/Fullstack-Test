@@ -1,15 +1,23 @@
 export default class OrganizationItemCtrl{
-    constructor($scope, $routeParams, OrganizationService) {
+    constructor($routeParams, OrganizationService, $location) {
         "ngInject";
         this.new =  'id' in $routeParams;
-        this.scope = $scope;
+        this.$location = $location;
         this.OrganizationService = OrganizationService;
         this.id =  $routeParams.id;
     }
 
     $onInit() {
         if (this.new) {
-            //TODO: this.OrganizationService.get(this.id)...    
+            this.OrganizationService.get(this.id)
+            .then((data)=>{
+                this.name = data.orgName;
+                this.head_id = data.headOrgId;
+            }, (error) => {
+                if (error.status === 404) {
+                    this.$location.path('/not-found');
+                }
+            });    
         }
     }
 
