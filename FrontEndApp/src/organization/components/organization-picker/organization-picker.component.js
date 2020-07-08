@@ -9,7 +9,8 @@ let OrganizationPickerComponent = {
         message: '@',
         headid: '=',
         errormsg: '<',
-        errorid: '<'
+        errorid: '<',
+        init: '<'
     }
 }
 

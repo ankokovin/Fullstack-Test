@@ -7,6 +7,16 @@ export default class OrganizationPickerCtrl {
         this.error_ids = new Set();
     }
 
+    loadCur() {
+        if (this.headid) {
+            this.OrganizationService.get(this.headid).then((data) => {
+                this.searchName = data.orgName;
+                console.log(this.searchName);
+                document.getElementById('search-name-field').value = this.searchName;
+            })
+        }
+    }
+
     $onChanges(changesObj) {
         console.log(changesObj);
         if (changesObj.message){
@@ -18,21 +28,22 @@ export default class OrganizationPickerCtrl {
         if (changesObj.errormsg){
             this.error_msg = changesObj.errormsg.currentValue;
         }
+        if (changesObj.init){
+            this.headid = changesObj.init.currentValue;
+            this.loadCur();
+        }
     }
 
     select(id) {
         console.log(id);
         this.headid = id;
         this.searchName = this.$scope.organizationList[id];
+        this.showList = false;
     }
 
     load() {
-        console.log(this.$scope.organizationList);
-        console.log(this.searchName);
         this.OrganizationService.get_paged(1, 5, this.searchName).then((data) => {
-            console.log(data);
             this.$scope.organizationList = Object.fromEntries(data.list.slice(0,5).map(x=>[x.id, x.name]));
-            console.log(this.$scope.organizationList);
             this.headid = Object.keys(this.$scope.organizationList).find(key => this.$scope.organizationList[key] === this.searchName);
             this.$scope.$apply();
         });  
@@ -53,6 +64,15 @@ export default class OrganizationPickerCtrl {
         if (this.error_ids.has(id)) return 'disabled';
         else if (id === this.headid) return 'active';
         return ''
+    }
+
+    inputClass() {
+        console.log(this.headid);
+        if (this.headid) {
+            if (this.error_ids.has(this.headid.toString())) return 'is-invalid';
+            return 'is-valid';
+        }
+        return '';
     }
 
 

@@ -16,7 +16,9 @@
         <organization-picker-component  message="Головная организация:" 
                                         headid="$ctrl.head_id" 
                                         errormsg="$ctrl.head_error_message"
-                                        errorid="$ctrl.head_error_id"></organization-picker-component>
+                                        errorid="$ctrl.head_error_id"
+                                        init="$ctrl.head_id">
+                                    </organization-picker-component>
         <button class="btn btn-primary" ng-hide="$ctrl.new" ng-click="$ctrl.create()">Создать</button>
         <button class="btn btn-primary"  ng-hide="!$ctrl.new" ng-click="$ctrl.update()">Обновить</button>
         <button class="btn btn-danger"  ng-hide="!$ctrl.new">Удалить</button>
