@@ -3,7 +3,9 @@ export default function($routeProvider){
         template: '<worker-list-component></worker-list-component>'
       }).when('/worker/tree-list', {
         template: '<worker-list-tree-component></worker-list-tree-component>'
-      }).when('/worker/create', {
+      }).when('/worker/item', {
+        template: '<worker-create-component></worker-create-component>'
+      }).when('/worker/item/:id', {
         template: '<worker-create-component></worker-create-component>'
       });
 }
