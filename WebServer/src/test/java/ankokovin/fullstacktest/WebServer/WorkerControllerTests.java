@@ -194,14 +194,14 @@ public class WorkerControllerTests {
             @Test
             public void whenWrongPage_thenReturnBadRequest() {
                 String url = endPoint + "?page=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
 
             @Test
             public void whenWrongPageSize_thenReturnBadRequest() {
                 String url = endPoint + "?pageSize=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class, -1);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
 
@@ -292,14 +292,14 @@ public class WorkerControllerTests {
             @Test
             void get_bigDepth_errors() throws BaseException {
                 WorkerTreeNode given = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository,dsl));
-                ResponseEntity<Object> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=3", Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=3", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
             void getNegativeDepth(){
-                ResponseEntity<Object> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=-1", Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=-1", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test

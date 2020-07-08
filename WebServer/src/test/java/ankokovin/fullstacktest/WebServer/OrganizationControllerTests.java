@@ -262,13 +262,13 @@ class OrganizationControllerTests {
             @Test
             public void whenWrongPage_thenReturnBadRequest() {
                 String url = endPoint+"?page=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
             public void whenWrongPageSize_thenReturnBadRequest() {
                 String url = endPoint+"?pageSize=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
@@ -322,9 +322,9 @@ class OrganizationControllerTests {
                                 .map(x->new OrganizationTreeNode(x.item, new ArrayList<>()))
                                 .collect(Collectors.toList())
                 );
-                ResponseEntity<Object> response = restTemplate.getForEntity(
+                ResponseEntity<String> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=1",
-                        Object.class);
+                        String.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertEquals(expected, response.getBody());
             }
@@ -348,8 +348,8 @@ class OrganizationControllerTests {
             @Test
             void get_bigDepth_errors() {
                 OrganizationTreeNode given = new OrganizationTreeNode(OrganizationHelpers.setUp(dsl));
-                ResponseEntity<Object> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=3", Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=3", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
         }
