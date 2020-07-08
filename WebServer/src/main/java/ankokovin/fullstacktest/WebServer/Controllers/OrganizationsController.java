@@ -41,6 +41,12 @@ public class OrganizationsController {
     @Autowired
     private OrganizationService organizationService;
 
+    /**
+     * Получение организации по идентификатору
+     * @param id идентификатор
+     * @return организация
+     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Organization> get(@PathVariable int id) throws NoSuchRecordException {
         return ResponseEntity.ok(organizationService.getById(id));

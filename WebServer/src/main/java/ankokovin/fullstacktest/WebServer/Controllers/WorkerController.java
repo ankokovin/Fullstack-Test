@@ -3,6 +3,9 @@ package ankokovin.fullstacktest.WebServer.Controllers;
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.DeleteHasChildResponse;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
+import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.Page;
@@ -10,6 +13,11 @@ import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerListElement;
 import ankokovin.fullstacktest.WebServer.Models.Response.WorkerTreeListElement;
 import ankokovin.fullstacktest.WebServer.Services.WorkerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +55,14 @@ public class WorkerController {
      * @throws WrongHeadIdException - при ошибке в идентификаторе начальника
      * @throws UnexpectedException - при неожиданной ошибке при создании работника
      */
+    @Operation(summary = "Create worker")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Worker was created successfully"),
+            @ApiResponse(responseCode = "400", description = "Worker cannot have a head with such id",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = WrongHeadIdResponse.class))}),
+        }
+    )
     @PostMapping
     public ResponseEntity<Worker> create(
             @Valid @RequestBody CreateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
@@ -61,6 +77,18 @@ public class WorkerController {
      * @throws UnexpectedException - при неожиданной ошибке при создании работника
      * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
      */
+    @Operation(summary = "Update worker")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Worker was updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Worker with such id was not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = NoSuchRecordResponse.class))}
+            ),
+            @ApiResponse(responseCode = "400", description = "Worker cannot have a head with such id",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = WrongHeadIdResponse.class))}),
+    }
+    )
     @PostMapping("/update")
     public ResponseEntity<Worker> update(
             @Valid @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException, NoSuchRecordException {
@@ -75,6 +103,18 @@ public class WorkerController {
      * @throws DeleteHasChildException - при наличии подчинённых
      * @throws UnexpectedException - при неожиданной ошибке при удалении работника
      */
+    @Operation(summary = "Delete worker")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Worker was deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Worker with such id was not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = NoSuchRecordResponse.class))}
+            ),
+            @ApiResponse(responseCode = "403", description = "Worker with dependant workers cannot be deleted",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = DeleteHasChildResponse.class))}),
+    }
+    )
     @DeleteMapping
     public ResponseEntity<Worker> delete(
             @RequestBody int id
@@ -82,6 +122,20 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.delete(id));
     }
 
+    /**
+     * Получение работника по идентификатору
+     * @param id идентификатор
+     * @return работник
+     * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
+     */
+    @Operation(summary = "Get worker by id")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Worker was found and returned successfully"),
+            @ApiResponse(responseCode = "404", description = "Worker with such id was not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = NoSuchRecordResponse.class))}
+            )}
+    )
     @GetMapping("/{id}")
     public ResponseEntity<Worker> get(@PathVariable int id) throws NoSuchRecordException {
         return ResponseEntity.ok(workerService.getById(id));
@@ -95,6 +149,11 @@ public class WorkerController {
      * @param searchOrgName Строка поиска организации
      * @return Список работников
      */
+    @Operation(summary = "Get paged worker list with search")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Worker page was found and returned successfully"),
+            }
+    )
     @GetMapping
     public ResponseEntity<Page<List<WorkerListElement>>> getPage(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -112,7 +171,13 @@ public class WorkerController {
      * @return Древовидный список работника
      * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
      */
+    @Operation(summary = "Get worker tree")
     @GetMapping("/tree")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Worker node was found and returned successfully"),
+            @ApiResponse(responseCode = "404", description = "Worker with such id was not found")
+        }
+    )
     public ResponseEntity<TreeNode<WorkerTreeListElement>> getTree(
             @RequestParam(required = false) Integer id,
             @RequestParam(required = false, defaultValue = "2") @PositiveOrZero @Max(2) Integer depth
