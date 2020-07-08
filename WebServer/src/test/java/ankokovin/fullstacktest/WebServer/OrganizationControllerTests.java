@@ -74,6 +74,14 @@ class OrganizationControllerTests {
     @Nested
     class Create {
         @Test
+        public void whenCreateNameNull_thenReturnsBadRequest(){
+            CreateOrganizationInput input = new CreateOrganizationInput(null,null);
+            ResponseEntity<Organization> response = restTemplate.postForEntity(endPoint, input,
+                    Organization.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+        @Test
         public void whenCreateCorrectNoHead_thenOrganizationCreates() {
             create();
         }
@@ -124,6 +132,16 @@ class OrganizationControllerTests {
     class Update {
         private final String endPointUpdate = endPoint + "/update";
 
+
+        @Test
+        public void whenUpdateNameNull_thenReturnsBadRequest(){
+            Organization given = create();
+            CreateOrganizationInput input = new UpdateOrganizationInput(given.getId(),null, null);
+            ResponseEntity<Organization> response = restTemplate.postForEntity(endPointUpdate, input,
+                    Organization.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
         @Test
         public void whenUpdateCorrect_thenUpdates() {
             Organization given = create();
@@ -173,6 +191,18 @@ class OrganizationControllerTests {
 
     @Nested
     class Delete {
+        @Test
+        public void whenDeleteIdEmpty_thenReturnsBadRequest(){
+            ResponseEntity<NoSuchRecordResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                    new HttpEntity<>(""), NoSuchRecordResponse.class, new HashMap<>());
+            assertEquals(400, resp.getStatusCodeValue());
+        }
+        @Test
+        public void whenDeleteIdNull_thenReturnsBadRequest(){
+            ResponseEntity<NoSuchRecordResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
+                   null, NoSuchRecordResponse.class, new HashMap<>());
+            assertEquals(400, resp.getStatusCodeValue());
+        }
         @Test
         public void whenDeleteSucceeds() {
             Organization given = create();
@@ -229,17 +259,16 @@ class OrganizationControllerTests {
 
         @Nested
         class GetAll {
-
             @Test
             public void whenWrongPage_thenReturnBadRequest() {
                 String url = endPoint+"?page=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
             public void whenWrongPageSize_thenReturnBadRequest() {
                 String url = endPoint+"?pageSize=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class, -1);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
@@ -301,9 +330,9 @@ class OrganizationControllerTests {
             }
             @Test
             void getNegativeDepth(){
-                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
+                ResponseEntity<String> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=-1",
-                        OrganizationTreeNode.class);
+                        String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
@@ -319,8 +348,8 @@ class OrganizationControllerTests {
             @Test
             void get_bigDepth_errors() {
                 OrganizationTreeNode given = new OrganizationTreeNode(OrganizationHelpers.setUp(dsl));
-                ResponseEntity<Object> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=3", Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=3", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
         }

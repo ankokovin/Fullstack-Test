@@ -9,15 +9,23 @@ import ankokovin.fullstacktest.WebServer.Models.Response.TreeNode;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.client.RestClientException;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
  * Контроллер для работы с организациями
  */
 @RestController
+@Validated
 @RequestMapping(
         value = "/api/organization",
         headers = "Accept=application/json",
@@ -47,10 +55,9 @@ public class OrganizationsController {
      */
     @GetMapping
     public ResponseEntity<Page<List<OrgListElement>>> getPage(
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) int pageSize,
+            @RequestParam(value = "page", required = false, defaultValue = "1") @Positive int page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) @Positive int pageSize,
             @RequestParam(value = "searchName", required = false) String name) {
-        if (page <= 0 || pageSize <= 0) return ResponseEntity.badRequest().body(null);
         return ResponseEntity.ok(organizationService.getAllWithCount(page, pageSize, name));
     }
 
@@ -64,7 +71,7 @@ public class OrganizationsController {
      */
     @PostMapping
     public ResponseEntity<Organization> create(
-            @RequestBody CreateOrganizationInput model) throws SameNameException,
+            @Valid @RequestBody CreateOrganizationInput model) throws SameNameException,
             WrongHeadIdException,
             UnexpectedException {
         return ResponseEntity.ok(organizationService.create(model));
@@ -82,7 +89,7 @@ public class OrganizationsController {
      */
     @PostMapping("/update")
     public ResponseEntity<Organization> update(
-            @RequestBody UpdateOrganizationInput model) throws SameNameException,
+            @Valid @RequestBody UpdateOrganizationInput model) throws SameNameException,
             WrongHeadIdException, UnexpectedException, NoSuchRecordException {
         return ResponseEntity.ok(organizationService.update(model));
     }
@@ -96,7 +103,7 @@ public class OrganizationsController {
      * @throws UnexpectedException - при неожиданной ошибке при удалении организации
      */
     @DeleteMapping
-    public ResponseEntity<Organization> delete(@RequestBody Integer id) throws DeleteHasChildException,
+    public ResponseEntity<Organization> delete(@RequestBody int id) throws DeleteHasChildException,
             NoSuchRecordException, UnexpectedException {
         return ResponseEntity.ok(organizationService.delete(id));
     }
@@ -111,8 +118,14 @@ public class OrganizationsController {
     @GetMapping("/tree")
     public ResponseEntity<TreeNode<Organization>> getTree(
             @RequestParam(required = false) Integer id,
-            @RequestParam(required = false, defaultValue = "2") Integer depth) throws NoSuchRecordException {
-        if (depth <= 0 || depth > 2) return ResponseEntity.badRequest().build();
+            @RequestParam(required = false, defaultValue = "2") @PositiveOrZero @Max(2) Integer depth) throws NoSuchRecordException {
         return ResponseEntity.ok(organizationService.getTree(id, depth));
+    }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
+        return new ResponseEntity<>("not valid due to validation error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
