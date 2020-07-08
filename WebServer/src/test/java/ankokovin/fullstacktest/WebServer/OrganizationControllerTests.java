@@ -322,9 +322,9 @@ class OrganizationControllerTests {
                                 .map(x->new OrganizationTreeNode(x.item, new ArrayList<>()))
                                 .collect(Collectors.toList())
                 );
-                ResponseEntity<String> response = restTemplate.getForEntity(
+                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=1",
-                        String.class);
+                        OrganizationTreeNode.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertEquals(expected, response.getBody());
             }
