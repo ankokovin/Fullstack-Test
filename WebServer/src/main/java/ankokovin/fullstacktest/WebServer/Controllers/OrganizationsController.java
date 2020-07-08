@@ -123,7 +123,7 @@ public class OrganizationsController {
     }
 
 
-    @ExceptionHandler({ConstraintViolationException.class, RestClientException.class})
+    @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
         return new ResponseEntity<>("not valid due to validation error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
