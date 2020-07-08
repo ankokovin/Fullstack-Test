@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -64,7 +65,7 @@ public class OrganizationsController {
      */
     @PostMapping
     public ResponseEntity<Organization> create(
-            @RequestBody CreateOrganizationInput model) throws SameNameException,
+            @Valid @RequestBody CreateOrganizationInput model) throws SameNameException,
             WrongHeadIdException,
             UnexpectedException {
         return ResponseEntity.ok(organizationService.create(model));
@@ -82,7 +83,7 @@ public class OrganizationsController {
      */
     @PostMapping("/update")
     public ResponseEntity<Organization> update(
-            @RequestBody UpdateOrganizationInput model) throws SameNameException,
+            @Valid @RequestBody UpdateOrganizationInput model) throws SameNameException,
             WrongHeadIdException, UnexpectedException, NoSuchRecordException {
         return ResponseEntity.ok(organizationService.update(model));
     }
@@ -96,7 +97,7 @@ public class OrganizationsController {
      * @throws UnexpectedException - при неожиданной ошибке при удалении организации
      */
     @DeleteMapping
-    public ResponseEntity<Organization> delete(@RequestBody Integer id) throws DeleteHasChildException,
+    public ResponseEntity<Organization> delete(@RequestBody int id) throws DeleteHasChildException,
             NoSuchRecordException, UnexpectedException {
         return ResponseEntity.ok(organizationService.delete(id));
     }

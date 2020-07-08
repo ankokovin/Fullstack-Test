@@ -1,5 +1,9 @@
 package ankokovin.fullstacktest.WebServer.Models.Input;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 /**
  * Входная информация о создаваемом работника
  */
@@ -8,14 +12,17 @@ public class CreateWorkerInput {
     /**
      * Имя работника
      */
+    @NotEmpty
     public final String name;
     /**
      * Идентификатор организации
      */
+    @NotNull
     public final Integer org_id;
     /**
      * Идентификатор начальника (может быть Null)
      */
+
     public final Integer head_id;
 
 

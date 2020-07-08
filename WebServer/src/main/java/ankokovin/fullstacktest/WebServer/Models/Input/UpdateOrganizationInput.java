@@ -1,5 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Models.Input;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Информация об изменяемой организации
  */
@@ -7,6 +9,7 @@ public class UpdateOrganizationInput extends CreateOrganizationInput {
     /**
      * Идентификатор организации
      */
+    @NotNull
     public Integer id;
 
     public UpdateOrganizationInput() {

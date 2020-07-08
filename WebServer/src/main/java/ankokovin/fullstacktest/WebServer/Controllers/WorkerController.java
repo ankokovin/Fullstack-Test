@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class WorkerController {
      */
     @PostMapping
     public ResponseEntity<Worker> create(
-            @RequestBody CreateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
+            @Valid @RequestBody CreateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
         return ResponseEntity.ok(workerService.create(model));
     }
 
@@ -56,7 +57,7 @@ public class WorkerController {
      */
     @PostMapping("/update")
     public ResponseEntity<Worker> update(
-            @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException, NoSuchRecordException {
+            @Valid @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException, NoSuchRecordException {
         return ResponseEntity.ok(workerService.update(model));
     }
 
@@ -70,7 +71,7 @@ public class WorkerController {
      */
     @DeleteMapping
     public ResponseEntity<Worker> delete(
-            @RequestBody Integer id
+            @RequestBody int id
     ) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
         return ResponseEntity.ok(workerService.delete(id));
     }
@@ -108,7 +109,7 @@ public class WorkerController {
     @GetMapping("/tree")
     public ResponseEntity<TreeNode<WorkerTreeListElement>> getTree(
             @RequestParam(required = false) Integer id,
-            @RequestParam Integer depth
+            @RequestParam(required = false, defaultValue = "2") Integer depth
     ) throws NoSuchRecordException {
         if (depth <= 0 || depth > 2) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(workerService.getTree(depth, id));

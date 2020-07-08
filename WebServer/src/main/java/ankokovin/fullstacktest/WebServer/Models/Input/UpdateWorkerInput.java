@@ -1,5 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Models.Input;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Информация об изменяемом работнике
  */
@@ -7,6 +9,7 @@ public class UpdateWorkerInput extends CreateWorkerInput {
     /**
      * Идентификатор работника
      */
+    @NotNull
     public final Integer id;
 
     /**
