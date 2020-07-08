@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -30,25 +31,29 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler(DeleteHasChildException.class)
-    protected ResponseEntity<Object> handleDeleteChild(DeleteHasChildException ex, WebRequest request) {
+    @ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "Item has other dependant items and cannot be deleted")
+    protected ResponseEntity<DeleteHasChildResponse> handleDeleteChild(DeleteHasChildException ex, WebRequest request) {
         DeleteHasChildResponse response = new DeleteHasChildResponse(ex.id, ex.table);
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NoSuchRecordException.class)
-    protected ResponseEntity<Object> handleNoSuchRecord(NoSuchRecordException ex, WebRequest request) {
+    @ResponseStatus(value=HttpStatus.NOT_FOUND, reason = "Item was not found")
+    protected ResponseEntity<NoSuchRecordResponse> handleNoSuchRecord(NoSuchRecordException ex, WebRequest request) {
         NoSuchRecordResponse response = new NoSuchRecordResponse(ex.id);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(WrongHeadIdException.class)
-    protected ResponseEntity<Object> handleWrongHead(WrongHeadIdException ex, WebRequest request) {
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason = "Item cannot have such parent element")
+    protected ResponseEntity<WrongHeadIdResponse> handleWrongHead(WrongHeadIdException ex, WebRequest request) {
         WrongHeadIdResponse response = new WrongHeadIdResponse(ex.id, ex.to);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(SameNameException.class)
-    protected ResponseEntity<Object> handleSameName(SameNameException ex, WebRequest request) {
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason = "There is already item with such name")
+    protected ResponseEntity<SameNameResponse> handleSameName(SameNameException ex, WebRequest request) {
         SameNameResponse response = new SameNameResponse(ex.name);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
