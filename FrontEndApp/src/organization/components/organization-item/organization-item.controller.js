@@ -28,14 +28,12 @@ export default class OrganizationItemCtrl{
     }
 
     create() {
-        console.log(this.name, this.head_id);
         this.OrganizationService.create(this.name, this.head_id).then(
             (response) => console.log('Nice') //TODO: show some message, redirect?
         );
     }
 
     update() {
-        console.log(this.id, this.name, this.head_id);
         this.OrganizationService.update(this.id, this.name, this.head_id).then(
             (response) => console.log('Nice'), //TODO: show some message, redirect?
             (error) => {

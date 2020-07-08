@@ -5,6 +5,7 @@ export default class OrganizationPickerCtrl {
         this.$scope = $scope;
         this.showList = false;
         this.error_ids = new Set();
+        this.reqired = false;
     }
 
     loadCur() {
@@ -12,7 +13,7 @@ export default class OrganizationPickerCtrl {
             this.OrganizationService.get(this.headid).then((data) => {
                 this.searchName = data.orgName;
                 console.log(this.searchName);
-                document.getElementById('search-name-field').value = this.searchName;
+                document.getElementById('org-search-name-field').value = this.searchName;
             })
         }
     }
@@ -30,6 +31,9 @@ export default class OrganizationPickerCtrl {
         if (changesObj.init){
             this.headid = changesObj.init.currentValue;
             this.loadCur();
+        }
+        if (changesObj.required){
+            this.required = changesObj.required.currentValue;
         }
     }
 
@@ -68,6 +72,7 @@ export default class OrganizationPickerCtrl {
             if (this.error_ids.has(this.headid.toString())) return 'is-invalid';
             return 'is-valid';
         }
+        if (this.required === true) return 'is-invalid';
         return '';
     }
 

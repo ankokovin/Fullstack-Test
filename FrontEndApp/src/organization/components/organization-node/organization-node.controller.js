@@ -8,7 +8,6 @@ export default class OrganizationListCtrl{
     }
 
     $onChanges(changesObj) {
-        console.log(changesObj);
         if (changesObj.node) {
             this.id = this.node.item.id;
             this.name = this.node.item.orgName;
@@ -29,7 +28,6 @@ export default class OrganizationListCtrl{
                 }
             })
         }
-        console.log(this.children);
     }
 
     load_children() {

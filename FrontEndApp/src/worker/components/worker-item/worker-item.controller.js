@@ -17,8 +17,10 @@ export default class WorkerItemCtrl{
         if (this.new) {
             this.WorkerService.get(this.id)
             .then((data)=>{
-                //this.name = data.orgName;
-                //this.head_id = data.headOrgId;
+                this.name = data.workerName;
+                this.head_id = data.headId;
+                this.org_id = data.orgId;
+                this.$scope.$apply();
             }, (error) => {
                 if (error.status === 404) {
                     this.$location.path('/not-found');
@@ -39,6 +41,7 @@ export default class WorkerItemCtrl{
         this.WorkerService.update(this.id, this.name,  this.org_id, this.head_id).then(
             (response) => console.log('Nice'), //TODO: show some message, redirect?
             (error) => {
+                console.log(error);
                 if (error.status === 404) {
                     console.log('Record was deleted');
                 } else if (error.status === 400) {
