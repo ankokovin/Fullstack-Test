@@ -268,7 +268,7 @@ class OrganizationControllerTests {
             @Test
             public void whenWrongPageSize_thenReturnBadRequest() {
                 String url = endPoint+"?pageSize=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class, -1);
+                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
@@ -322,17 +322,17 @@ class OrganizationControllerTests {
                                 .map(x->new OrganizationTreeNode(x.item, new ArrayList<>()))
                                 .collect(Collectors.toList())
                 );
-                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
+                ResponseEntity<Object> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=1",
-                        OrganizationTreeNode.class);
+                        Object.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertEquals(expected, response.getBody());
             }
             @Test
             void getNegativeDepth(){
-                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
+                ResponseEntity<Object> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=-1",
-                        OrganizationTreeNode.class);
+                        Object.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test

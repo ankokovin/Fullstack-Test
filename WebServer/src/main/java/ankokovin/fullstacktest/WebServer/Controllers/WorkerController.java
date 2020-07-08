@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -109,9 +111,8 @@ public class WorkerController {
     @GetMapping("/tree")
     public ResponseEntity<TreeNode<WorkerTreeListElement>> getTree(
             @RequestParam(required = false) Integer id,
-            @RequestParam(required = false, defaultValue = "2") Integer depth
+            @RequestParam(required = false, defaultValue = "2") @PositiveOrZero @Max(2) Integer depth
     ) throws NoSuchRecordException {
-        if (depth <= 0 || depth > 2) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(workerService.getTree(depth, id));
     }
 }

@@ -131,14 +131,7 @@ public class WorkerControllerTests {
             assertEquals(400, response.getStatusCodeValue());
         }
 
-        @Test
-        public void whenUpdateOrgIdNull_thenReturnsBadRequest() {
-            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
-            UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),given.getWorkerName(), null, null);
-            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
-                    Worker.class);
-            assertEquals(400, response.getStatusCodeValue());
-        }
+
     }
 
     @Nested
@@ -305,9 +298,8 @@ public class WorkerControllerTests {
             }
             @Test
             void getNegativeDepth(){
-                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=-1",
-                        OrganizationTreeNode.class);
+                ResponseEntity<Object> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=-1", Object.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
