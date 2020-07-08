@@ -1,6 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Controllers;
 
 import ankokovin.fullstacktest.WebServer.Exceptions.*;
+import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.WebServer.Generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
@@ -74,6 +75,11 @@ public class WorkerController {
         return ResponseEntity.ok(workerService.delete(id));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Worker> get(@PathVariable int id) throws NoSuchRecordException {
+        return ResponseEntity.ok(workerService.getById(id));
+    }
+
     /**
      * Получение списка работников с поддержкой поиска
      * @param page Номер страницы (нумерация с единицы)
@@ -83,7 +89,7 @@ public class WorkerController {
      * @return Список работников
      */
     @GetMapping
-    public ResponseEntity<Page<List<WorkerListElement>>> get(
+    public ResponseEntity<Page<List<WorkerListElement>>> getPage(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) Integer pageSize,
             @RequestParam(value = "searchName", required = false) String searchName,
@@ -100,7 +106,7 @@ public class WorkerController {
      * @throws NoSuchRecordException - при отсутствии работника с данным идентификатором
      */
     @GetMapping("/tree")
-    public ResponseEntity<TreeNode<WorkerTreeListElement>> get(
+    public ResponseEntity<TreeNode<WorkerTreeListElement>> getTree(
             @RequestParam(required = false) Integer id,
             @RequestParam Integer depth
     ) throws NoSuchRecordException {
