@@ -330,9 +330,9 @@ class OrganizationControllerTests {
             }
             @Test
             void getNegativeDepth(){
-                ResponseEntity<Object> response = restTemplate.getForEntity(
+                ResponseEntity<String> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=-1",
-                        Object.class);
+                        String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
