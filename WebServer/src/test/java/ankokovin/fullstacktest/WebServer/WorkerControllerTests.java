@@ -7,6 +7,7 @@ import ankokovin.fullstacktest.WebServer.Models.*;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.DeleteHasChildResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.WebServer.Models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.WebServer.Models.Input.CreateOrganizationInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.CreateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Input.UpdateWorkerInput;
 import ankokovin.fullstacktest.WebServer.Models.Response.*;
@@ -80,6 +81,15 @@ public class WorkerControllerTests {
             WrongHeadIdResponse actual = response.getBody();
             assertEquals(expected, actual);
         }
+
+        @Test
+        public void whenCreateNameNull_thenReturnsBadRequest() throws BaseException {
+            Organization given = OrganizationHelpers.create(organizationRepository, dsl);
+            CreateWorkerInput input = new CreateWorkerInput(null,given.getId(), null);
+            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
+                    Worker.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
     }
 
     @Nested
@@ -111,6 +121,17 @@ public class WorkerControllerTests {
             WrongHeadIdResponse actual = response.getBody();
             assertEquals(expected, actual);
         }
+
+        @Test
+        public void whenUpdateNameNull_thenReturnsBadRequest() {
+            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
+            UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),null, given.getOrgId(), null);
+            ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
+                    Worker.class);
+            assertEquals(400, response.getStatusCodeValue());
+        }
+
+
     }
 
     @Nested
@@ -173,14 +194,14 @@ public class WorkerControllerTests {
             @Test
             public void whenWrongPage_thenReturnBadRequest() {
                 String url = endPoint + "?page=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
 
             @Test
             public void whenWrongPageSize_thenReturnBadRequest() {
                 String url = endPoint + "?pageSize=-1";
-                ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class, -1);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
 
@@ -271,15 +292,14 @@ public class WorkerControllerTests {
             @Test
             void get_bigDepth_errors() throws BaseException {
                 WorkerTreeNode given = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository,dsl));
-                ResponseEntity<Object> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=3", Object.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=3", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test
             void getNegativeDepth(){
-                ResponseEntity<OrganizationTreeNode> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=-1",
-                        OrganizationTreeNode.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(
+                        treeEndpoint+"?depth=-1", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
             @Test

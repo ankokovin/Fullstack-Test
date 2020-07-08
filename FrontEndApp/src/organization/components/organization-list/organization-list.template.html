@@ -11,9 +11,9 @@
         </thead>
         <tbody>
             <tr ng-repeat="organization in $ctrl.organizationList">
-                <th scope="row">{{organization.id}}</th>
-                <td>{{organization.name}}</td>
-                <td>{{organization.count}}</td>
+                <th scope="row"><a class="btn" ng-href="#!/organization/item/{{organization.id}}">{{organization.id}}</a></th>
+                <td><a class="btn" ng-href="#!/organization/item/{{organization.id}}">{{organization.name}}</a></td>
+                <td><a class="btn" ng-href="#!/organization/item/{{organization.id}}">{{organization.count}}</a></td>
             </tr>
         </tbody>
     </table>

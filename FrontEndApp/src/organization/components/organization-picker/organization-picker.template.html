@@ -1,0 +1,25 @@
+<div ng-controller="OrganizationPickerCtrl">
+    <label>{{$ctrl.message}}</label>
+    <div class="form-group">
+        <input  id="search-name-field"
+                type="text" 
+                ng-model="$ctrl.searchName" 
+                class="form-control" 
+                ng-class="$ctrl.inputClass()" 
+                ng-change="$ctrl.load()" 
+                ng-focus="$ctrl.searchNameFocus()" 
+                placeholder="Нет"/>
+        <div class="invalid-feedback">
+            {{$ctrl.error_msg}}
+        </div>
+        <div class="valid-feedback">
+             Организация выбрана
+        </div>
+        <ol ng-hide="!$ctrl.showList" class="list-group">
+            <li ng-repeat="(id, name) in organizationList" 
+                class="list-group-item" 
+                ng-click="$ctrl.select(id)"
+                ng-class="$ctrl.listItemClass(id)">{{name}}</li>
+        </ol>           
+    </div>
+</div>

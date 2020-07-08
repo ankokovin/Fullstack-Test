@@ -1,25 +1,88 @@
 export default class OrganizationItemCtrl{
-    constructor($scope, $routeParams, OrganizationService) {
+    constructor($routeParams, OrganizationService, $location, $scope) {
         "ngInject";
-        this.organization = {};
-        console.log(this.organization.id);
         this.new =  'id' in $routeParams;
-        this.scope = $scope;
+        this.$scope = $scope; 
+        this.$location = $location;
         this.OrganizationService = OrganizationService;
-        this.load();
-    }
-    select(id) {
-        console.log(id);
-        this.organization.head_id = id;
-        this.searchName = this.scope.organizationList[id];
+        this.id =  $routeParams.id;
+        this.name_invalid = false;
+        this.name_error_message = "Error";
+        this.$scope.head_error_message = false;
+        this.head_error_message = 'Невозможно указать элемент как родительский';
+        this.head_error_id = this.id;
     }
 
-    load() {
-        this.OrganizationService.get_paged(1, 5, this.searchName).then((data) => {
-            console.log(data);
-            this.scope.organizationList = Object.fromEntries(data.list.slice(0,5).map(x=>[x.id, x.name]));
-            console.log(this.scope.organizationList);
-            this.organization.head_id = Object.keys(this.scope.organizationList).find(key => this.scope.organizationList[key] === this.searchName);
-        });  
+    $onInit() {
+        if (this.new) {
+            this.OrganizationService.get(this.id)
+            .then((data)=>{
+                this.name = data.orgName;
+                this.head_id = data.headOrgId;
+            }, (error) => {
+                if (error.status === 404) {
+                    this.$location.path('/not-found');
+                }
+            });    
+        }
+    }
+
+    create() {
+        console.log(this.name, this.head_id);
+        this.OrganizationService.create(this.name, this.head_id).then(
+            (response) => console.log('Nice') //TODO: show some message, redirect?
+        );
+    }
+
+    update() {
+        console.log(this.id, this.name, this.head_id);
+        this.OrganizationService.update(this.id, this.name, this.head_id).then(
+            (response) => console.log('Nice'), //TODO: show some message, redirect?
+            (error) => {
+                if (error.status === 404) {
+                    console.log('Record was deleted');
+                } else if (error.status === 400) {
+                    if (error.data.message === 'Запись с таким именем уже сущесвует') {
+                        this.name_invalid = true;
+                        this.name_error_message = error.data.message;
+                        this.$scope.$apply();
+                    }else if (error.data.message === this.head_error_message) {
+                        this.updateHeadError(error.data.id);    
+                    }
+                }
+            }
+        )
+    }
+
+    delete() {
+        this.OrganizationService.delete(this.id).then(
+            (response) => console.log('Nice'), //TODO: show some message, redirect?
+            (error) => {
+                if (error.status === 404) {
+                    alert('Record was already deleted');
+                }else if (error.status === 403) {
+                    alert('Record has children');                    
+                }
+            }
+        )
+    }
+
+    updateHeadError(id) {
+        this.head_error_id = id;   
+        this.$scope.$apply();  
+    }
+
+
+    nameInputChange() {
+        if (!this.name || this.name.length === 0) {
+            if (!this.name_invalid) {
+                this.name_invalid = true;
+                this.name_error_message = 'Это обязательное поле'
+            }
+        } else {
+            if (this.name_invalid) {
+                this.name_invalid = false;
+            }
+        }
     }
 }

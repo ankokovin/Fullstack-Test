@@ -19,15 +19,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
  * Контроллер для работы с сотрудниками
  */
 @RestController
+@Validated
 @RequestMapping(value = "/api/worker",
         headers = "Accept=application/json",
         produces = "application/json")
@@ -58,7 +65,7 @@ public class WorkerController {
     )
     @PostMapping
     public ResponseEntity<Worker> create(
-            @RequestBody CreateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
+            @Valid @RequestBody CreateWorkerInput model) throws WrongHeadIdException, UnexpectedException {
         return ResponseEntity.ok(workerService.create(model));
     }
 
@@ -84,7 +91,7 @@ public class WorkerController {
     )
     @PostMapping("/update")
     public ResponseEntity<Worker> update(
-            @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException, NoSuchRecordException {
+            @Valid @RequestBody UpdateWorkerInput model) throws WrongHeadIdException, UnexpectedException, NoSuchRecordException {
         return ResponseEntity.ok(workerService.update(model));
     }
 
@@ -110,7 +117,7 @@ public class WorkerController {
     )
     @DeleteMapping
     public ResponseEntity<Worker> delete(
-            @RequestBody Integer id
+            @RequestBody int id
     ) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
         return ResponseEntity.ok(workerService.delete(id));
     }
@@ -173,9 +180,14 @@ public class WorkerController {
     )
     public ResponseEntity<TreeNode<WorkerTreeListElement>> getTree(
             @RequestParam(required = false) Integer id,
-            @RequestParam Integer depth
+            @RequestParam(required = false, defaultValue = "2") @PositiveOrZero @Max(2) Integer depth
     ) throws NoSuchRecordException {
-        if (depth <= 0 || depth > 2) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(workerService.getTree(depth, id));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
+        return new ResponseEntity<>("not valid due to validation error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

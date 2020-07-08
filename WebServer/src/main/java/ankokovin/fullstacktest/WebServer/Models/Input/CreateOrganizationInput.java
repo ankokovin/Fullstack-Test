@@ -1,5 +1,7 @@
 package ankokovin.fullstacktest.WebServer.Models.Input;
 
+import javax.validation.constraints.NotEmpty;
+
 /**
  * Входная информация о создаваемой организации
  */
@@ -8,6 +10,7 @@ public class CreateOrganizationInput {
     /**
      * Наименование создаваемой организации
      */
+    @NotEmpty
     public String name;
 
     /**
