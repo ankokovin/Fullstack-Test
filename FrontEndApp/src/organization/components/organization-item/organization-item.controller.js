@@ -8,6 +8,9 @@ export default class OrganizationItemCtrl{
         this.id =  $routeParams.id;
         this.name_invalid = false;
         this.name_error_message = "Error";
+        this.$scope.head_error_message = false;
+        this.head_error_message = 'Невозможно указать элемент как родительский';
+        this.head_error_id = this.id;
     }
 
     $onInit() {
@@ -43,12 +46,17 @@ export default class OrganizationItemCtrl{
                         this.name_invalid = true;
                         this.name_error_message = error.data.message;
                         this.$scope.$apply();
-                    }else if (error.data.message === 'Невозможно указать элемент как родительский') {
-
+                    }else if (error.data.message === this.head_error_message) {
+                        this.updateHeadError(error.data.id);    
                     }
                 }
             }
         )
+    }
+
+    updateHeadError(id) {
+        this.head_error_id = id;   
+        this.$scope.$apply();  
     }
 
 

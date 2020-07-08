@@ -7,7 +7,9 @@ let OrganizationPickerComponent = {
     controller: OrganizationPickerCtrl,
     bindings: {
         message: '@',
-        headid: '='
+        headid: '=',
+        errormsg: '<',
+        errorid: '<'
     }
 }
 
