@@ -32,14 +32,20 @@ export default class WorkerItemCtrl{
     create() {
         console.log(this.name, this.org_id, this.head_id);
         this.WorkerService.create(this.name, this.org_id, this.head_id).then(
-            (response) => console.log('Nice') //TODO: show some message, redirect?
+            (response) =>{
+                alert('Работник успешно создан');
+                this.$window.history.back();
+            }
         );
     }
 
     update() {
         console.log(this.id, this.name, this.org_id, this.head_id);
         this.WorkerService.update(this.id, this.name,  this.org_id, this.head_id).then(
-            (response) => console.log('Nice'), //TODO: show some message, redirect?
+            (response) => {
+                alert('Работник успешно обновлён');
+                this.$window.history.back();
+            }, 
             (error) => {
                 console.log(error);
                 if (error.status === 404) {
@@ -59,7 +65,10 @@ export default class WorkerItemCtrl{
 
     delete() {
         this.WorkerService.delete(this.id).then(
-            (response) => console.log('Nice'), //TODO: show some message, redirect?
+            (response) => {
+                alert('Работник успешно удалён');
+                this.$window.history.back();
+            },
             (error) => {
                 if (error.status === 404) {
                     alert('Record was already deleted');
