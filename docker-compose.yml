@@ -1,13 +1,18 @@
 version: '2.0'
 services:
     postgres:
-        build: ./postgres
+        image: postgres
         restart: always
         environment:
             POSTGRES_PASSWORD: 12345
             POSTGRES_USER: admin
             POSTGRES_DB: orgs_and_workers
-
+        volumes: 
+            - ./postgres/setup:/docker-entrypoint-initdb.d/
     server:
-        build: .
+        image: rycarok/orgs_and_workers_server
         restart: always
+        ports: 
+            - "3000:3000"
+        links:
+            - postgres

@@ -51,7 +51,7 @@ jobs:
       run: sudo -u postgres bash -c "psql -c \"CREATE DATABASE orgs_and_workers;\""
 
     - name: Setup database
-      run: psql --dbname orgs_and_workers -f setup.sql
+      run: psql --dbname orgs_and_workers -f ./setup/setup.sql
       working-directory: postgres
       env:
         PGPASSWORD: 12345
@@ -101,7 +101,7 @@ jobs:
       run: sudo cpan TAP::Parser::SourceHandler::pgTAP
       
     - name: Setup database
-      run: psql --dbname orgs_and_workers -f setup.sql
+      run: psql --dbname orgs_and_workers -f ./setup/setup.sql
       working-directory: postgres
       env:
         PGPASSWORD: 12345
