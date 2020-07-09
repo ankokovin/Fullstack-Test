@@ -47,11 +47,11 @@ export default class WorkerListCtrl{
     }
 
     unfold(e){
-        this.$onChanges({
+        if (this.children.length) this.$onChanges({
             childrenVisible: {
                 previousValue: this.childrenVisible,
                 currentValue: !this.childrenVisible
             }
-        })
+        });
     }
 }

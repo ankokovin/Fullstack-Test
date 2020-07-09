@@ -39,11 +39,11 @@ export default class OrganizationListCtrl{
     }
 
     unfold(e){
-        this.$onChanges({
+        if (this.children.length) this.$onChanges({
             childrenVisible: {
                 previousValue: this.childrenVisible,
                 currentValue: !this.childrenVisible
             }
-        })
+        });
     }
 }
