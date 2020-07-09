@@ -34,7 +34,7 @@ CREATE OR REPLACE FUNCTION GenerateWorkers(n integer) RETURNS void AS $gen_worke
             org_id_v := floor(random()*org_count)+1;
             SELECT(Count(*)) INTO worker_cnt FROM Worker WHERE Worker.org_id = org_id_v;
             worker_name := CONCAT('Test', i);
-            IF worker_cnt > 0 AND random() < head_probability THEN
+            IF worker_cnt > 0 AND random() > head_probability THEN
                 head_id_n := floor(random()*worker_cnt);
                 SELECT(Worker.id) INTO head_id  FROM Worker WHERE Worker.org_id = org_id_v OFFSET head_id_n LIMIT 1;
                 INSERT INTO Worker VALUES (i, worker_name, org_id_v, head_id);
