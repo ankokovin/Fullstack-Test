@@ -6,8 +6,8 @@
 
 ### Docker-compose
 
-1. Скачать [docker-compose.yml](https://github.com/ankokovin/Fullstack-Test/blob/master/docker-compose.yml)
-2. В терминале в папке с файлом:
+1. Склонировать репозиторий
+2. В терминале в папке с репозиторием:
 ```bash
 docker-compose up 
 ```
