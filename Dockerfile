@@ -11,13 +11,14 @@ WORKDIR /app/WebServer
 RUN apt-get update && apt-get install -y postgresql-12 maven sudo
 RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
 COPY postgres/setup/setup.sql app/postgres/setup.sql 
-ENV PGPASSWORD 12345    
+ENV PGPASSWORD 12345
+RUN echo "\nlocalhost postgres" >> /etc/hosts    
 RUN pg_ctlcluster 12 main start &&\
     sudo -u postgres psql -c "CREATE USER admin WITH PASSWORD '12345' SUPERUSER;" &&\
     sudo -u postgres psql -c "CREATE DATABASE orgs_and_workers;" &&\
     sudo -u postgres psql --dbname orgs_and_workers -f app/postgres/setup.sql &&\
-    mvn generate-sources  &&\
-    mvn package -Dmaven.test.skip=true -Dspring.datasource.url=dbc:postgresql://postgres:5432/orgs_and_workers 
+    mvn generate-sources -P prod &&\
+    mvn package -Dmaven.test.skip=true -P prod
 USER docker
 COPY --from=FrontEnd /app/WebServer/static /app/WebServer/target/static
 
