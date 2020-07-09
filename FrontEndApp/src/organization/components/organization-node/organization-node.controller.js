@@ -1,10 +1,11 @@
-export default class OrganizationListCtrl{
-    constructor(OrganizationService) {
+export default class OrganizationNodeCtrl{
+    constructor(OrganizationService, $scope) {
         "ngInject";
         this.OrganizationService = OrganizationService;
         this.load = false;
         this.visible = false;
         this.childrenVisible = false;
+        this.$scope = $scope;
     }
 
     $onChanges(changesObj) {
@@ -35,15 +36,16 @@ export default class OrganizationListCtrl{
             this.id = data.item.id;
             this.name = data.item.orgName;
             this.children = data.children;
+            this.$scope.$apply();
         });    
     }
 
     unfold(e){
-        this.$onChanges({
+        if (this.children.length) this.$onChanges({
             childrenVisible: {
                 previousValue: this.childrenVisible,
                 currentValue: !this.childrenVisible
             }
-        })
+        });
     }
 }

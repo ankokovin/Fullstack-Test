@@ -1,10 +1,11 @@
-export default class WorkerListCtrl{
-    constructor(WorkerService) {
+export default class WorkerNodeCtrl{
+    constructor(WorkerService, $scope) {
         "ngInject";
         this.WorkerService = WorkerService;
         this.load = false;
         this.visible = false;
         this.childrenVisible = false;
+        this.$scope = $scope;
     }
 
     $onChanges(changesObj) {
@@ -41,17 +42,17 @@ export default class WorkerListCtrl{
             this.name = data.item.name;
             this.org_id = data.item.org_id;
             this.org_name = data.item.org_name;
-            console.log(this.org_id , this.org_name);
             this.children = data.children;
+            this.$scope.$apply();
         });    
     }
 
     unfold(e){
-        this.$onChanges({
+        if (this.children.length) this.$onChanges({
             childrenVisible: {
                 previousValue: this.childrenVisible,
                 currentValue: !this.childrenVisible
             }
-        })
+        });
     }
 }

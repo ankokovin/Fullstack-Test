@@ -1,6 +1,12 @@
 <div ng-controller="OrganizationListCtrl">
-    <input ng-model="$ctrl.searchString" >
-    <a class="btn" ng-href="#!/organization/list?search={{$ctrl.searchString}}">Искать</a>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Название</span>
+    </div>
+    <input class="form-control" ng-model="$ctrl.searchString" >
+    <a class="btn btn-primary form-control" ng-href="#!/organization/list?search={{$ctrl.searchString}}">Искать</a>
+  </div>
+  <a class="btn btn-primary" ng-href="#!/organization/item">Создать</a>
     <table class="table">
         <thead>
             <tr>

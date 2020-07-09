@@ -1,4 +1,5 @@
-<div ng-controller="WorkerListTreeCtrl">    
+<div ng-controller="WorkerListTreeCtrl">   
+    <a class="btn btn-primary" ng-href="#!/worker/item">Создать</a> 
     <ul class="list-group" >
         <div ng-repeat="node in $ctrl.children"> {{node.id}}</div>
         <worker-node-component node="node" visible="true" ng-repeat="node in $ctrl.children"></worker-node-component>

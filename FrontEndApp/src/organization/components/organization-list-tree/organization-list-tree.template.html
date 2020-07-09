@@ -1,4 +1,5 @@
-<div ng-controller="OrganizationListTreeCtrl">    
+<div ng-controller="OrganizationListTreeCtrl"> 
+    <a class="btn btn-primary" ng-href="#!/organization/item">Создать</a>   
     <ul class="list-group" >
         <organization-node-component node="node" visible="true" ng-repeat="node in $ctrl.children"></organization-node-component>
     </ul>    

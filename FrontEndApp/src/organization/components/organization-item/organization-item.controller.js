@@ -1,5 +1,5 @@
 export default class OrganizationItemCtrl{
-    constructor($routeParams, OrganizationService, $location, $scope) {
+    constructor($routeParams, OrganizationService, $location, $scope, $window) {
         "ngInject";
         this.new =  'id' in $routeParams;
         this.$scope = $scope; 
@@ -11,6 +11,7 @@ export default class OrganizationItemCtrl{
         this.$scope.head_error_message = false;
         this.head_error_message = 'Невозможно указать элемент как родительский';
         this.head_error_id = this.id;
+        this.$window = $window;
     }
 
     $onInit() {
@@ -29,13 +30,19 @@ export default class OrganizationItemCtrl{
 
     create() {
         this.OrganizationService.create(this.name, this.head_id).then(
-            (response) => console.log('Nice') //TODO: show some message, redirect?
+            (response) => {
+                alert('Организация успешно создана');
+                this.$window.history.back();
+            }
         );
     }
 
     update() {
         this.OrganizationService.update(this.id, this.name, this.head_id).then(
-            (response) => console.log('Nice'), //TODO: show some message, redirect?
+            (response) => {
+                alert('Организация успешно обновлена');
+                this.$window.history.back();
+            },
             (error) => {
                 if (error.status === 404) {
                     console.log('Record was deleted');
@@ -54,7 +61,10 @@ export default class OrganizationItemCtrl{
 
     delete() {
         this.OrganizationService.delete(this.id).then(
-            (response) => console.log('Nice'), //TODO: show some message, redirect?
+            (response) => {
+                alert('Организация успешно удалена');
+                this.$window.history.back();
+            },
             (error) => {
                 if (error.status === 404) {
                     alert('Record was already deleted');
