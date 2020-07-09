@@ -1,0 +1,23 @@
+name: docker
+
+on:
+  push:
+    branches: 
+    - master
+    - 'dev/*'
+    - 'dependabot/*' 
+        
+  pull_request:
+    branches: 
+    - master
+    - 'dev/docker'
+    - 'dependabot/*' 
+
+jobs:
+  build-server-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v1.1.0

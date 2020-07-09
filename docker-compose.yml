@@ -1,2 +1,13 @@
-# TODO(#5): docker-compose: описать используемый веб-сервер
-# TODO(#9): docker-compose: описать postgres
+version: '2.0'
+services:
+    postgres:
+        build: ./postgres
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: 12345
+            POSTGRES_USER: admin
+            POSTGRES_DB: orgs_and_workers
+
+    server:
+        build: .
+        restart: always
