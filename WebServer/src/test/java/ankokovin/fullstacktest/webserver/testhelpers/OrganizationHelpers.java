@@ -18,7 +18,7 @@ public class OrganizationHelpers {
     private static final ankokovin.fullstacktest.webserver.generated.tables.Organization organization
             = ankokovin.fullstacktest.webserver.generated.tables.Organization.ORGANIZATION;
 
-    private static String defaultNamePattern = "ООО Тест%d";
+    private static final String defaultNamePattern = "ООО Тест%d";
 
     public static Organization[] create(int cnt, int offset, Integer headOrgId, String namePattern,
                                         OrganizationRepository organizationRepository, DSLContext dslContext)
@@ -41,6 +41,7 @@ public class OrganizationHelpers {
         return expected;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Organization[] create(int cnt, int offset, int headOrgId,
                                         OrganizationRepository organizationRepository, DSLContext dslContext)
             throws BaseException {
@@ -91,19 +92,19 @@ public class OrganizationHelpers {
         return given;
     }
 
-    public static void  push(TreeNode<Organization> orgs, DSLContext dslContext) {
-        if (orgs.item != null) dslContext.insertInto(organization).values(
-                orgs.item.getId(),
-                orgs.item.getOrgName(),
-                orgs.item.getHeadOrgId()).execute();
-        if (orgs.children != null) orgs.children.forEach(it->push(it, dslContext));
+    public static void  push(TreeNode<Organization> organizationsNode, DSLContext dslContext) {
+        if (organizationsNode.item != null) dslContext.insertInto(organization).values(
+                organizationsNode.item.getId(),
+                organizationsNode.item.getOrgName(),
+                organizationsNode.item.getHeadOrgId()).execute();
+        if (organizationsNode.children != null) organizationsNode.children.forEach(it->push(it, dslContext));
     }
 
-    public static List<Organization> unroll(TreeNode<Organization> orgs) {
+    public static List<Organization> unroll(TreeNode<Organization> organizationsNode) {
         ArrayList<Organization> result = new ArrayList<>();
-        if (orgs.item != null) result.add(orgs.item);
-        if (orgs.children != null && orgs.children.size() > 0) result.addAll(
-                orgs.children.stream()
+        if (organizationsNode.item != null) result.add(organizationsNode.item);
+        if (organizationsNode.children != null && organizationsNode.children.size() > 0) result.addAll(
+                organizationsNode.children.stream()
                         .map(OrganizationHelpers::unroll)
                         .reduce((x, y) -> {
                             x.addAll(y);

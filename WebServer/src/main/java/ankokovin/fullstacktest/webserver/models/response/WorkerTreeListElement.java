@@ -20,6 +20,8 @@ public class WorkerTreeListElement {
      * Название организации
      */
     public String org_name;
+
+    @SuppressWarnings("unused")
     public WorkerTreeListElement(){}
     public WorkerTreeListElement(int id, String name,
                                  int org_id, String org_name) {

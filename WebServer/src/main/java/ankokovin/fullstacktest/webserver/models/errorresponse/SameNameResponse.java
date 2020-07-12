@@ -3,6 +3,7 @@ package ankokovin.fullstacktest.webserver.models.errorresponse;
 public class SameNameResponse extends ErrorResponse {
     public String name;
 
+    @SuppressWarnings("unused")
     public SameNameResponse() {
     }
 

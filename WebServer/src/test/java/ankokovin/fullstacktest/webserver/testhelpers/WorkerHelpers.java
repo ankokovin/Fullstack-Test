@@ -23,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WorkerHelpers {
-    private static final ankokovin.fullstacktest.webserver.generated.tables.Organization organization
-            = ankokovin.fullstacktest.webserver.generated.tables.Organization.ORGANIZATION;
     private static final ankokovin.fullstacktest.webserver.generated.tables.Worker worker
             = ankokovin.fullstacktest.webserver.generated.tables.Worker.WORKER;
 
@@ -109,7 +107,7 @@ public class WorkerHelpers {
 
     public static TreeNode<WorkerTreeListElement> setUp(OrganizationRepository organizationRepository,
                                                         DSLContext dslContext) throws BaseException {
-        Organization[] orgs = OrganizationHelpers.create(2,organizationRepository,dslContext);
+        Organization[] organizations = OrganizationHelpers.create(2,organizationRepository,dslContext);
         TreeNode<Worker> workersTree = new TreeNode<>(null,
                 Arrays.asList(
                         new TreeNode<>(new Worker(1,"Test",1,null)),
@@ -127,7 +125,7 @@ public class WorkerHelpers {
         Worker[] res = dslContext.selectFrom(worker).fetchInto(Worker.class).toArray(new Worker[0]);
         assertArrayEquals(check_added, res);
         return new TreeNode<>(null, workersTree.children.parallelStream()
-                .map(x->transform(x,x.item.getOrgId(),orgs[x.item.getOrgId()-1].getOrgName())).collect(Collectors.toList()));
+                .map(x->transform(x,x.item.getOrgId(),organizations[x.item.getOrgId()-1].getOrgName())).collect(Collectors.toList()));
     }
     public static TreeNode<WorkerTreeListElement> transform(TreeNode<Worker> workerNode, int org_id, String org_name){
         WorkerTreeListElement element = new WorkerTreeListElement(
@@ -146,11 +144,11 @@ public class WorkerHelpers {
         if (workerTreeNode.children != null) workerTreeNode.children.forEach(it->push(it, dslContext));
     }
 
-    public static List<Worker> unroll(TreeNode<Worker> orgs) {
+    public static List<Worker> unroll(TreeNode<Worker> workerNode) {
         ArrayList<Worker> result = new ArrayList<>();
-        if (orgs.item != null) result.add(orgs.item);
-        if (orgs.children != null && orgs.children.size() > 0) result.addAll(
-                orgs.children.stream()
+        if (workerNode.item != null) result.add(workerNode.item);
+        if (workerNode.children != null && workerNode.children.size() > 0) result.addAll(
+                workerNode.children.stream()
                         .map(WorkerHelpers::unroll)
                         .reduce((x, y) -> {
                             x.addAll(y);

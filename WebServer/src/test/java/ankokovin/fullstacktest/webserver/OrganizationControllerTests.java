@@ -280,8 +280,8 @@ class OrganizationControllerTests {
                         .toArray(Organization[]::new);
                 int page = 2;
                 int pageSize = 10;
-                Organization[] expected_orgs = Arrays.copyOfRange(given, (page-1) * pageSize, page*pageSize);
-                OrgListElement[] expected = Arrays.stream(expected_orgs)
+                Organization[] expected_organizations = Arrays.copyOfRange(given, (page-1) * pageSize, page*pageSize);
+                OrgListElement[] expected = Arrays.stream(expected_organizations)
                         .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
                         .toArray(OrgListElement[]::new);
                 String url = endPoint+String.format("?page=%d&pageSize=%d",page, pageSize);
@@ -299,8 +299,8 @@ class OrganizationControllerTests {
                 Organization[] given = create(100);
                 int page = 1;
                 int pageSize = 1;
-                Organization[] expected_orgs =  new Organization[]{given[42]};
-                OrgListElement[] expected = Arrays.stream(expected_orgs)
+                Organization[] expected_organizations =  new Organization[]{given[42]};
+                OrgListElement[] expected = Arrays.stream(expected_organizations)
                         .map((org) -> new OrgListElement(org.getId(), org.getOrgName(), 0))
                         .toArray(OrgListElement[]::new);
                 String url = endPoint+String.format("?page=%d&pageSize=%d&searchName=%s",
@@ -350,7 +350,7 @@ class OrganizationControllerTests {
             }
             @Test
             void get_bigDepth_errors() {
-                OrganizationTreeNode given = new OrganizationTreeNode(OrganizationHelpers.setUp(dsl));
+                OrganizationHelpers.setUp(dsl);
                 ResponseEntity<String> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=3", String.class);
                 assertEquals(400, response.getStatusCodeValue());

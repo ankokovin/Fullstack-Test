@@ -293,19 +293,19 @@ public class OrganizationRepositoryTests {
             }
             @Test
             void whenSearch_thenReturnCountCorrect() throws BaseException {
-                int[] cnts = new int[]{23, 42,54,13};
+                int[] counts = new int[]{23, 42,54,13};
                 String searchPattern = "Find me";
                 String namePattern = searchPattern+"%d";
                 int expected = 0;
                 int cur = 0;
-                for (int i = 0; i < cnts.length; i++) {
+                for (int i = 0; i < counts.length; i++) {
                     if (i%2 == 0) {
-                        OrganizationHelpers.create(cnts[i], cur, organizationRepository,dslContext);
+                        OrganizationHelpers.create(counts[i], cur, organizationRepository,dslContext);
                     } else {
-                        OrganizationHelpers.create(cnts[i],cur,namePattern,organizationRepository,dslContext);
-                        expected += cnts[i];
+                        OrganizationHelpers.create(counts[i],cur,namePattern,organizationRepository,dslContext);
+                        expected += counts[i];
                     }
-                    cur += cnts[i];
+                    cur += counts[i];
                 }
                 int actual = organizationRepository.getCount(searchPattern);
                 assertEquals(expected, actual);
@@ -373,8 +373,8 @@ public class OrganizationRepositoryTests {
                         = organizationRepository.getAllWithCount(pageNum , pageSize , null);
                 assertEquals(expectedPageSize, actual.size());
                 for (int i = 0; i < expectedPageSize; i++) {
-                    assertEquals(expected[(pageNum-1)*expectedPageSize + i].getId(), actual.get(i).component1());
-                    assertEquals(expected[(pageNum-1)*expectedPageSize + i].getOrgName(), actual.get(i).component2());
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getOrgName(), actual.get(i).component2());
                     assertEquals(0, actual.get(i).component3());
                 }
             }
@@ -403,8 +403,8 @@ public class OrganizationRepositoryTests {
                         = organizationRepository.getAllWithCount(pageNum , pageSize , searchTerm);
                 int expectedPageSize = Math.min(pageSize, expected.length);
                 for (int i = 0; i < expectedPageSize; i++) {
-                    assertEquals(expected[(pageNum-1)*expectedPageSize + i].getId(), actual.get(i).component1());
-                    assertEquals(expected[(pageNum-1)*expectedPageSize + i].getOrgName(), actual.get(i).component2());
+                    assertEquals(expected[i].getId(), actual.get(i).component1());
+                    assertEquals(expected[i].getOrgName(), actual.get(i).component2());
                     assertEquals(0, actual.get(i).component3());
                 }
             }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
  * Дерево организаций
  */
 public class OrganizationTreeNode extends TreeNode<Organization> {
+    @SuppressWarnings("unused")
     public OrganizationTreeNode(){super(null);}
     public OrganizationTreeNode(TreeNode<Organization> node){super(node.item, node.children);}
     public OrganizationTreeNode(Organization item, List<OrganizationTreeNode> children) {

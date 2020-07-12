@@ -78,7 +78,7 @@ public class OrganizationRepositoryUnitTests {
         }
 
         @Test
-        public void whenUpdateThrowsUnknownUncategorised_thenThrowsUnexpectedException() {
+        public void whenUpdateThrowsUnknownUncategorized_thenThrowsUnexpectedException() {
             MockDataProvider mockDataProvider = ctx -> {
                 throw new org.springframework.jdbc.UncategorizedSQLException(null,null,new SQLException());
             };

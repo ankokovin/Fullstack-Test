@@ -32,7 +32,6 @@ import ankokovin.fullstacktest.webserver.testhelpers.WorkerHelpers;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ankokovin.fullstacktest.webserver.testhelpers.OrganizationHelpers.create;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -212,8 +211,8 @@ public class WorkerControllerTests {
                 int page = 2;
                 int pageSize = 10;
                 String url = endPoint + String.format("?page=%d&pageSize=%d", page, pageSize);
-                Worker[] expected_orgs = Arrays.copyOfRange(given, (page - 1) * pageSize, page * pageSize);
-                WorkerListElement[] expected = Arrays.stream(expected_orgs)
+                Worker[] expected_organizations = Arrays.copyOfRange(given, (page - 1) * pageSize, page * pageSize);
+                WorkerListElement[] expected = Arrays.stream(expected_organizations)
                         .map((x) -> new WorkerListElement(x.getId(), x.getWorkerName(),
                                 null, null,
                                 1, "TestOrg")).toArray(WorkerListElement[]::new);
@@ -229,30 +228,30 @@ public class WorkerControllerTests {
             @Test
             public void whenSearch_thenReturns() throws BaseException {
                 int exp_1 = 12;
-                Organization[] orgs = OrganizationHelpers.create(2, organizationRepository, dsl);
-                String orgName = orgs[0].getOrgName();
-                WorkerHelpers.insert(exp_1, orgs[0].getId(), workerRepository);
+                Organization[] organizations = OrganizationHelpers.create(2, organizationRepository, dsl);
+                String orgName = organizations[0].getOrgName();
+                WorkerHelpers.insert(exp_1, organizations[0].getId(), workerRepository);
                 int r = 42;
-                WorkerHelpers.insert(r, orgs[1].getId(), exp_1, workerRepository);
+                WorkerHelpers.insert(r, organizations[1].getId(), exp_1, workerRepository);
                 Worker[] heads = new Worker[]
                         {
-                                WorkerHelpers.insert(1, orgs[0].getId(), exp_1 + r, workerRepository)[0],
-                                WorkerHelpers.insert(1, orgs[1].getId(), exp_1 + r + 1, workerRepository)[0]
+                                WorkerHelpers.insert(1, organizations[0].getId(), exp_1 + r, workerRepository)[0],
+                                WorkerHelpers.insert(1, organizations[1].getId(), exp_1 + r + 1, workerRepository)[0]
                         };
                 int exp_2 = 23;
                 String nameTemplate = "Find me%d";
-                Worker[] expectedWorker = WorkerHelpers.insert(exp_2, orgs[0].getId(),
+                Worker[] expectedWorker = WorkerHelpers.insert(exp_2, organizations[0].getId(),
                         r + exp_1 + heads.length, heads[0].getId(), nameTemplate, workerRepository);
                 java.util.function.Function<Worker, WorkerListElement > mapToWorkerListElement =
                         (w) -> new WorkerListElement(w.getId(), w.getWorkerName(),
                         heads[w.getOrgId()-1].getId(), heads[w.getOrgId()-1].getWorkerName(),
-                        orgs[w.getOrgId()-1].getId(), orgs[w.getOrgId()-1].getOrgName());
+                        organizations[w.getOrgId()-1].getId(), organizations[w.getOrgId()-1].getOrgName());
 
                 WorkerListElement[] expected = Arrays.stream(expectedWorker)
                         .sorted(Comparator.comparing(Worker::getWorkerName))
                         .map(mapToWorkerListElement)
                         .toArray(WorkerListElement[]::new);
-                WorkerHelpers.insert(exp_2, orgs[1].getId(),
+                WorkerHelpers.insert(exp_2, organizations[1].getId(),
                         r + exp_1 + exp_2 + heads.length, heads[1].getId(), nameTemplate, workerRepository);
                 int pageSize = 15;
                 WorkerListElement[] expectedFirstPage = Arrays.copyOfRange(expected, 0, pageSize);
@@ -292,7 +291,7 @@ public class WorkerControllerTests {
             }
             @Test
             void get_bigDepth_errors() throws BaseException {
-                WorkerTreeNode given = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository,dsl));
+                WorkerHelpers.setUp(organizationRepository,dsl);
                 ResponseEntity<String> response = restTemplate.getForEntity(
                         treeEndpoint+"?depth=3", String.class);
                 assertEquals(400, response.getStatusCodeValue());

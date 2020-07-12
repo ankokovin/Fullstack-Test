@@ -267,7 +267,7 @@ public class OrganizationServiceUnitTests {
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
                     () -> organizationService.delete(expected.id));
-
+            assertEquals(expected, e.getCause());
         }
     }
 
@@ -310,6 +310,7 @@ public class OrganizationServiceUnitTests {
                 int pageSize = 1;
                 OrgListElement el = new OrgListElement(1,"Test",42);
                 List<Record4<Integer, String, Integer, Integer>> repRes = new LinkedList<>();
+                @SuppressWarnings("unchecked")
                 Record4<Integer, String, Integer, Integer> mockResult = Mockito.mock(Record4.class);
                 Mockito.when(mockResult.component1()).thenReturn(el.id);
                 Mockito.when(mockResult.component2()).thenReturn(el.name);

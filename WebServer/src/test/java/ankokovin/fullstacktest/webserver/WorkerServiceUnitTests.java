@@ -35,6 +35,7 @@ public class WorkerServiceUnitTests {
     @Autowired
     protected WorkerService workerService;
 
+    @SuppressWarnings("unused")
     @MockBean
     protected WorkerRepository workerRepository;
 
@@ -74,7 +75,7 @@ public class WorkerServiceUnitTests {
         @Test
         void whenThrowsUnknownException() throws BaseException {
             String name = "Test";
-            Integer org_id = 424;
+            int org_id = 424;
             Integer head_id = 452;
             String message = "TestTest";
             Mockito.when(workerRepository.insert(name, org_id, head_id))
@@ -87,7 +88,7 @@ public class WorkerServiceUnitTests {
         @Test
         void whenNotFound_throwsUnknown() throws BaseException {
             String name = "Test";
-            Integer org_id = 42442;
+            int org_id = 42442;
             Integer head_id = 452235;
             Integer id = 5356;
             Mockito.when(workerRepository.insert(name, org_id, head_id))
@@ -130,9 +131,9 @@ public class WorkerServiceUnitTests {
         @Test
         void whenThrowsWrongId_Throws() throws BaseException {
             String name = "Test";
-            Integer id = 2;
+            int id = 2;
             Integer head_id = 3;
-            Integer org_id = 4;
+            int org_id = 4;
             Mockito.when(workerRepository.update(
                     id,
                     name,
@@ -164,7 +165,7 @@ public class WorkerServiceUnitTests {
             String name = "Test";
             Integer id = 3;
             Integer head_id = 4;
-            Integer org_id = 5;
+            int org_id = 5;
             Mockito.when(workerRepository.update(
                     id,
                     name,
@@ -212,6 +213,7 @@ public class WorkerServiceUnitTests {
             Mockito.when(workerRepository.delete(id)).thenReturn(id+1);
             UnexpectedException e = assertThrows(UnexpectedException.class,
                     () -> workerService.delete(id));
+            assertEquals("Delete returned wrong id", e.getMessage());
         }
     }
 
@@ -263,6 +265,7 @@ public class WorkerServiceUnitTests {
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> mockResult
                         = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
                         .mapToObj((i) -> {
+                            //noinspection unchecked
                             Record8<Integer, String, Integer, String, Integer, String, Integer, Integer> res
                                     = Mockito.mock(Record8.class);
                             Mockito.when(res.component1()).thenReturn(i);

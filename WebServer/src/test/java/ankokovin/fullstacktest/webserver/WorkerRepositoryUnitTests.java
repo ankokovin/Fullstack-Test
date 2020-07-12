@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WorkerRepositoryUnitTests {
     @Nested
@@ -48,7 +47,7 @@ public class WorkerRepositoryUnitTests {
         }
 
         @Test
-        public void whenCreateThrowsUnknownUncategorised_thenThrowsUnexpectedException() {
+        public void whenCreateThrowsUnknownUncategorized_thenThrowsUnexpectedException() {
             MockDataProvider mockDataProvider = ctx -> {
                 throw new org.springframework.jdbc.UncategorizedSQLException(null,null,new SQLException());
             };
@@ -90,7 +89,7 @@ public class WorkerRepositoryUnitTests {
         }
 
         @Test
-        public void whenUpdateThrowsUnknownUncategorised_thenThrowsUnexpectedException() {
+        public void whenUpdateThrowsUnknownUncategorized_thenThrowsUnexpectedException() {
             MockDataProvider mockDataProvider = ctx -> {
                 throw new org.springframework.jdbc.UncategorizedSQLException(null,null,new SQLException());
             };

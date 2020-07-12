@@ -53,7 +53,6 @@ public class WorkerRepositoryTests {
     @TestConfiguration
     static class WorkerServiceTestsConfiguration {
 
-        @SuppressWarnings("unused")
         @Bean
         public WorkerRepository workerRepository() {
             return new WorkerRepository();
@@ -258,58 +257,58 @@ public class WorkerRepositoryTests {
             }
             @Test
             void whenWorkerSearch_thenReturnCountCorrect() throws BaseException {
-                int[] cnts = new int[]{23, 42,54,13};
+                int[] counts = new int[]{23, 42,54,13};
                 String searchPattern = "Find me";
                 String namePattern = searchPattern+"%d";
                 int org_id = OrganizationHelpers.create(organizationRepository, dslContext).getId();
                 int expected = 0;
                 int cur = 0;
-                for (int i = 0; i < cnts.length; i++) {
+                for (int i = 0; i < counts.length; i++) {
                     if (i%2 == 0) {
-                        WorkerHelpers.insert(cnts[i], org_id, cur,workerRepository);
+                        WorkerHelpers.insert(counts[i], org_id, cur,workerRepository);
                     } else {
-                        WorkerHelpers.insert(cnts[i], org_id, cur, namePattern, workerRepository);
-                        expected += cnts[i];
+                        WorkerHelpers.insert(counts[i], org_id, cur, namePattern, workerRepository);
+                        expected += counts[i];
                     }
-                    cur += cnts[i];
+                    cur += counts[i];
                 }
                 int actual = workerRepository.getCount(searchPattern, null);
                 assertEquals(expected, actual);
             }
             @Test
             void whenOrganizationSearch_thenReturnCountCorrect() throws BaseException {
-                int[] cnts = new int[]{23, 42,54,13};
-                Organization[] orgs = OrganizationHelpers.create(2, organizationRepository, dslContext);
+                int[] counts = new int[]{23, 42,54,13};
+                Organization[] organizations = OrganizationHelpers.create(2, organizationRepository, dslContext);
                 int expected = 0;
                 int cur = 0;
-                for (int i = 0; i < cnts.length; i++) {
-                    WorkerHelpers.insert(cnts[i], orgs[i%2].getId(), cur, workerRepository);
+                for (int i = 0; i < counts.length; i++) {
+                    WorkerHelpers.insert(counts[i], organizations[i%2].getId(), cur, workerRepository);
                     if (i%2 == 0)
-                        expected += cnts[i];
-                    cur += cnts[i];
+                        expected += counts[i];
+                    cur += counts[i];
                 }
-                int actual = workerRepository.getCount(null, orgs[0].getOrgName());
+                int actual = workerRepository.getCount(null, organizations[0].getOrgName());
                 assertEquals(expected, actual);
             }
             @Test
             void whenBothSearch_thenReturnCountCorrect() throws BaseException {
-                int[] cnts = new int[]{23, 42,54,13, 52,15,63,42};
+                int[] counts = new int[]{23, 42,54,13, 52,15,63,42};
                 String searchPattern = "Find me";
                 String namePattern = searchPattern+"%d";
-                Organization[] orgs =  OrganizationHelpers.create(2, organizationRepository, dslContext);
+                Organization[] organizations =  OrganizationHelpers.create(2, organizationRepository, dslContext);
                 int expected = 0;
                 int cur = 0;
-                for (int i = 0; i < cnts.length; i++) {
-                    int org_id = i % 4 > 1 ? orgs[1].getId() : orgs[0].getId();
+                for (int i = 0; i < counts.length; i++) {
+                    int org_id = i % 4 > 1 ? organizations[1].getId() : organizations[0].getId();
                     if (i%2 == 0) {
-                        WorkerHelpers.insert(cnts[i], org_id, cur, namePattern, workerRepository);
+                        WorkerHelpers.insert(counts[i], org_id, cur, namePattern, workerRepository);
                     } else {
-                        WorkerHelpers.insert(cnts[i], org_id, cur, workerRepository);
+                        WorkerHelpers.insert(counts[i], org_id, cur, workerRepository);
                     }
-                    if (i%4 == 0) expected += cnts[i];
-                    cur += cnts[i];
+                    if (i%4 == 0) expected += counts[i];
+                    cur += counts[i];
                 }
-                int actual = workerRepository.getCount(searchPattern, orgs[0].getOrgName());
+                int actual = workerRepository.getCount(searchPattern, organizations[0].getOrgName());
                 assertEquals(expected, actual);
             }
         }
@@ -385,7 +384,7 @@ public class WorkerRepositoryTests {
                         organizationRepository,dslContext)[0];
                 Organization other = OrganizationHelpers.create(1,1,otherOrgName,organizationRepository,
                         dslContext)[0];
-                Organization[] orgs = new Organization[]{null, target, other};
+                Organization[] organizations = new Organization[]{null, target, other};
                 Worker[] given = WorkerHelpers.insert(startCnt,other.getId(),0,workerRepository);
                 int targetWorkersCnt = 7;
                 Worker[] targetWorkers = Arrays.stream(WorkerHelpers.insert(targetWorkersCnt, target.getId(), startCnt,
@@ -410,7 +409,7 @@ public class WorkerRepositoryTests {
                     assertNull(actual.get(i).component3());
                     assertNull(actual.get(i).component4());
                     assertEquals(expected[i].getOrgId(), actual.get(i).component5());
-                    assertEquals(orgs[expected[i].getOrgId()].getOrgName(), actual.get(i).component6());
+                    assertEquals(organizations[expected[i].getOrgId()].getOrgName(), actual.get(i).component6());
                 }
             }
             @Test
@@ -423,7 +422,7 @@ public class WorkerRepositoryTests {
                         organizationRepository,dslContext)[0];
                 Organization other = OrganizationHelpers.create(1,1,otherOrgName,organizationRepository,
                         dslContext)[0];
-                Organization[] orgs = new Organization[]{null, target, other};
+                Organization[] organizations = new Organization[]{null, target, other};
                 Worker[] given = WorkerHelpers.insert(startCnt,other.getId(),0,workerRepository);
                 int targetWorkersCnt = 7;
                 Worker[] targetWorkers = Arrays.stream(
@@ -447,7 +446,7 @@ public class WorkerRepositoryTests {
                     assertNull(actual.get(i).component3());
                     assertNull(actual.get(i).component4());
                     assertEquals(expected[i].getOrgId(), actual.get(i).component5());
-                    assertEquals(orgs[expected[i].getOrgId()].getOrgName(), actual.get(i).component6());
+                    assertEquals(organizations[expected[i].getOrgId()].getOrgName(), actual.get(i).component6());
                 }
             }
 
@@ -524,7 +523,7 @@ public class WorkerRepositoryTests {
             void whenSearchedBoth_thenNameOverOrgName() throws BaseException {
                 String nameTarget = "Hi";
                 String orgNameTarget = "Hello";
-                Organization[] orgs = ArrayUtils.addAll(
+                Organization[] organizations = ArrayUtils.addAll(
                         OrganizationHelpers.create(1,0,orgNameTarget,organizationRepository,dslContext),
                         OrganizationHelpers.create(1,1,"test"+orgNameTarget,
                                 organizationRepository,dslContext));
@@ -533,19 +532,19 @@ public class WorkerRepositoryTests {
                 int nameMatchCnt = 5;
                 int orgNameMatchCnt = 4;
                 int others = 7;
-                Worker[] othersWorkers = Arrays.stream(WorkerHelpers.insert(others, orgs[1].getId(),0,
+                Worker[] othersWorkers = Arrays.stream(WorkerHelpers.insert(others, organizations[1].getId(),0,
                         "test"+nameTarget, workerRepository))
                         .sorted(Comparator.comparing(Worker::getWorkerName))
                         .toArray(Worker[]::new);
-                Worker[] nameMatchWorkers = Arrays.stream(WorkerHelpers.insert(nameMatchCnt, orgs[1].getId(),others,
+                Worker[] nameMatchWorkers = Arrays.stream(WorkerHelpers.insert(nameMatchCnt, organizations[1].getId(),others,
                         nameTarget,workerRepository))
                         .sorted(Comparator.comparing(Worker::getWorkerName))
                         .toArray(Worker[]::new);
-                Worker[] fullMatchWorkers = Arrays.stream(WorkerHelpers.insert(fullMatchCnt, orgs[0].getId(),
+                Worker[] fullMatchWorkers = Arrays.stream(WorkerHelpers.insert(fullMatchCnt, organizations[0].getId(),
                         others+nameMatchCnt, nameTarget, workerRepository))
                         .sorted(Comparator.comparing(Worker::getWorkerName))
                         .toArray(Worker[]::new);
-                Worker[] orgNameMatch = Arrays.stream(WorkerHelpers.insert(orgNameMatchCnt, orgs[0].getId(),
+                Worker[] orgNameMatch = Arrays.stream(WorkerHelpers.insert(orgNameMatchCnt, organizations[0].getId(),
                         others+nameMatchCnt+fullMatchCnt, "test"+nameTarget, workerRepository))
                         .sorted(Comparator.comparing(Worker::getWorkerName))
                         .toArray(Worker[]::new);
@@ -562,7 +561,7 @@ public class WorkerRepositoryTests {
                     assertNull(actual.get(i).component3());
                     assertNull(actual.get(i).component4());
                     assertEquals(expected[i].getOrgId(), actual.get(i).component5());
-                    assertEquals(orgs[expected[i].getOrgId()-1].getOrgName(), actual.get(i).component6());
+                    assertEquals(organizations[expected[i].getOrgId()-1].getOrgName(), actual.get(i).component6());
                 }
             }
         }

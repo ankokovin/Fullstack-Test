@@ -9,6 +9,7 @@ public class UpdateOrganizationInput extends CreateOrganizationInput {
      */
     public int id;
 
+    @SuppressWarnings("unused")
     public UpdateOrganizationInput() {
         super();
     }
