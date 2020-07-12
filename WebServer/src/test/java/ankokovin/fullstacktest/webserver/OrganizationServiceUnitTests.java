@@ -3,12 +3,12 @@ package ankokovin.fullstacktest.webserver;
 
 import ankokovin.fullstacktest.webserver.exceptions.*;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
-import ankokovin.fullstacktest.webserver.models.webinput.UpdateOrganizationInput;
+import ankokovin.fullstacktest.webserver.models.Table;
 import ankokovin.fullstacktest.webserver.models.response.OrgListElement;
 import ankokovin.fullstacktest.webserver.models.response.Page;
 import ankokovin.fullstacktest.webserver.models.response.TreeNode;
-import ankokovin.fullstacktest.webserver.models.Table;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
+import ankokovin.fullstacktest.webserver.models.webinput.UpdateOrganizationInput;
 import ankokovin.fullstacktest.webserver.repos.OrganizationRepository;
 import ankokovin.fullstacktest.webserver.services.OrganizationService;
 import org.jooq.Record4;
@@ -105,6 +105,7 @@ public class OrganizationServiceUnitTests {
                     () -> organizationService.create(new CreateOrganizationInput("ООО Тест-3", expected)));
             assertEquals(expected, e.id);
         }
+
         @Test
         public void whenCreateNoSuchRecord_thenThrowsUnexpected() {
             int expected = 4;
@@ -259,11 +260,12 @@ public class OrganizationServiceUnitTests {
             assertEquals(expected.id, actual.id);
             assertEquals(expected.table, actual.table);
         }
+
         @Test
         public void whenDeleteReturnedWrongId() throws BaseException {
             DeleteHasChildException expected = new DeleteHasChildException(42, Table.UNKNOWN);
             Mockito.when(organizationRepository.delete(expected.id))
-                    .thenReturn(expected.id+1);
+                    .thenReturn(expected.id + 1);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
                     () -> organizationService.delete(expected.id));
@@ -308,7 +310,7 @@ public class OrganizationServiceUnitTests {
             void whenAsked_thenReturns() {
                 int pageNum = 1;
                 int pageSize = 1;
-                OrgListElement el = new OrgListElement(1,"Test",42);
+                OrgListElement el = new OrgListElement(1, "Test", 42);
                 List<Record4<Integer, String, Integer, Integer>> repRes = new LinkedList<>();
                 @SuppressWarnings("unchecked")
                 Record4<Integer, String, Integer, Integer> mockResult = Mockito.mock(Record4.class);
@@ -342,6 +344,7 @@ public class OrganizationServiceUnitTests {
                 TreeNode<Organization> actual = organizationService.getTree(root, depth);
                 assertEquals(expected, actual);
             }
+
             @Test
             void whenThrows_thenThrows() throws NoSuchRecordException {
                 int root = 42;

@@ -6,6 +6,7 @@ import java.util.Objects;
 
 /**
  * Дерево выходных данных
+ *
  * @param <T> хранимый тип
  */
 @SuppressWarnings("unused")
@@ -22,6 +23,7 @@ public class TreeNode<T> {
 
     /**
      * Вершина выходных данных
+     *
      * @param item хранимый элемент
      */
     public TreeNode(T item) {
@@ -31,7 +33,8 @@ public class TreeNode<T> {
 
     /**
      * Под-дерево выходных данных
-     * @param item Хранимый элемент корневой вершины
+     *
+     * @param item     Хранимый элемент корневой вершины
      * @param children Потомки корневой вершины
      */
     public TreeNode(T item, List<TreeNode<T>> children) {

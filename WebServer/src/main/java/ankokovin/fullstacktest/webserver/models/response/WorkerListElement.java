@@ -31,9 +31,12 @@ public class WorkerListElement {
      * Имя начальника
      */
     public String head_name;
+
     @SuppressWarnings("unused")
-    public WorkerListElement(){}
-    public WorkerListElement(int id, String name, Integer head_id, String head_name, Integer org_id, String org_name){
+    public WorkerListElement() {
+    }
+
+    public WorkerListElement(int id, String name, Integer head_id, String head_name, Integer org_id, String org_name) {
         this.id = id;
         this.name = name;
         this.head_id = head_id;

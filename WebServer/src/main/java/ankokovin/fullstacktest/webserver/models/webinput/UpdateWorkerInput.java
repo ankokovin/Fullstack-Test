@@ -11,9 +11,10 @@ public class UpdateWorkerInput extends CreateWorkerInput {
 
     /**
      * Информация об изменяемом работнике
-     * @param id Идентификатор работника
-     * @param name Имя работника
-     * @param org_id Идентификатор организации
+     *
+     * @param id      Идентификатор работника
+     * @param name    Имя работника
+     * @param org_id  Идентификатор организации
      * @param head_id Идентификатор начальника (может быть Null)
      */
     public UpdateWorkerInput(int id, String name, int org_id, Integer head_id) {

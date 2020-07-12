@@ -16,8 +16,9 @@ public class UpdateOrganizationInput extends CreateOrganizationInput {
 
     /**
      * Информация об изменяемой организации
-     * @param id Идентификатор организации
-     * @param name Наименование организации
+     *
+     * @param id          Идентификатор организации
+     * @param name        Наименование организации
      * @param head_org_id Идентификатор головной организации
      */
     public UpdateOrganizationInput(int id, String name, Integer head_org_id) {

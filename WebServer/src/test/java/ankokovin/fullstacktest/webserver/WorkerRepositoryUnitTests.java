@@ -29,7 +29,7 @@ public class WorkerRepositoryUnitTests {
             WorkerRepository WorkerRepository = new WorkerRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> WorkerRepository.insert("1", 1,null));
+                    () -> WorkerRepository.insert("1", 1, null));
             assertTrue(e.getCause() instanceof DataAccessException);
         }
 
@@ -42,20 +42,20 @@ public class WorkerRepositoryUnitTests {
             WorkerRepository WorkerRepository = new WorkerRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> WorkerRepository.insert("1", 1,null));
+                    () -> WorkerRepository.insert("1", 1, null));
             assertTrue(e.getCause() instanceof org.springframework.dao.DataIntegrityViolationException);
         }
 
         @Test
         public void whenCreateThrowsUnknownUncategorized_thenThrowsUnexpectedException() {
             MockDataProvider mockDataProvider = ctx -> {
-                throw new org.springframework.jdbc.UncategorizedSQLException(null,null,new SQLException());
+                throw new org.springframework.jdbc.UncategorizedSQLException(null, null, new SQLException());
             };
             DSLContext dslContext = DSL.using(new MockConnection(mockDataProvider), SQLDialect.POSTGRES);
             WorkerRepository WorkerRepository = new WorkerRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> WorkerRepository.insert("1",1, null));
+                    () -> WorkerRepository.insert("1", 1, null));
             assertTrue(e.getCause() instanceof org.springframework.jdbc.UncategorizedSQLException);
         }
     }
@@ -71,7 +71,7 @@ public class WorkerRepositoryUnitTests {
             WorkerRepository WorkerRepository = new WorkerRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> WorkerRepository.update(1,"1",1, null));
+                    () -> WorkerRepository.update(1, "1", 1, null));
             assertTrue(e.getCause() instanceof DataAccessException);
         }
 
@@ -84,20 +84,20 @@ public class WorkerRepositoryUnitTests {
             WorkerRepository WorkerRepository = new WorkerRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> WorkerRepository.update(1,"1",1, null));
+                    () -> WorkerRepository.update(1, "1", 1, null));
             assertTrue(e.getCause() instanceof org.springframework.dao.DataIntegrityViolationException);
         }
 
         @Test
         public void whenUpdateThrowsUnknownUncategorized_thenThrowsUnexpectedException() {
             MockDataProvider mockDataProvider = ctx -> {
-                throw new org.springframework.jdbc.UncategorizedSQLException(null,null,new SQLException());
+                throw new org.springframework.jdbc.UncategorizedSQLException(null, null, new SQLException());
             };
             DSLContext dslContext = DSL.using(new MockConnection(mockDataProvider), SQLDialect.POSTGRES);
             WorkerRepository WorkerRepository = new WorkerRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> WorkerRepository.update(1,"1",1, null));
+                    () -> WorkerRepository.update(1, "1", 1, null));
             assertTrue(e.getCause() instanceof org.springframework.jdbc.UncategorizedSQLException);
         }
     }
@@ -137,7 +137,7 @@ public class WorkerRepositoryUnitTests {
             MockDataProvider mockDataProvider = ctx -> {
                 throw new org.springframework.dao.DataIntegrityViolationException(
                         "Delete violates foreign key constrain: record is still referenced in table UNKNOWN with key " +
-                                "(id)=("+expectedId+")");
+                                "(id)=(" + expectedId + ")");
             };
             DSLContext dslContext = DSL.using(new MockConnection(mockDataProvider), SQLDialect.POSTGRES);
             WorkerRepository workerRepository = new WorkerRepository(dslContext);

@@ -60,7 +60,7 @@ public class OrganizationRepositoryUnitTests {
             OrganizationRepository organizationRepository = new OrganizationRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> organizationRepository.update(1,"1", null));
+                    () -> organizationRepository.update(1, "1", null));
             assertTrue(e.getCause() instanceof DataAccessException);
         }
 
@@ -73,20 +73,20 @@ public class OrganizationRepositoryUnitTests {
             OrganizationRepository organizationRepository = new OrganizationRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> organizationRepository.update(1,"1", null));
+                    () -> organizationRepository.update(1, "1", null));
             assertTrue(e.getCause() instanceof org.springframework.dao.DataIntegrityViolationException);
         }
 
         @Test
         public void whenUpdateThrowsUnknownUncategorized_thenThrowsUnexpectedException() {
             MockDataProvider mockDataProvider = ctx -> {
-                throw new org.springframework.jdbc.UncategorizedSQLException(null,null,new SQLException());
+                throw new org.springframework.jdbc.UncategorizedSQLException(null, null, new SQLException());
             };
             DSLContext dslContext = DSL.using(new MockConnection(mockDataProvider), SQLDialect.POSTGRES);
             OrganizationRepository organizationRepository = new OrganizationRepository(dslContext);
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
-                    () -> organizationRepository.update(1,"1", null));
+                    () -> organizationRepository.update(1, "1", null));
             assertTrue(e.getCause() instanceof org.springframework.jdbc.UncategorizedSQLException);
         }
     }
@@ -118,6 +118,7 @@ public class OrganizationRepositoryUnitTests {
                     () -> organizationRepository.delete(1));
             assertTrue(e.getCause() instanceof org.springframework.dao.DataIntegrityViolationException);
         }
+
         @Test
         public void whenDeleteThrowsDataIntegrityException_withRefOnUnknownTable_thenThrowsUnexpectedException() {
             int id = 42;
@@ -125,7 +126,7 @@ public class OrganizationRepositoryUnitTests {
             MockDataProvider mockDataProvider = ctx -> {
                 throw new org.springframework.dao.DataIntegrityViolationException(
                         "Delete violates foreign key constrain: record is still referenced in table UNKNOWN with key " +
-                                "(id)=("+expectedId+")");
+                                "(id)=(" + expectedId + ")");
             };
             DSLContext dslContext = DSL.using(new MockConnection(mockDataProvider), SQLDialect.POSTGRES);
             OrganizationRepository organizationRepository = new OrganizationRepository(dslContext);

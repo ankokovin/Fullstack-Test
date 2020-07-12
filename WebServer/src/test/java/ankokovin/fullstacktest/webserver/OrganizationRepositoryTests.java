@@ -20,7 +20,10 @@ import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static ankokovin.fullstacktest.webserver.testhelpers.OrganizationHelpers.create;
@@ -51,7 +54,6 @@ public class OrganizationRepositoryTests {
     }
 
 
-
     @SuppressWarnings("unused")
     @TestConfiguration
     static class OrganizationServiceTestsConfiguration {
@@ -63,9 +65,10 @@ public class OrganizationRepositoryTests {
         }
 
         @Bean
-        public WorkerRepository workerRepository() { return new WorkerRepository(); }
+        public WorkerRepository workerRepository() {
+            return new WorkerRepository();
+        }
     }
-
 
 
     @Nested
@@ -287,22 +290,23 @@ public class OrganizationRepositoryTests {
             @Test
             void whenNoSearch_thenReturnsCount() throws BaseException {
                 int expected = 42;
-                OrganizationHelpers.create(expected,organizationRepository,dslContext);
+                OrganizationHelpers.create(expected, organizationRepository, dslContext);
                 int actual = organizationRepository.getCount(null);
                 assertEquals(expected, actual);
             }
+
             @Test
             void whenSearch_thenReturnCountCorrect() throws BaseException {
-                int[] counts = new int[]{23, 42,54,13};
+                int[] counts = new int[]{23, 42, 54, 13};
                 String searchPattern = "Find me";
-                String namePattern = searchPattern+"%d";
+                String namePattern = searchPattern + "%d";
                 int expected = 0;
                 int cur = 0;
                 for (int i = 0; i < counts.length; i++) {
-                    if (i%2 == 0) {
-                        OrganizationHelpers.create(counts[i], cur, organizationRepository,dslContext);
+                    if (i % 2 == 0) {
+                        OrganizationHelpers.create(counts[i], cur, organizationRepository, dslContext);
                     } else {
-                        OrganizationHelpers.create(counts[i],cur,namePattern,organizationRepository,dslContext);
+                        OrganizationHelpers.create(counts[i], cur, namePattern, organizationRepository, dslContext);
                         expected += counts[i];
                     }
                     cur += counts[i];
@@ -328,35 +332,37 @@ public class OrganizationRepositoryTests {
                     assertEquals(0, actual.get(i).component3());
                 }
             }
+
             @Test
             void whenAskedPage_thenReturnsPage() throws BaseException {
                 int pageSize = 42;
                 Organization[] expected = Arrays.stream(
-                        OrganizationHelpers.create(pageSize*2, organizationRepository, dslContext))
+                        OrganizationHelpers.create(pageSize * 2, organizationRepository, dslContext))
                         .sorted(Comparator.comparing(Organization::getOrgName)).toArray(Organization[]::new);
                 List<Record4<Integer, String, Integer, Integer>> actual
                         = organizationRepository.getAllWithCount(2, pageSize, null);
                 assertEquals(pageSize, actual.size());
                 for (int i = 0; i < pageSize; i++) {
-                    assertEquals(expected[pageSize+i].getId(), actual.get(i).component1());
-                    assertEquals(expected[pageSize+i].getOrgName(), actual.get(i).component2());
+                    assertEquals(expected[pageSize + i].getId(), actual.get(i).component1());
+                    assertEquals(expected[pageSize + i].getOrgName(), actual.get(i).component2());
                     assertEquals(0, actual.get(i).component3());
                 }
             }
+
             @Test
             void whenAskedUnevenPage_thenReturnsPage() throws BaseException {
                 int expectedPageSize = 42;
                 int pageSize = 100;
                 int pageNum = 2;
-                Organization[] expected =  Arrays.stream(
+                Organization[] expected = Arrays.stream(
                         OrganizationHelpers.create(pageSize, organizationRepository, dslContext))
                         .sorted(Comparator.comparing(Organization::getOrgName)).toArray(Organization[]::new);
                 List<Record4<Integer, String, Integer, Integer>> actual
-                        = organizationRepository.getAllWithCount(pageNum , expectedPageSize, null);
+                        = organizationRepository.getAllWithCount(pageNum, expectedPageSize, null);
                 assertEquals(expectedPageSize, actual.size());
                 for (int i = 0; i < expectedPageSize; i++) {
-                    assertEquals(expected[(pageNum-1)*expectedPageSize + i].getId(), actual.get(i).component1());
-                    assertEquals(expected[(pageNum-1)*expectedPageSize + i].getOrgName(), actual.get(i).component2());
+                    assertEquals(expected[(pageNum - 1) * expectedPageSize + i].getId(), actual.get(i).component1());
+                    assertEquals(expected[(pageNum - 1) * expectedPageSize + i].getOrgName(), actual.get(i).component2());
                     assertEquals(0, actual.get(i).component3());
                 }
             }
@@ -370,7 +376,7 @@ public class OrganizationRepositoryTests {
                         OrganizationHelpers.create(expectedPageSize, organizationRepository, dslContext))
                         .sorted(Comparator.comparing(Organization::getOrgName)).toArray(Organization[]::new);
                 List<Record4<Integer, String, Integer, Integer>> actual
-                        = organizationRepository.getAllWithCount(pageNum , pageSize , null);
+                        = organizationRepository.getAllWithCount(pageNum, pageSize, null);
                 assertEquals(expectedPageSize, actual.size());
                 for (int i = 0; i < expectedPageSize; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
@@ -378,6 +384,7 @@ public class OrganizationRepositoryTests {
                     assertEquals(0, actual.get(i).component3());
                 }
             }
+
             @Test
             void whenAskedSearch_thenReturnsPage() throws BaseException {
                 int offset = 42;
@@ -389,18 +396,18 @@ public class OrganizationRepositoryTests {
                 List<Organization> expected_l = new LinkedList<>();
                 for (int i = 0; i < 5; i++) {
                     int c = 32;
-                    if (i%2 == 0) {
+                    if (i % 2 == 0) {
                         expected_l.addAll(Arrays.asList(OrganizationHelpers
                                 .create(c, offset, filter, organizationRepository, dslContext)));
                     } else {
                         OrganizationHelpers.create(c, offset, organizationRepository, dslContext);
                     }
-                    offset +=c ;
+                    offset += c;
                 }
                 Organization[] expected = expected_l.stream().sorted(Comparator.comparing(Organization::getOrgName))
                         .toArray(Organization[]::new);
                 List<Record4<Integer, String, Integer, Integer>> actual
-                        = organizationRepository.getAllWithCount(pageNum , pageSize , searchTerm);
+                        = organizationRepository.getAllWithCount(pageNum, pageSize, searchTerm);
                 int expectedPageSize = Math.min(pageSize, expected.length);
                 for (int i = 0; i < expectedPageSize; i++) {
                     assertEquals(expected[i].getId(), actual.get(i).component1());
@@ -408,6 +415,7 @@ public class OrganizationRepositoryTests {
                     assertEquals(0, actual.get(i).component3());
                 }
             }
+
             @Test
             void whenAsked_thenReturnsWithWorkerCounts() throws BaseException {
                 int pageSize = 25;
@@ -417,11 +425,11 @@ public class OrganizationRepositoryTests {
                                 .toArray(Organization[]::new);
                 int offsetWorker = 0;
                 for (int i = 0; i < pageSize; i++) {
-                    WorkerHelpers.insert(i, expected[i].getId(),offsetWorker, workerRepository);
+                    WorkerHelpers.insert(i, expected[i].getId(), offsetWorker, workerRepository);
                     offsetWorker += i;
                 }
                 List<Record4<Integer, String, Integer, Integer>> actual
-                        = organizationRepository.getAllWithCount(1,pageSize,null);
+                        = organizationRepository.getAllWithCount(1, pageSize, null);
 
                 assertEquals(pageSize, actual.size());
                 for (int i = 0; i < pageSize; i++) {
@@ -430,20 +438,21 @@ public class OrganizationRepositoryTests {
                     assertEquals(i, actual.get(i).component3());
                 }
             }
+
             @Test
             void whenAskedSearch_hasExact_thenExactReturnedFirst() throws BaseException {
                 String target = "Hello";
-                String noise = "Noise "+target+"%d";
+                String noise = "Noise " + target + "%d";
                 int startCnt = 10;
-                Organization[] given = create(startCnt,0, noise, organizationRepository, dslContext);
-                Organization exact_match_target = OrganizationHelpers.create(1,startCnt,target,organizationRepository,
+                Organization[] given = create(startCnt, 0, noise, organizationRepository, dslContext);
+                Organization exact_match_target = OrganizationHelpers.create(1, startCnt, target, organizationRepository,
                         dslContext)[0];
                 int endCnt = 10;
                 int pageSize = startCnt + endCnt + 1;
-                given = Arrays.stream(ArrayUtils.addAll(given, OrganizationHelpers.create(endCnt, startCnt+1, noise,
+                given = Arrays.stream(ArrayUtils.addAll(given, OrganizationHelpers.create(endCnt, startCnt + 1, noise,
                         organizationRepository, dslContext))).sorted(Comparator.comparing(Organization::getOrgName))
                         .toArray(Organization[]::new);
-                Organization[] expected =  ArrayUtils.addAll(new Organization[]{exact_match_target}, given);
+                Organization[] expected = ArrayUtils.addAll(new Organization[]{exact_match_target}, given);
                 List<Record4<Integer, String, Integer, Integer>> actual = organizationRepository.getAllWithCount(1,
                         pageSize, target);
                 assertEquals(pageSize, actual.size());
@@ -466,17 +475,19 @@ public class OrganizationRepositoryTests {
                 TreeNode<Organization> actual = organizationRepository.getTree(5, null);
                 assertEquals(expected, actual);
             }
+
             @Test
             void depth_limit() throws NoSuchRecordException {
                 TreeNode<Organization> given = setUp(dslContext);
                 TreeNode<Organization> expected = new TreeNode<>(given.item,
-                            given.children.stream()
-                                    .map(x->new TreeNode<>(x.item))
-                                    .collect(Collectors.toList())
-                        );
+                        given.children.stream()
+                                .map(x -> new TreeNode<>(x.item))
+                                .collect(Collectors.toList())
+                );
                 TreeNode<Organization> actual = organizationRepository.getTree(1, null);
                 assertEquals(expected, actual);
             }
+
             @Test
             void custom_head() throws NoSuchRecordException {
                 TreeNode<Organization> given = setUp(dslContext);

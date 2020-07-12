@@ -20,8 +20,9 @@ public class OrgListElement {
 
     /**
      * Информация об организации
-     * @param id Идентификатор организации
-     * @param name Название организации
+     *
+     * @param id    Идентификатор организации
+     * @param name  Название организации
      * @param count Количество сотрудников организации
      */
     public OrgListElement(int id, String name, Integer count) {

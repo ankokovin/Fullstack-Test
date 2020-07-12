@@ -2,10 +2,10 @@ package ankokovin.fullstacktest.webserver.controllers;
 
 import ankokovin.fullstacktest.webserver.exceptions.*;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
 import ankokovin.fullstacktest.webserver.models.response.OrgListElement;
 import ankokovin.fullstacktest.webserver.models.response.Page;
 import ankokovin.fullstacktest.webserver.models.response.TreeNode;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
 import ankokovin.fullstacktest.webserver.models.webinput.UpdateOrganizationInput;
 import ankokovin.fullstacktest.webserver.services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +43,7 @@ public class OrganizationsController {
 
     /**
      * Получение организации по идентификатору
+     *
      * @param id идентификатор
      * @return организация
      * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
@@ -54,26 +55,28 @@ public class OrganizationsController {
 
     /**
      * Получение списка организаций с поддержкой поиска
-     * @param page номер страницы (нумерация с единицы)
+     *
+     * @param page     номер страницы (нумерация с единицы)
      * @param pageSize количество организаций на странице
-     * @param name строка поиска организации
+     * @param name     строка поиска организации
      * @return Список информации об организациях
      */
     @GetMapping
     public ResponseEntity<Page<List<OrgListElement>>> getPage(
             @RequestParam(value = "page", required = false, defaultValue = "1") @Positive int page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount ) @Positive int pageSize,
+            @RequestParam(value = "pageSize", required = false, defaultValue = defaultPageCount) @Positive int pageSize,
             @RequestParam(value = "searchName", required = false) String name) {
         return ResponseEntity.ok(organizationService.getAllWithCount(page, pageSize, name));
     }
 
     /**
      * Создание организации
+     *
      * @param model входная информация об организации
      * @return созданная организация
-     * @throws SameNameException - при наличии организации с данным названием
+     * @throws SameNameException    - при наличии организации с данным названием
      * @throws WrongHeadIdException - при ошибке в идентификаторе головной организации
-     * @throws UnexpectedException - при неожиданной ошибке при создании организации
+     * @throws UnexpectedException  - при неожиданной ошибке при создании организации
      */
     @PostMapping
     public ResponseEntity<Organization> create(
@@ -86,11 +89,12 @@ public class OrganizationsController {
 
     /**
      * Обновление данных организации
+     *
      * @param model входная информация об организации
      * @return Обновлённая организация
-     * @throws SameNameException - при наличии организации с данным названием
-     * @throws WrongHeadIdException - при ошибке в идентификаторе головной организации
-     * @throws UnexpectedException - при неожиданной ошибке при обновлении данных организации
+     * @throws SameNameException     - при наличии организации с данным названием
+     * @throws WrongHeadIdException  - при ошибке в идентификаторе головной организации
+     * @throws UnexpectedException   - при неожиданной ошибке при обновлении данных организации
      * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
      */
     @PostMapping("/update")
@@ -102,11 +106,12 @@ public class OrganizationsController {
 
     /**
      * Удаление организации
+     *
      * @param id идентификатор организации
      * @return Удалённая организация
      * @throws DeleteHasChildException - при наличии дочерних элементов
-     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
-     * @throws UnexpectedException - при неожиданной ошибке при удалении организации
+     * @throws NoSuchRecordException   - при отсутствии организации с данным идентификатором
+     * @throws UnexpectedException     - при неожиданной ошибке при удалении организации
      */
     @DeleteMapping
     public ResponseEntity<Organization> delete(@RequestBody int id) throws DeleteHasChildException,
@@ -116,7 +121,8 @@ public class OrganizationsController {
 
     /**
      * Получение древовидного списка организаций
-     * @param id идентификатор организации (null для всех головных)
+     *
+     * @param id    идентификатор организации (null для всех головных)
      * @param depth глубина поиска
      * @return Древовидный список
      * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором

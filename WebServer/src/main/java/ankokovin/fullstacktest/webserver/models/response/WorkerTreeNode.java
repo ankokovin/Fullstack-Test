@@ -8,11 +8,17 @@ import java.util.stream.Collectors;
  */
 public class WorkerTreeNode extends TreeNode<WorkerTreeListElement> {
     @SuppressWarnings("unused")
-    public WorkerTreeNode(){super(null);}
-    public WorkerTreeNode(WorkerTreeListElement item, List<WorkerTreeNode>children) {
+    public WorkerTreeNode() {
+        super(null);
+    }
+
+    public WorkerTreeNode(WorkerTreeListElement item, List<WorkerTreeNode> children) {
         super(item, children.stream().map(WorkerTreeNode::new).collect(Collectors.toList()));
     }
-    public WorkerTreeNode(TreeNode<WorkerTreeListElement> node){super(node.item, node.children);}
+
+    public WorkerTreeNode(TreeNode<WorkerTreeListElement> node) {
+        super(node.item, node.children);
+    }
 
     @Override
     public boolean equals(Object o) {

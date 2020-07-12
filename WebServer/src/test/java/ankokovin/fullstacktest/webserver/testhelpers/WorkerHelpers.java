@@ -3,10 +3,10 @@ package ankokovin.fullstacktest.webserver.testhelpers;
 import ankokovin.fullstacktest.webserver.exceptions.BaseException;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
-import ankokovin.fullstacktest.webserver.models.webinput.CreateWorkerInput;
 import ankokovin.fullstacktest.webserver.models.response.TreeNode;
 import ankokovin.fullstacktest.webserver.models.response.WorkerTreeListElement;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateWorkerInput;
 import ankokovin.fullstacktest.webserver.repos.OrganizationRepository;
 import ankokovin.fullstacktest.webserver.repos.WorkerRepository;
 import org.jooq.DSLContext;
@@ -60,11 +60,12 @@ public class WorkerHelpers {
         String nameTemplate = "Тест Тестовый Тестович %d";
         return insert(n, org_id, offset, nameTemplate, workerRepository);
     }
+
     public static Worker[] insert(int n, int org_id, WorkerRepository workerRepository) throws BaseException {
-        return insert(n, org_id,0,  workerRepository);
+        return insert(n, org_id, 0, workerRepository);
     }
 
-        public static Worker[] insert(int n, WorkerRepository workerRepository, OrganizationRepository organizationRepository)
+    public static Worker[] insert(int n, WorkerRepository workerRepository, OrganizationRepository organizationRepository)
             throws BaseException {
         assert n > 0;
         int org_id = organizationRepository.insert("Test", null);
@@ -107,15 +108,15 @@ public class WorkerHelpers {
 
     public static TreeNode<WorkerTreeListElement> setUp(OrganizationRepository organizationRepository,
                                                         DSLContext dslContext) throws BaseException {
-        Organization[] organizations = OrganizationHelpers.create(2,organizationRepository,dslContext);
+        Organization[] organizations = OrganizationHelpers.create(2, organizationRepository, dslContext);
         TreeNode<Worker> workersTree = new TreeNode<>(null,
                 Arrays.asList(
-                        new TreeNode<>(new Worker(1,"Test",1,null)),
-                        new TreeNode<>(new Worker(2,"Test2",2,null)),
-                        new TreeNode<>(new Worker(3,"Test3",2,null),
+                        new TreeNode<>(new Worker(1, "Test", 1, null)),
+                        new TreeNode<>(new Worker(2, "Test2", 2, null)),
+                        new TreeNode<>(new Worker(3, "Test3", 2, null),
                                 Arrays.asList(
-                                        new TreeNode<>(new Worker(4,"Test4",2,3)),
-                                        new TreeNode<>(new Worker(5,"Test5",2,3),
+                                        new TreeNode<>(new Worker(4, "Test4", 2, 3)),
+                                        new TreeNode<>(new Worker(5, "Test5", 2, 3),
                                                 Collections.singletonList(new TreeNode<>(new Worker(6, "Test6", 2, 5))))
                                 )
                         )
@@ -125,23 +126,24 @@ public class WorkerHelpers {
         Worker[] res = dslContext.selectFrom(worker).fetchInto(Worker.class).toArray(new Worker[0]);
         assertArrayEquals(check_added, res);
         return new TreeNode<>(null, workersTree.children.parallelStream()
-                .map(x->transform(x,x.item.getOrgId(),organizations[x.item.getOrgId()-1].getOrgName())).collect(Collectors.toList()));
+                .map(x -> transform(x, x.item.getOrgId(), organizations[x.item.getOrgId() - 1].getOrgName())).collect(Collectors.toList()));
     }
-    public static TreeNode<WorkerTreeListElement> transform(TreeNode<Worker> workerNode, int org_id, String org_name){
+
+    public static TreeNode<WorkerTreeListElement> transform(TreeNode<Worker> workerNode, int org_id, String org_name) {
         WorkerTreeListElement element = new WorkerTreeListElement(
                 workerNode.item.getId(), workerNode.item.getWorkerName(), org_id, org_name);
         return new TreeNode<>(element, workerNode.children.parallelStream()
-                .map(x->transform(x, org_id, org_name)).collect(Collectors.toList()));
+                .map(x -> transform(x, org_id, org_name)).collect(Collectors.toList()));
 
     }
 
-    public static void  push(TreeNode<Worker> workerTreeNode, DSLContext dslContext) {
+    public static void push(TreeNode<Worker> workerTreeNode, DSLContext dslContext) {
         if (workerTreeNode.item != null) dslContext.insertInto(worker).values(
                 workerTreeNode.item.getId(),
                 workerTreeNode.item.getWorkerName(),
                 workerTreeNode.item.getOrgId(),
                 workerTreeNode.item.getHeadId()).execute();
-        if (workerTreeNode.children != null) workerTreeNode.children.forEach(it->push(it, dslContext));
+        if (workerTreeNode.children != null) workerTreeNode.children.forEach(it -> push(it, dslContext));
     }
 
     public static List<Worker> unroll(TreeNode<Worker> workerNode) {

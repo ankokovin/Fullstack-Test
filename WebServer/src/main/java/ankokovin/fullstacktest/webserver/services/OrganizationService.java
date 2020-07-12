@@ -1,14 +1,14 @@
 package ankokovin.fullstacktest.webserver.services;
 
 
+import ankokovin.fullstacktest.webserver.exceptions.*;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
 import ankokovin.fullstacktest.webserver.models.response.OrgListElement;
 import ankokovin.fullstacktest.webserver.models.response.Page;
 import ankokovin.fullstacktest.webserver.models.response.TreeNode;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
 import ankokovin.fullstacktest.webserver.models.webinput.UpdateOrganizationInput;
 import ankokovin.fullstacktest.webserver.repos.OrganizationRepository;
-import ankokovin.fullstacktest.webserver.exceptions.*;
 import org.jooq.Record4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +26,9 @@ public class OrganizationService {
 
     /**
      * Получение информации об организациях с поддержкой поиска
-     * @param pageNum - номер страницы (нумерация с единицы)
-     * @param pageSize - количество записей на странице
+     *
+     * @param pageNum    - номер страницы (нумерация с единицы)
+     * @param pageSize   - количество записей на странице
      * @param searchName - строка поиска
      * @return Список информации об организациях
      */
@@ -38,16 +39,17 @@ public class OrganizationService {
         for (Record4<Integer, String, Integer, Integer> rec : rep.getAllWithCount(pageNum, pageSize, searchName)) {
             result.add(new OrgListElement(rec.component1(), rec.component2(), rec.component3()));
         }
-        return new Page<>(pageNum,pageSize, total, result);
+        return new Page<>(pageNum, pageSize, total, result);
     }
 
     /**
      * Создание организации
+     *
      * @param model - входная информация об организации
      * @return созданная организация
-     * @throws SameNameException - при наличии организации с данным именем
+     * @throws SameNameException    - при наличии организации с данным именем
      * @throws WrongHeadIdException - при указании несуществующего идентификатора головной организации
-     * @throws UnexpectedException - при неожиданной ошибке в ходе создания организации
+     * @throws UnexpectedException  - при неожиданной ошибке в ходе создания организации
      */
     public Organization create(CreateOrganizationInput model) throws
             SameNameException,
@@ -63,6 +65,7 @@ public class OrganizationService {
 
     /**
      * Получение организации по идентификатору
+     *
      * @param id идентификатор организации
      * @return Организация
      * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
@@ -73,11 +76,12 @@ public class OrganizationService {
 
     /**
      * Обновление данных организации
+     *
      * @param model - входная информация об организации
      * @return Изменённая организация
-     * @throws WrongHeadIdException - при указании несуществующего идентификатора головной организации или при цикличной зависимости
-     * @throws SameNameException - при наличии организации с данным именем
-     * @throws UnexpectedException - при неожиданной ошибке в ходе создания организации
+     * @throws WrongHeadIdException  - при указании несуществующего идентификатора головной организации или при цикличной зависимости
+     * @throws SameNameException     - при наличии организации с данным именем
+     * @throws UnexpectedException   - при неожиданной ошибке в ходе создания организации
      * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
      */
     public Organization update(UpdateOrganizationInput model) throws
@@ -95,11 +99,12 @@ public class OrganizationService {
 
     /**
      * Удаление данных об организации
+     *
      * @param id - идентификатор организации
      * @return Удалённая организация
-     * @throws NoSuchRecordException - при отстутствии организации с данным идентификатором
+     * @throws NoSuchRecordException   - при отстутствии организации с данным идентификатором
      * @throws DeleteHasChildException - при наличии дочерних организаций
-     * @throws UnexpectedException - при неожиданной ошибке в ходе удаления организации
+     * @throws UnexpectedException     - при неожиданной ошибке в ходе удаления организации
      */
     public Organization delete(Integer id) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
         Organization res = getById(id);
@@ -110,7 +115,8 @@ public class OrganizationService {
 
     /**
      * Получение информации об организациях в виде дерева
-     * @param root - идентификатор организации (может быть Null)
+     *
+     * @param root  - идентификатор организации (может быть Null)
      * @param depth - глубина поиска
      * @return Дерево организаций
      * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором

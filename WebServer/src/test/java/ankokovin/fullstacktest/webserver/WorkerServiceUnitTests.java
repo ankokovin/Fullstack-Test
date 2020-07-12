@@ -5,13 +5,13 @@ import ankokovin.fullstacktest.webserver.exceptions.NoSuchRecordException;
 import ankokovin.fullstacktest.webserver.exceptions.UnexpectedException;
 import ankokovin.fullstacktest.webserver.exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.webserver.models.webinput.CreateWorkerInput;
-import ankokovin.fullstacktest.webserver.models.webinput.UpdateWorkerInput;
+import ankokovin.fullstacktest.webserver.models.Table;
 import ankokovin.fullstacktest.webserver.models.response.Page;
 import ankokovin.fullstacktest.webserver.models.response.TreeNode;
 import ankokovin.fullstacktest.webserver.models.response.WorkerListElement;
 import ankokovin.fullstacktest.webserver.models.response.WorkerTreeListElement;
-import ankokovin.fullstacktest.webserver.models.Table;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateWorkerInput;
+import ankokovin.fullstacktest.webserver.models.webinput.UpdateWorkerInput;
 import ankokovin.fullstacktest.webserver.repos.WorkerRepository;
 import ankokovin.fullstacktest.webserver.services.WorkerService;
 import org.assertj.core.util.Lists;
@@ -152,7 +152,7 @@ public class WorkerServiceUnitTests {
 
         @Test
         void whenNotFound_thenThrows() throws BaseException {
-            UpdateWorkerInput model = new UpdateWorkerInput(1,"test",1,null);
+            UpdateWorkerInput model = new UpdateWorkerInput(1, "test", 1, null);
             Mockito.when(workerRepository.update(model.id, model.name, model.org_id, model.head_id))
                     .thenThrow(new NoSuchRecordException(model.id));
             NoSuchRecordException e = assertThrows(NoSuchRecordException.class,
@@ -207,10 +207,11 @@ public class WorkerServiceUnitTests {
                     () -> workerService.delete(id));
             assertEquals(id, e.id);
         }
+
         @Test
         void whenDeleteThrowsUnexpected_ThrowsUnexpected() throws BaseException {
             int id = 42;
-            Mockito.when(workerRepository.delete(id)).thenReturn(id+1);
+            Mockito.when(workerRepository.delete(id)).thenReturn(id + 1);
             UnexpectedException e = assertThrows(UnexpectedException.class,
                     () -> workerService.delete(id));
             assertEquals("Delete returned wrong id", e.getMessage());
@@ -240,6 +241,7 @@ public class WorkerServiceUnitTests {
                 assertEquals(id, e.id);
             }
         }
+
         @Nested
         class GetAll {
             @Test
@@ -252,38 +254,39 @@ public class WorkerServiceUnitTests {
                 String head_name = "head_name";
                 String name_format = "Name:";
                 List<WorkerListElement> expected
-                        = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
+                        = Lists.newArrayList(IntStream.rangeClosed(pageSize * (page - 1), pageSize * page)
                         .mapToObj((i) -> new WorkerListElement(
-                                        i,
-                                        String.format(name_format+"%d",i),
-                                        head_id,
-                                        head_name,
-                                        org_id,
-                                        org_name)
+                                i,
+                                String.format(name_format + "%d", i),
+                                head_id,
+                                head_name,
+                                org_id,
+                                org_name)
                         ).collect(Collectors.toList()));
-                Mockito.when(workerRepository.getCount(name_format,org_name)).thenReturn(expected.size());
+                Mockito.when(workerRepository.getCount(name_format, org_name)).thenReturn(expected.size());
                 List<Record8<Integer, String, Integer, String, Integer, String, Integer, Integer>> mockResult
-                        = Lists.newArrayList(IntStream.rangeClosed(pageSize*(page-1), pageSize*page)
+                        = Lists.newArrayList(IntStream.rangeClosed(pageSize * (page - 1), pageSize * page)
                         .mapToObj((i) -> {
                             //noinspection unchecked
                             Record8<Integer, String, Integer, String, Integer, String, Integer, Integer> res
                                     = Mockito.mock(Record8.class);
                             Mockito.when(res.component1()).thenReturn(i);
-                            Mockito.when(res.component2()).thenReturn(String.format(name_format+"%d",i));
+                            Mockito.when(res.component2()).thenReturn(String.format(name_format + "%d", i));
                             Mockito.when(res.component3()).thenReturn(head_id);
                             Mockito.when(res.component4()).thenReturn(head_name);
                             Mockito.when(res.component5()).thenReturn(org_id);
                             Mockito.when(res.component6()).thenReturn(org_name);
                             return res;
                         }).collect(Collectors.toList()));
-                Mockito.when(workerRepository.getAll(page, pageSize,org_name,name_format))
+                Mockito.when(workerRepository.getAll(page, pageSize, org_name, name_format))
                         .thenReturn(mockResult);
-                Page<List<WorkerListElement>> actual = workerService.get(page, pageSize,name_format,org_name);
+                Page<List<WorkerListElement>> actual = workerService.get(page, pageSize, name_format, org_name);
                 assertEquals(expected.size(), actual.total);
                 assertEquals(expected.size(), actual.list.size());
                 assertIterableEquals(expected, actual.list);
             }
         }
+
         @Nested
         class GetTree {
             @Test
@@ -291,11 +294,12 @@ public class WorkerServiceUnitTests {
                 int id = 42;
                 int depth = 1;
                 TreeNode<WorkerTreeListElement> expected = new TreeNode<>(
-                        new WorkerTreeListElement(42, "Hi",1,"test"));
+                        new WorkerTreeListElement(42, "Hi", 1, "test"));
                 Mockito.when(workerRepository.getTree(depth, id)).thenReturn(expected);
                 TreeNode<WorkerTreeListElement> actual = workerService.getTree(depth, id);
                 assertEquals(expected, actual);
             }
+
             @Test
             void whenThrows_thenThrows() throws NoSuchRecordException {
                 int id = 42;
@@ -303,7 +307,7 @@ public class WorkerServiceUnitTests {
                 NoSuchRecordException expected = new NoSuchRecordException(id);
                 Mockito.when(workerRepository.getTree(depth, id)).thenThrow(expected);
                 NoSuchRecordException actual = assertThrows(NoSuchRecordException.class
-                        ,() -> workerService.getTree(depth, id));
+                        , () -> workerService.getTree(depth, id));
                 assertEquals(expected, actual);
             }
         }

@@ -3,18 +3,19 @@ package ankokovin.fullstacktest.webserver;
 import ankokovin.fullstacktest.webserver.exceptions.BaseException;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Worker;
+import ankokovin.fullstacktest.webserver.models.Table;
 import ankokovin.fullstacktest.webserver.models.errorresponse.DeleteHasChildResponse;
 import ankokovin.fullstacktest.webserver.models.errorresponse.NoSuchRecordResponse;
 import ankokovin.fullstacktest.webserver.models.errorresponse.WrongHeadIdResponse;
-import ankokovin.fullstacktest.webserver.models.webinput.CreateWorkerInput;
-import ankokovin.fullstacktest.webserver.models.webinput.UpdateWorkerInput;
 import ankokovin.fullstacktest.webserver.models.response.WorkerListElement;
 import ankokovin.fullstacktest.webserver.models.response.WorkerPage;
 import ankokovin.fullstacktest.webserver.models.response.WorkerTreeNode;
-import ankokovin.fullstacktest.webserver.models.Table;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateWorkerInput;
+import ankokovin.fullstacktest.webserver.models.webinput.UpdateWorkerInput;
 import ankokovin.fullstacktest.webserver.repos.OrganizationRepository;
 import ankokovin.fullstacktest.webserver.repos.WorkerRepository;
 import ankokovin.fullstacktest.webserver.testhelpers.OrganizationHelpers;
+import ankokovin.fullstacktest.webserver.testhelpers.WorkerHelpers;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -27,9 +28,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ankokovin.fullstacktest.webserver.testhelpers.WorkerHelpers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -60,7 +63,6 @@ public class WorkerControllerTests {
     }
 
 
-
     @Nested
     class Create {
         @Test
@@ -82,7 +84,7 @@ public class WorkerControllerTests {
         @Test
         public void whenCreateNameNull_thenReturnsBadRequest() throws BaseException {
             Organization given = OrganizationHelpers.create(organizationRepository, dsl);
-            CreateWorkerInput input = new CreateWorkerInput(null,given.getId(), null);
+            CreateWorkerInput input = new CreateWorkerInput(null, given.getId(), null);
             ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
                     Worker.class);
             assertEquals(400, response.getStatusCodeValue());
@@ -95,7 +97,7 @@ public class WorkerControllerTests {
 
         @Test
         public void updates() {
-            Worker expected =  WorkerHelpers.create(restTemplate, endPoint);
+            Worker expected = WorkerHelpers.create(restTemplate, endPoint);
             expected.setWorkerName("Test1");
             UpdateWorkerInput input = new UpdateWorkerInput(expected.getId(),
                     expected.getWorkerName(), expected.getOrgId(), expected.getHeadId());
@@ -107,7 +109,7 @@ public class WorkerControllerTests {
 
         @Test
         public void whenWrongHeadId_returns() {
-            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
+            Worker given = WorkerHelpers.create(restTemplate, endPoint);
             given.setOrgId(given.getOrgId() + 1);
             WrongHeadIdResponse expected = new WrongHeadIdResponse(given.getOrgId(), Table.ORGANIZATION);
             UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),
@@ -121,8 +123,8 @@ public class WorkerControllerTests {
 
         @Test
         public void whenUpdateNameNull_thenReturnsBadRequest() {
-            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
-            UpdateWorkerInput input = new UpdateWorkerInput(given.getId(),null, given.getOrgId(), null);
+            Worker given = WorkerHelpers.create(restTemplate, endPoint);
+            UpdateWorkerInput input = new UpdateWorkerInput(given.getId(), null, given.getOrgId(), null);
             ResponseEntity<Worker> response = restTemplate.postForEntity(endPoint, input,
                     Worker.class);
             assertEquals(400, response.getStatusCodeValue());
@@ -135,9 +137,10 @@ public class WorkerControllerTests {
     class Delete {
         @Test
         public void deletes() {
-            Worker given =  WorkerHelpers.create(restTemplate, endPoint);
+            Worker given = WorkerHelpers.create(restTemplate, endPoint);
             restTemplate.delete(endPoint, given.getId());
         }
+
         @Test
         public void whenNoRecord_thenThrows() {
             int id = 42;
@@ -147,10 +150,11 @@ public class WorkerControllerTests {
             assertNotNull(resp.getBody());
             assertEquals(id, resp.getBody().id);
         }
+
         @Test
         public void whenHasChild_thenThrows() throws BaseException {
             Worker given = WorkerHelpers.create(restTemplate, endPoint);
-            WorkerHelpers.insert(1,given.getOrgId(),1,given.getId(),"Hello",workerRepository);
+            WorkerHelpers.insert(1, given.getOrgId(), 1, given.getId(), "Hello", workerRepository);
             ResponseEntity<DeleteHasChildResponse> resp = restTemplate.exchange(endPoint, HttpMethod.DELETE,
                     new HttpEntity<>(given.getId()), DeleteHasChildResponse.class, new HashMap<>());
             assertEquals(403, resp.getStatusCodeValue());
@@ -158,6 +162,7 @@ public class WorkerControllerTests {
             assertEquals(given.getId(), resp.getBody().id);
         }
     }
+
     @Nested
     class Get {
 
@@ -166,7 +171,7 @@ public class WorkerControllerTests {
             @Test
             public void whenNoSuchRecord_thenReturnNotFound() {
                 int id = 42;
-                String url = endPoint+"/"+id;
+                String url = endPoint + "/" + id;
                 ResponseEntity<NoSuchRecordResponse> response = restTemplate.getForEntity(url,
                         NoSuchRecordResponse.class);
                 assertEquals(404, response.getStatusCodeValue());
@@ -176,8 +181,8 @@ public class WorkerControllerTests {
 
             @Test
             public void whenOk_thenReturns() {
-                Worker expected =  WorkerHelpers.create(restTemplate, endPoint);
-                String url = endPoint+"/"+expected.getId();
+                Worker expected = WorkerHelpers.create(restTemplate, endPoint);
+                String url = endPoint + "/" + expected.getId();
                 ResponseEntity<Worker> response = restTemplate.getForEntity(url,
                         Worker.class);
                 assertEquals(200, response.getStatusCodeValue());
@@ -242,10 +247,10 @@ public class WorkerControllerTests {
                 String nameTemplate = "Find me%d";
                 Worker[] expectedWorker = WorkerHelpers.insert(exp_2, organizations[0].getId(),
                         r + exp_1 + heads.length, heads[0].getId(), nameTemplate, workerRepository);
-                java.util.function.Function<Worker, WorkerListElement > mapToWorkerListElement =
+                java.util.function.Function<Worker, WorkerListElement> mapToWorkerListElement =
                         (w) -> new WorkerListElement(w.getId(), w.getWorkerName(),
-                        heads[w.getOrgId()-1].getId(), heads[w.getOrgId()-1].getWorkerName(),
-                        organizations[w.getOrgId()-1].getId(), organizations[w.getOrgId()-1].getOrgName());
+                                heads[w.getOrgId() - 1].getId(), heads[w.getOrgId() - 1].getWorkerName(),
+                                organizations[w.getOrgId() - 1].getId(), organizations[w.getOrgId() - 1].getOrgName());
 
                 WorkerListElement[] expected = Arrays.stream(expectedWorker)
                         .sorted(Comparator.comparing(Worker::getWorkerName))
@@ -274,39 +279,43 @@ public class WorkerControllerTests {
         @Nested
         class GetTree {
             private final String treeEndpoint = endPoint + "/tree";
+
             @Test
             void get_returns() throws BaseException {
-                WorkerTreeNode given = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository,dsl));
+                WorkerTreeNode given = new WorkerTreeNode(WorkerHelpers.setUp(organizationRepository, dsl));
                 WorkerTreeNode expected = new WorkerTreeNode(
                         given.item,
                         given.children.stream()
-                                .map(x->new WorkerTreeNode(x.item, new ArrayList<>()))
+                                .map(x -> new WorkerTreeNode(x.item, new ArrayList<>()))
                                 .collect(Collectors.toList())
                 );
                 ResponseEntity<WorkerTreeNode> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=1",
+                        treeEndpoint + "?depth=1",
                         WorkerTreeNode.class);
                 assertEquals(200, response.getStatusCodeValue());
                 assertEquals(expected, response.getBody());
             }
+
             @Test
             void get_bigDepth_errors() throws BaseException {
-                WorkerHelpers.setUp(organizationRepository,dsl);
+                WorkerHelpers.setUp(organizationRepository, dsl);
                 ResponseEntity<String> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=3", String.class);
+                        treeEndpoint + "?depth=3", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
+
             @Test
-            void getNegativeDepth(){
+            void getNegativeDepth() {
                 ResponseEntity<String> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=-1", String.class);
+                        treeEndpoint + "?depth=-1", String.class);
                 assertEquals(400, response.getStatusCodeValue());
             }
+
             @Test
             void get_noSuchRecord() {
                 Integer id = 42;
                 ResponseEntity<NoSuchRecordResponse> response = restTemplate.getForEntity(
-                        treeEndpoint+"?depth=1&id="+id.toString(),
+                        treeEndpoint + "?depth=1&id=" + id.toString(),
                         NoSuchRecordResponse.class);
                 assertEquals(404, response.getStatusCodeValue());
                 assertNotNull(response.getBody());

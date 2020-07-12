@@ -28,7 +28,7 @@ public class OrganizationHelpers {
         assert namePattern != null;
         Organization[] expected = new Organization[cnt];
         for (int i = 0; i < cnt; ++i) {
-            String fName = String.format(namePattern, i+offset);
+            String fName = String.format(namePattern, i + offset);
             int id = organizationRepository.insert(fName, headOrgId);
             assertEquals(offset + i + 1, id);
             expected[i] = new Organization(id, fName, headOrgId);
@@ -49,38 +49,38 @@ public class OrganizationHelpers {
     }
 
     public static Organization[] create(int cnt, int offset,
-                                 String namePattern,
-                                 OrganizationRepository organizationRepository,
-                                 DSLContext dslContext) throws BaseException {
-       return create(cnt, offset, null, namePattern, organizationRepository, dslContext);
+                                        String namePattern,
+                                        OrganizationRepository organizationRepository,
+                                        DSLContext dslContext) throws BaseException {
+        return create(cnt, offset, null, namePattern, organizationRepository, dslContext);
     }
 
     public static Organization[] create(int cnt, int offset,
-                                 OrganizationRepository organizationRepository,
-                                 DSLContext dslContext) throws BaseException {
+                                        OrganizationRepository organizationRepository,
+                                        DSLContext dslContext) throws BaseException {
         return create(cnt, offset, defaultNamePattern, organizationRepository, dslContext);
     }
 
     public static Organization[] create(int cnt,
-                                 OrganizationRepository organizationRepository,
-                                 DSLContext dslContext) throws BaseException {
+                                        OrganizationRepository organizationRepository,
+                                        DSLContext dslContext) throws BaseException {
         return create(cnt, 0, organizationRepository, dslContext);
     }
 
     public static Organization create(OrganizationRepository organizationRepository,
-            DSLContext dslContext) throws BaseException {
+                                      DSLContext dslContext) throws BaseException {
         return create(1, organizationRepository, dslContext)[0];
     }
 
     public static TreeNode<Organization> setUp(DSLContext dslContext) {
         TreeNode<Organization> given = new TreeNode<>(null,
                 Arrays.asList(
-                        new TreeNode<>(new Organization(1,"Test",null)),
-                        new TreeNode<>(new Organization(2,"Test2",null)),
-                        new TreeNode<>(new Organization(3,"Test3",null),
+                        new TreeNode<>(new Organization(1, "Test", null)),
+                        new TreeNode<>(new Organization(2, "Test2", null)),
+                        new TreeNode<>(new Organization(3, "Test3", null),
                                 Arrays.asList(
-                                        new TreeNode<>(new Organization(4,"Test4",3)),
-                                        new TreeNode<>(new Organization(5,"Test5",3),
+                                        new TreeNode<>(new Organization(4, "Test4", 3)),
+                                        new TreeNode<>(new Organization(5, "Test5", 3),
                                                 Collections.singletonList(new TreeNode<>(new Organization(6, "Test6", 5))))
                                 )
                         )
@@ -92,12 +92,12 @@ public class OrganizationHelpers {
         return given;
     }
 
-    public static void  push(TreeNode<Organization> organizationsNode, DSLContext dslContext) {
+    public static void push(TreeNode<Organization> organizationsNode, DSLContext dslContext) {
         if (organizationsNode.item != null) dslContext.insertInto(organization).values(
                 organizationsNode.item.getId(),
                 organizationsNode.item.getOrgName(),
                 organizationsNode.item.getHeadOrgId()).execute();
-        if (organizationsNode.children != null) organizationsNode.children.forEach(it->push(it, dslContext));
+        if (organizationsNode.children != null) organizationsNode.children.forEach(it -> push(it, dslContext));
     }
 
     public static List<Organization> unroll(TreeNode<Organization> organizationsNode) {

@@ -1,10 +1,11 @@
 package ankokovin.fullstacktest.webserver.repos;
-import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
+
+import ankokovin.fullstacktest.webserver.exceptions.*;
 import ankokovin.fullstacktest.webserver.generated.tables.Worker;
+import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.webserver.generated.tables.records.OrganizationRecord;
 import ankokovin.fullstacktest.webserver.models.Table;
 import ankokovin.fullstacktest.webserver.models.response.TreeNode;
-import ankokovin.fullstacktest.webserver.exceptions.*;
 import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -29,11 +30,16 @@ public class OrganizationRepository {
     public DSLContext dsl;
 
 
-    public OrganizationRepository() {}
-    public OrganizationRepository(DSLContext dsl){this.dsl = dsl;}
+    public OrganizationRepository() {
+    }
+
+    public OrganizationRepository(DSLContext dsl) {
+        this.dsl = dsl;
+    }
 
     /**
      * Получить количество записей
+     *
      * @param searchName Шаблон названия организации, может быть Null
      * @return количество записей
      */
@@ -47,8 +53,9 @@ public class OrganizationRepository {
 
     /**
      * Получение списка организаций с количеством работников с поддержкой поиска
-     * @param pageNum - Номер страницы (нумерация с единицы)
-     * @param pageSize - Количество записей на одной странице
+     *
+     * @param pageNum    - Номер страницы (нумерация с единицы)
+     * @param pageSize   - Количество записей на одной странице
      * @param searchName - Строка поиска организации
      * @return Список записей.
      * Состав записи: ID, Name, Количество организаций, позиция вхождения строки поиска организации
@@ -56,29 +63,30 @@ public class OrganizationRepository {
     @Transactional(readOnly = true)
     public List<Record4<Integer, String, Integer, Integer>> getAllWithCount(int pageNum, int pageSize, String searchName) {
         Field<Integer> subStringIdx = position(lower(organization.ORG_NAME), lower(val(searchName)));
-        SelectJoinStep<Record4<Integer, String, Integer, Integer>> s =  dsl.select(
+        SelectJoinStep<Record4<Integer, String, Integer, Integer>> s = dsl.select(
                 organization.ID, organization.ORG_NAME, count(worker.ID), subStringIdx)
                 .from(organization.leftJoin(worker).on(worker.ORG_ID.eq(organization.ID)));
         Condition cond = searchName == null ? trueCondition() : subStringIdx.greaterThan(val(0));
-                return s.where(cond)
-                        .groupBy(organization.ID)
-                        .orderBy(subStringIdx, organization.ORG_NAME)
-                        .limit(pageSize)
-                        .offset((pageNum - 1) * pageSize)
-                        .fetch();
+        return s.where(cond)
+                .groupBy(organization.ID)
+                .orderBy(subStringIdx, organization.ORG_NAME)
+                .limit(pageSize)
+                .offset((pageNum - 1) * pageSize)
+                .fetch();
 
     }
 
     /**
      * Получение вершины дерева
-     * @param root - Организация, находящаяся в вершине
+     *
+     * @param root     - Организация, находящаяся в вершине
      * @param maxDepth - Текущая глубина поиска
      * @return Вершина дерева
      */
     @Transactional(readOnly = true)
     private TreeNode<Organization> getTree(
             @NotNull
-            Organization root,
+                    Organization root,
             Integer maxDepth) {
         if (maxDepth == 0) return new TreeNode<>(root);
         return new TreeNode<>(root, dsl.selectFrom(organization)
@@ -91,8 +99,9 @@ public class OrganizationRepository {
 
     /**
      * Получение вершины дерева
+     *
      * @param maxDepth - максимально допустимая глубина
-     * @param rootId - идентификатор вершины, с которой происходит обход. Null - обход со всех коренных вершин
+     * @param rootId   - идентификатор вершины, с которой происходит обход. Null - обход со всех коренных вершин
      * @return Вершина дерева
      * @throws NoSuchRecordException - в случае отсутствия вершины с идентификатором rootId
      */
@@ -102,22 +111,23 @@ public class OrganizationRepository {
             Integer rootId) throws NoSuchRecordException {
         assert maxDepth > 0;
         if (rootId == null) return new TreeNode<>(null, dsl.selectFrom(organization)
-                    .where(organization.HEAD_ORG_ID.isNull())
-                    .fetchInto(Organization.class)
-                    .parallelStream()
-                    .map(organization1 -> getTree(organization1, maxDepth - 1))
-                    .collect(Collectors.toList()));
+                .where(organization.HEAD_ORG_ID.isNull())
+                .fetchInto(Organization.class)
+                .parallelStream()
+                .map(organization1 -> getTree(organization1, maxDepth - 1))
+                .collect(Collectors.toList()));
         return getTree(getById(rootId), maxDepth);
     }
 
     /**
      * Внесение организации в базу данных
-     * @param name - название организации
+     *
+     * @param name   - название организации
      * @param org_id - идентификатор головной организации (может быть Null)
      * @return идентификатор созданной организации
-     * @throws SameNameException - при попытке создания организации с повторяющимся названием
+     * @throws SameNameException    - при попытке создания организации с повторяющимся названием
      * @throws WrongHeadIdException - при попытке указать несущесвующий идентификатор головной организации
-     * @throws UnexpectedException - при неожиданной ошибке во время внесения записи в базу данных
+     * @throws UnexpectedException  - при неожиданной ошибке во время внесения записи в базу данных
      */
     @Transactional
     public Integer insert(String name, Integer org_id) throws
@@ -148,14 +158,15 @@ public class OrganizationRepository {
 
     /**
      * Обновление данных организации в базе данных
-     * @param id - идентификатор организации
-     * @param name - название организации
+     *
+     * @param id     - идентификатор организации
+     * @param name   - название организации
      * @param org_id - идентификатор головной организации (может быть Null)
      * @return идентификатор организации
-     * @throws SameNameException - при попытке изменения название организации на уже существующее
-     * @throws WrongHeadIdException - при попытке указать несуществующий идентификатор головной организации или при цикличной зависимости
+     * @throws SameNameException     - при попытке изменения название организации на уже существующее
+     * @throws WrongHeadIdException  - при попытке указать несуществующий идентификатор головной организации или при цикличной зависимости
      * @throws NoSuchRecordException - при отсутствии записи с данным идентификатором
-     * @throws UnexpectedException - при неожиданной ошибке во время внесения записи в базу данных
+     * @throws UnexpectedException   - при неожиданной ошибке во время внесения записи в базу данных
      */
     @Transactional
     public Integer update(Integer id, String name, Integer org_id) throws
@@ -199,6 +210,7 @@ public class OrganizationRepository {
 
     /**
      * Получение организации по её идентификатору
+     *
      * @param id идентификатор организации
      * @return Организация
      * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
@@ -217,10 +229,11 @@ public class OrganizationRepository {
 
     /**
      * Удаление организации из базы данных
+     *
      * @param id - идентификатор организации
      * @return идентификатор организации
-     * @throws NoSuchRecordException - при отсутствии организации с данным идентификатором
-     * @throws UnexpectedException - при неожиданной ошибке в ходе удаления организации из базы данных
+     * @throws NoSuchRecordException   - при отсутствии организации с данным идентификатором
+     * @throws UnexpectedException     - при неожиданной ошибке в ходе удаления организации из базы данных
      * @throws DeleteHasChildException - при наличии зависимых организаций
      */
     @Transactional

@@ -1,15 +1,15 @@
 package ankokovin.fullstacktest.webserver.repos;
 
+import ankokovin.fullstacktest.webserver.exceptions.DeleteHasChildException;
+import ankokovin.fullstacktest.webserver.exceptions.NoSuchRecordException;
+import ankokovin.fullstacktest.webserver.exceptions.UnexpectedException;
+import ankokovin.fullstacktest.webserver.exceptions.WrongHeadIdException;
 import ankokovin.fullstacktest.webserver.generated.tables.Organization;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Worker;
 import ankokovin.fullstacktest.webserver.generated.tables.records.WorkerRecord;
 import ankokovin.fullstacktest.webserver.models.Table;
 import ankokovin.fullstacktest.webserver.models.response.TreeNode;
 import ankokovin.fullstacktest.webserver.models.response.WorkerTreeListElement;
-import ankokovin.fullstacktest.webserver.exceptions.DeleteHasChildException;
-import ankokovin.fullstacktest.webserver.exceptions.NoSuchRecordException;
-import ankokovin.fullstacktest.webserver.exceptions.UnexpectedException;
-import ankokovin.fullstacktest.webserver.exceptions.WrongHeadIdException;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,24 +34,29 @@ public class WorkerRepository {
     @Autowired
     private DSLContext dsl;
 
-    public WorkerRepository(){}
-    public WorkerRepository(DSLContext dsl){this.dsl = dsl;}
+    public WorkerRepository() {
+    }
+
+    public WorkerRepository(DSLContext dsl) {
+        this.dsl = dsl;
+    }
 
     /**
      * Получить количество записей
+     *
      * @param workerName шаблон имени работника
-     * @param orgName шаблон названия организации
+     * @param orgName    шаблон названия организации
      * @return количество записей
      */
     public Integer getCount(String workerName, String orgName) {
         Condition workerCond = lower(worker.WORKER_NAME).contains(lower(val(workerName)));
         Condition orgCond = lower(organization.ORG_NAME).contains(lower(val(orgName)));
         if (orgName == null) {
-            SelectJoinStep<Record1<Integer>> step =  dsl.select(count()).from(worker);
+            SelectJoinStep<Record1<Integer>> step = dsl.select(count()).from(worker);
             if (workerName == null) return step.fetchOneInto(Integer.class);
             return step.where(workerCond).fetchOneInto(Integer.class);
         } else {
-            SelectJoinStep<Record1<Integer>> step =  dsl.select(count())
+            SelectJoinStep<Record1<Integer>> step = dsl.select(count())
                     .from(worker)
                     .join(organization)
                     .on(worker.ORG_ID.eq(organization.ID));
@@ -63,12 +68,13 @@ public class WorkerRepository {
 
     /**
      * Внесение работника в базу данных
-     * @param name Имя работника
-     * @param org_id Идентификатор организации
+     *
+     * @param name    Имя работника
+     * @param org_id  Идентификатор организации
      * @param head_id Идентификатор начальника (может быть Null)
      * @return идентификатор созданного работника
      * @throws WrongHeadIdException - при попытке указать несущесвующий идентификатор начальника или начальника из другой организации
-     * @throws UnexpectedException - при неожиданной ошибке при внесении записи в базу данных
+     * @throws UnexpectedException  - при неожиданной ошибке при внесении записи в базу данных
      */
     @Transactional
     public Integer insert(String name, Integer org_id, Integer head_id) throws WrongHeadIdException, UnexpectedException {
@@ -97,14 +103,15 @@ public class WorkerRepository {
 
     /**
      * Обновление данных о работнике
-     * @param id - идентификатор работника
-     * @param name - имя работника
-     * @param org_id - идентификатор организации
+     *
+     * @param id      - идентификатор работника
+     * @param name    - имя работника
+     * @param org_id  - идентификатор организации
      * @param head_id - идентификатор начальника (может быть Null)
      * @return идентификатор работника
-     * @throws WrongHeadIdException - при попытке указать несущесвующий идентификатор начальника или начальника из другой организации
+     * @throws WrongHeadIdException  - при попытке указать несущесвующий идентификатор начальника или начальника из другой организации
      * @throws NoSuchRecordException - при отсутствии записи с данным идентификатором
-     * @throws UnexpectedException - при неожиданной ошибке во время внесения записи в базу данных
+     * @throws UnexpectedException   - при неожиданной ошибке во время внесения записи в базу данных
      */
     @Transactional
     public Integer update(Integer id, String name, Integer org_id, Integer head_id) throws
@@ -146,11 +153,12 @@ public class WorkerRepository {
 
     /**
      * Удаление работника из системы
+     *
      * @param id - идентификатор работника
      * @return идентификатор работника
-     * @throws NoSuchRecordException - при отсутствии записи с данным идентификатором
+     * @throws NoSuchRecordException   - при отсутствии записи с данным идентификатором
      * @throws DeleteHasChildException - при наличии работников, имеющих данного в качестве начальника
-     * @throws UnexpectedException- при неожиданной ошибке во время удаления записи из базы данных
+     * @throws UnexpectedException-    при неожиданной ошибке во время удаления записи из базы данных
      */
     @Transactional
     public Integer delete(Integer id) throws NoSuchRecordException, DeleteHasChildException, UnexpectedException {
@@ -161,8 +169,9 @@ public class WorkerRepository {
                     .fetchOne();
             if (result == null) throw new NoSuchRecordException(id);
             return result.getValue(worker.ID);
-        } catch (NoSuchRecordException ex){ throw ex;}
-        catch(org.springframework.dao.DataIntegrityViolationException ex) {
+        } catch (NoSuchRecordException ex) {
+            throw ex;
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
             String message = ex.getMessage();
             if (message != null && message.contains("is still referenced")) {
                 int child_id = Integer.parseInt(message.split("\\)=\\(")[1].split("\\)")[0]);
@@ -173,15 +182,17 @@ public class WorkerRepository {
 
             }
             throw new UnexpectedException(ex);
+        } catch (Exception ex) {
+            throw new UnexpectedException(ex);
         }
-        catch (Exception ex) {throw new UnexpectedException(ex);}
     }
 
     /**
      * Получение списка работников с поддержкой поиска
-     * @param pageNum - номер страницы (нумерация с единицы)
-     * @param pageSize - количество записей на одной странице
-     * @param org_name - строка поиска организации (может быть Null)
+     *
+     * @param pageNum     - номер страницы (нумерация с единицы)
+     * @param pageSize    - количество записей на одной странице
+     * @param org_name    - строка поиска организации (может быть Null)
      * @param worker_name - строка поиска работника (может быть Null)
      * @return Запись о работнике:
      * 1) идентификатор
@@ -210,7 +221,7 @@ public class WorkerRepository {
                 organization.ORG_NAME,
                 organizationNameSubstringId,
                 workerNameSubstringId
-                )
+        )
                 .from(worker)
                 .leftJoin(organization)
                 .on(worker.ORG_ID.eq(organization.ID))
@@ -227,14 +238,15 @@ public class WorkerRepository {
                         organization.ORG_NAME,
                         worker.ID)
                 .limit(pageSize)
-                .offset((pageNum-1)*pageSize)
+                .offset((pageNum - 1) * pageSize)
                 .fetch();
     }
 
     /**
      * Получение вершины дерева
+     *
      * @param maxDepth текущая глубина
-     * @param element информация о работнике в текущей вершине
+     * @param element  информация о работнике в текущей вершине
      * @return Вершина дерева
      */
     @Transactional(readOnly = true)
@@ -252,8 +264,9 @@ public class WorkerRepository {
 
     /**
      * Получение вершины дерева
+     *
      * @param maxDepth максимальная глубина поиска
-     * @param root_id идентификатор работника (может быть Null)
+     * @param root_id  идентификатор работника (может быть Null)
      * @return Вершина дерева
      * @throws NoSuchRecordException - при отсутствии записи работника с данным идентификатором
      */
@@ -273,13 +286,14 @@ public class WorkerRepository {
                 .where(worker.HEAD_ID.isNull())
                 .orderBy(organization.ID, worker.ID)
                 .fetch().parallelStream()
-                .map(x -> getTree(maxDepth-1,
-                        new WorkerTreeListElement(x.component1(), x.component2(), x.component3(), x.component4() )))
+                .map(x -> getTree(maxDepth - 1,
+                        new WorkerTreeListElement(x.component1(), x.component2(), x.component3(), x.component4())))
                 .collect(Collectors.toList()));
     }
 
     /**
      * Получение работника по идентификатору
+     *
      * @param id идентификатор работника
      * @return Работник
      * @throws NoSuchRecordException - при отсутствии записи работника с данным идентификатором
