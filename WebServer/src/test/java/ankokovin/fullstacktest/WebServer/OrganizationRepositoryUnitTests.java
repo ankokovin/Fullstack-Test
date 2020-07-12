@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class OrganizationRepositoryUnitTests {
-    //TODO: duplicate other tests from OrganizationRepositoryTests
     @Nested
     public class Insert {
         @Test

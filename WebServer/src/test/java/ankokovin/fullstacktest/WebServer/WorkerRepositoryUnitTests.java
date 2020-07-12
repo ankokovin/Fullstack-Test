@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WorkerRepositoryUnitTests {
-    //TODO: duplicate other tests from WorkerRepositoryTests
     @Nested
     public class Insert {
         @Test
