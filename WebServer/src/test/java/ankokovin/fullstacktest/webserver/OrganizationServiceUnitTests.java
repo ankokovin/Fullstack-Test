@@ -269,7 +269,7 @@ public class OrganizationServiceUnitTests {
 
             UnexpectedException e = assertThrows(UnexpectedException.class,
                     () -> organizationService.delete(expected.id));
-            assertEquals(expected, e.getCause());
+            assertEquals("Delete returned wrong id", e.getMessage());
         }
     }
 
