@@ -1,4 +1,4 @@
-package ankokovin.fullstacktest.webserver.models.Input;
+package ankokovin.fullstacktest.webserver.models.webinput;
 
 import javax.validation.constraints.NotEmpty;
 

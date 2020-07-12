@@ -4,7 +4,7 @@ import ankokovin.fullstacktest.webserver.exceptions.*;
 import ankokovin.fullstacktest.webserver.generated.tables.Worker;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.webserver.models.Table;
-import ankokovin.fullstacktest.webserver.models.Response.TreeNode;
+import ankokovin.fullstacktest.webserver.models.response.TreeNode;
 import ankokovin.fullstacktest.webserver.repos.OrganizationRepository;
 import ankokovin.fullstacktest.webserver.repos.WorkerRepository;
 import ankokovin.fullstacktest.webserver.testhelpers.OrganizationHelpers;

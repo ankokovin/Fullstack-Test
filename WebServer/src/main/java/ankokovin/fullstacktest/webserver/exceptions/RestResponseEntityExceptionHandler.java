@@ -1,9 +1,9 @@
 package ankokovin.fullstacktest.webserver.exceptions;
 
-import ankokovin.fullstacktest.webserver.models.ErrorResponse.DeleteHasChildResponse;
-import ankokovin.fullstacktest.webserver.models.ErrorResponse.NoSuchRecordResponse;
-import ankokovin.fullstacktest.webserver.models.ErrorResponse.SameNameResponse;
-import ankokovin.fullstacktest.webserver.models.ErrorResponse.WrongHeadIdResponse;
+import ankokovin.fullstacktest.webserver.models.errorresponse.DeleteHasChildResponse;
+import ankokovin.fullstacktest.webserver.models.errorresponse.NoSuchRecordResponse;
+import ankokovin.fullstacktest.webserver.models.errorresponse.SameNameResponse;
+import ankokovin.fullstacktest.webserver.models.errorresponse.WrongHeadIdResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import org.springframework.http.HttpStatus;

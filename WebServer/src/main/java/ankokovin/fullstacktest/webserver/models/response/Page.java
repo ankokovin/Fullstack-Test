@@ -1,4 +1,4 @@
-package ankokovin.fullstacktest.webserver.models.Response;
+package ankokovin.fullstacktest.webserver.models.response;
 
 public class Page<T> {
     public Integer page;

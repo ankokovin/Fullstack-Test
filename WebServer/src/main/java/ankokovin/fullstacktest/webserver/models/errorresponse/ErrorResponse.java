@@ -1,4 +1,4 @@
-package ankokovin.fullstacktest.webserver.models.ErrorResponse;
+package ankokovin.fullstacktest.webserver.models.errorresponse;
 
 public class ErrorResponse {
     public String message;

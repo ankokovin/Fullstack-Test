@@ -2,7 +2,7 @@ package ankokovin.fullstacktest.webserver.testhelpers;
 
 import ankokovin.fullstacktest.webserver.exceptions.BaseException;
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.webserver.models.Response.TreeNode;
+import ankokovin.fullstacktest.webserver.models.response.TreeNode;
 import ankokovin.fullstacktest.webserver.repos.OrganizationRepository;
 import org.jooq.DSLContext;
 

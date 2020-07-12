@@ -3,7 +3,7 @@ import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
 import ankokovin.fullstacktest.webserver.generated.tables.Worker;
 import ankokovin.fullstacktest.webserver.generated.tables.records.OrganizationRecord;
 import ankokovin.fullstacktest.webserver.models.Table;
-import ankokovin.fullstacktest.webserver.models.Response.TreeNode;
+import ankokovin.fullstacktest.webserver.models.response.TreeNode;
 import ankokovin.fullstacktest.webserver.exceptions.*;
 import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;

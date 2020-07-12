@@ -1,4 +1,4 @@
-package ankokovin.fullstacktest.webserver.models.ErrorResponse;
+package ankokovin.fullstacktest.webserver.models.errorresponse;
 
 import ankokovin.fullstacktest.webserver.models.Table;
 

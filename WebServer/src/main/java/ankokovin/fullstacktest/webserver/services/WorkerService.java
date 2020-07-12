@@ -1,12 +1,12 @@
 package ankokovin.fullstacktest.webserver.services;
 
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Worker;
-import ankokovin.fullstacktest.webserver.models.Input.CreateWorkerInput;
-import ankokovin.fullstacktest.webserver.models.Input.UpdateWorkerInput;
-import ankokovin.fullstacktest.webserver.models.Response.Page;
-import ankokovin.fullstacktest.webserver.models.Response.TreeNode;
-import ankokovin.fullstacktest.webserver.models.Response.WorkerListElement;
-import ankokovin.fullstacktest.webserver.models.Response.WorkerTreeListElement;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateWorkerInput;
+import ankokovin.fullstacktest.webserver.models.webinput.UpdateWorkerInput;
+import ankokovin.fullstacktest.webserver.models.response.Page;
+import ankokovin.fullstacktest.webserver.models.response.TreeNode;
+import ankokovin.fullstacktest.webserver.models.response.WorkerListElement;
+import ankokovin.fullstacktest.webserver.models.response.WorkerTreeListElement;
 import ankokovin.fullstacktest.webserver.repos.WorkerRepository;
 import ankokovin.fullstacktest.webserver.exceptions.DeleteHasChildException;
 import ankokovin.fullstacktest.webserver.exceptions.NoSuchRecordException;

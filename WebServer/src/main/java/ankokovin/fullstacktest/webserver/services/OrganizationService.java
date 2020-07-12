@@ -2,11 +2,11 @@ package ankokovin.fullstacktest.webserver.services;
 
 
 import ankokovin.fullstacktest.webserver.generated.tables.pojos.Organization;
-import ankokovin.fullstacktest.webserver.models.Input.CreateOrganizationInput;
-import ankokovin.fullstacktest.webserver.models.Response.OrgListElement;
-import ankokovin.fullstacktest.webserver.models.Response.Page;
-import ankokovin.fullstacktest.webserver.models.Response.TreeNode;
-import ankokovin.fullstacktest.webserver.models.Input.UpdateOrganizationInput;
+import ankokovin.fullstacktest.webserver.models.webinput.CreateOrganizationInput;
+import ankokovin.fullstacktest.webserver.models.response.OrgListElement;
+import ankokovin.fullstacktest.webserver.models.response.Page;
+import ankokovin.fullstacktest.webserver.models.response.TreeNode;
+import ankokovin.fullstacktest.webserver.models.webinput.UpdateOrganizationInput;
 import ankokovin.fullstacktest.webserver.repos.OrganizationRepository;
 import ankokovin.fullstacktest.webserver.exceptions.*;
 import org.jooq.Record4;
